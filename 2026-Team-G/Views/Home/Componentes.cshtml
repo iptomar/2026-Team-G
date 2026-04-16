@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Componentes de Formulário";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+    <p class="lead">Guia de referência para os elementos de entrada do sistema.</p>
+    
+    <hr />
+
+    <section class="mb-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Campo de Texto (Input)</h3>
+                <p class="text-muted">Utilizado para capturar strings curtas, nomes e e-mails.</p>
+                
+                <div class="p-3 border rounded bg-light">
+                    <label for="exemploInput" class="form-label">Nome Completo</label>
+                    <input type="text" id="exemploInput" class="form-control" placeholder="Digite seu nome...">
+                </div>
+            </div>
+            
+          
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Seleção (Select)</h3>
+                <p class="text-muted">Permite ao usuário escolher uma opção de uma lista pré-definida.</p>
+                
+                <div class="p-3 border rounded bg-light">
+                    <label class="form-label">Escolha uma categoria</label>
+                    <select class="form-select">
+                        <option selected>Abrir menu de seleção</option>
+                        <option value="1">Opção A</option>
+                        <option value="2">Opção B</option>
+                    </select>
+                </div>
+            </div>
+            
+
+        </div>
+    </section>
+</div>
