@@ -1,6 +1,6 @@
-@{
-    ViewData["Title"] = "Construtor de Formulários";
-}
+<!--@{
+        ViewData["Title"] = "Construtor de Formulários";
+    }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 
@@ -234,11 +234,11 @@
     }
 
     /* Animations */
-    @keyframes fadeInDown {
+    keyframes fadeInDown {
         from { opacity: 0; transform: translateY(5px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes slideInRight {
+   keyframes slideInRight {
         from { opacity: 0; transform: translateX(20px); }
         to { opacity: 1; transform: translateX(0); }
     }
@@ -265,7 +265,7 @@
 </style>
 
 <div class="container-fluid py-2">
-    <!-- Header Area -->
+    Header Area 
     <div class="row align-items-center mb-2 mt-4">
         <div class="col">
             <h2 class="fw-bold" style="color: var(--fb-text); letter-spacing: -0.5px;">
@@ -283,9 +283,7 @@
         </div>
     </div>
 
-    <!-- Main Workspace -->
     <div class="form-builder-container">
-        <!-- Sidebar - Toolbox -->
         <div class="toolbox">
             <div class="header-title">
                 <i class="bi bi-grid-1x2"></i> Componentes
@@ -323,17 +321,14 @@
             </div>
         </div>
 
-        <!-- Center - Dropzone -->
         <div class="dropzone-container">
             <div class="header-title">
                 <i class="bi bi-window-sidebar"></i> Tela de Desenho
             </div>
             <div class="dropzone" id="formDropzone">
-                <!-- Dropbed area -->
             </div>
         </div>
 
-        <!-- Right sidebar - Properties Panel -->
         <div class="properties-panel" id="propertiesPanel">
             <div class="header-title">
                 <i class="bi bi-sliders2-vertical"></i> Propriedades
@@ -364,7 +359,6 @@
 </div>
 
 @section Scripts {
-    <!-- Importing Sortable.js for smooth Drag & Drop functionality -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     
     <script>
@@ -600,4 +594,5 @@
             });
         });
     </script>
-}
+
+-->

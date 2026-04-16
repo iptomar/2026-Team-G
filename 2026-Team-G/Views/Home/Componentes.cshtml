@@ -13,6 +13,11 @@ componente 2 (text box)
 titulo - titulo label - Nome 
 class - form-control
 texto placeholder - "insira o nome"
+<div class="container mt-4">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+    <p class="lead">Guia de referência para os elementos de entrada do sistema.</p>
+    
+    <hr />
 
 componente 3 (combo box)
 titulo - titulo label - Combo Box 
@@ -126,85 +131,35 @@ texto placeholder - "null"
                         <label class="form-label small fw-bold">label bold</label>
                         <input type="email" class="form-control" >
                     </div>
+    <section class="mb-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Campo de Texto (Input)</h3>
+                <p class="text-muted">Utilizado para capturar strings curtas, nomes e e-mails.</p>
+                
+                <div class="p-3 border rounded bg-light">
+                    <label for="exemploInput" class="form-label">Nome Completo</label>
+                    <input type="text" id="exemploInput" class="form-control" placeholder="Digite seu nome...">
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0 bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="num-step">03</div>
-                        <h5 class="card-title fw-bold m-0">ComboBox</h5>
-                    </div>
-                    <label class="form-label small fw-bold">label bold</label>
+    <section class="mb-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Seleção (Select)</h3>
+                <p class="text-muted">Permite ao usuário escolher uma opção de uma lista pré-definida.</p>
+                
+                <div class="p-3 border rounded bg-light">
+                    <label class="form-label">Escolha uma categoria</label>
                     <select class="form-select">
-                        <option selected disabled>Escolha uma opção...</option>
-                        <option>a</option>
-                        <option>b</option>
-                        <option>c</option>
+                        <option selected>Abrir menu de seleção</option>
+                        <option value="1">Opção A</option>
+                        <option value="2">Opção B</option>
                     </select>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0 bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="num-step">04</div>
-                        <h5 class="card-title fw-bold m-0">Check Box</h5>
-                    </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" id="sw1" checked>
-                        <label class="form-check-label" for="sw1">a</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="ck1">
-                        <label class="form-check-label" for="ck1">b</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0 bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="num-step">06</div>
-                        <h5 class="card-title fw-bold m-0">Label</h5>
-                    </div>
-                    <p class="small text-muted">SubLabel placeholder</p>
-
-                    <label class="form-label small fw-bold">Label bold</label>
-                    
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0 bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="num-step">07</div>
-                        <h5 class="card-title fw-bold m-0">Assinatura</h5>
-                    </div>
-
-                    <div class="mt-4 pt-2">
-                        <div style="border-bottom: 2px solid #333; width: 100%; min-height: 40px;">
-                            <input type="text" class="form-control border-0 bg-transparent shadow-none">
-                        </div>
-           
-                    </div>
-         
-                </div>
-            </div>
-        </div>  
-
-
-    </div>
-
-    <div class="mt-5 p-4 border-top d-flex justify-content-end gap-2">
-        <button class="btn btn-light border">Limpar Tudo</button>
-        <button class="btn btn-primary px-5">Submeter Formulário</button>
-    </div>
+    </section>
 </div>
