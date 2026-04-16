@@ -2,45 +2,181 @@
     ViewData["Title"] = "Componentes de Formulário";
 }
 
-<div class="container mt-4">
-    <h1 class="display-4">@ViewData["Title"]</h1>
-    <p class="lead">Guia de referência para os elementos de entrada do sistema.</p>
-    
-    <hr />
+<style>
+    /* Estilo para os quadrados indicadores de seção */
+    .num-step {
+        width: 35px;
+        height: 35px;
+        background-color: #0d6efd;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
 
-    <section class="mb-5">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Campo de Texto (Input)</h3>
-                <p class="text-muted">Utilizado para capturar strings curtas, nomes e e-mails.</p>
-                
-                <div class="p-3 border rounded bg-light">
-                    <label for="exemploInput" class="form-label">Nome Completo</label>
-                    <input type="text" id="exemploInput" class="form-control" placeholder="Digite seu nome...">
+    /* Estilo para as caixas de número único (PIN/OTP) */
+    .pin-container {
+        display: flex;
+        gap: 8px;
+    }
+
+    .pin-input {
+        width: 45px;
+        height: 45px;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        background-color: #fff;
+    }
+
+    .pin-input:focus {
+        border-color: #0d6efd;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    }
+
+    /* Remove setas de input type="number" */
+    .pin-input::-webkit-inner-spin-button,
+    .pin-input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container mt-5 pb-5">
+    <div class="border-bottom mb-4 pb-3">
+        <h1 class="display-5 fw-bold text-primary">@ViewData["Title"]</h1>
+        <p class="text-secondary">Template de componentes </p>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="num-step">01</div>
+                        <h5 class="card-title fw-bold m-0">Número</h5>
+                    </div>
+                    <p class="small text-muted">texto placeholder</p>
+                    <div class="pin-container">
+                        <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
+                        <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
+                        <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
+                        <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
+                    </div>
                 </div>
             </div>
-            
-          
         </div>
-    </section>
 
-    <section class="mb-5">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Seleção (Select)</h3>
-                <p class="text-muted">Permite ao usuário escolher uma opção de uma lista pré-definida.</p>
-                
-                <div class="p-3 border rounded bg-light">
-                    <label class="form-label">Escolha uma categoria</label>
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="num-step">02</div>
+                        <h5 class="card-title fw-bold m-0">Text box placeholder</h5>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">label bold</label>
+                        <input type="email" class="form-control" >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="num-step">03</div>
+                        <h5 class="card-title fw-bold m-0">ComboBox</h5>
+                    </div>
+                    <label class="form-label small fw-bold">label bold</label>
                     <select class="form-select">
-                        <option selected>Abrir menu de seleção</option>
-                        <option value="1">Opção A</option>
-                        <option value="2">Opção B</option>
+                        <option selected disabled>Escolha uma opção...</option>
+                        <option>TI / Desenvolvimento</option>
+                        <option>Recursos Humanos</option>
+                        <option>Marketing</option>
                     </select>
                 </div>
             </div>
-            
-
         </div>
-    </section>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="num-step">04</div>
+                        <h5 class="card-title fw-bold m-0">Preferências</h5>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="sw1" checked>
+                        <label class="form-check-label" for="sw1">Notificações Ativas</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="ck1">
+                        <label class="form-check-label" for="ck1">Aceito os termos de uso</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="num-step">05</div>
+                        <h5 class="card-title fw-bold m-0">Observações Adicionais</h5>
+                    </div>
+                    <textarea class="form-control" rows="3" placeholder="Escreva aqui os detalhes do seu pedido..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="num-step">06</div>
+                        <h5 class="card-title fw-bold m-0">Label</h5>
+                    </div>
+                    <p class="small text-muted">SubLabel placeholder</p>
+
+                    <label class="form-label small fw-bold">Label bold</label>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="num-step">07</div>
+                        <h5 class="card-title fw-bold m-0">Assinatura</h5>
+                    </div>
+
+                    <div class="mt-4 pt-2">
+                        <div style="border-bottom: 2px solid #333; width: 100%; min-height: 40px;">
+                            <input type="text" class="form-control border-0 bg-transparent shadow-none"
+                                
+                                   style="font-family: 'Cursive', sans-serif; font-size: 1.2rem;">
+                        </div>
+           
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+
+    </div>
+
+    <div class="mt-5 p-4 border-top d-flex justify-content-end gap-2">
+        <button class="btn btn-light border">Limpar Tudo</button>
+        <button class="btn btn-primary px-5">Submeter Formulário</button>
+    </div>
 </div>
