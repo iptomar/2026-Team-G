@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace _2026_Team_G.Models;
 
-public class User
+public class Utilizador
 {
     public int Id { get; set; }
     
