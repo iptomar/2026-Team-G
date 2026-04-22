@@ -63,22 +63,6 @@ texto placeholder - "null"
         display: flex;
         gap: 8px;
     }
-<!--
-COMPONENTES PARA A BASE DE DADOS 
-componete 1 (caixa de numeros)
-titulo - titulo label - Numero
-class - pin-input
-texto placeholder - null 
-
-componente 2 (text box)
-titulo - titulo label - Nome 
-class - form-control
-texto placeholder - "insira o nome"
-<div class="container mt-4">
-    <h1 class="display-4">@ViewData["Title"]</h1>
-    <p class="lead">Guia de referência para os elementos de entrada do sistema.</p>
-    
-    <hr />
 
     .pin-input {
         width: 45px;
@@ -142,133 +126,9 @@ texto placeholder - "insira o nome"
                         <label class="form-label small fw-bold">label bold</label>
                         <input type="email" class="form-control" >
                     </div>
-componente 3 (combo box)
-titulo - titulo label - Combo Box 
-class - form-control
-texto placeholder - "insira o nome"
-
-componente 4 (check box switch)
-titulo - titulo label - Check box switch
-class - form-check form-switch
-texto placeholder - "insira o nome"
-
-componente 5 (check box )
-titulo - titulo label - Check box 
-class - form-check
-texto placeholder - "insira o nome"
-
-componente 6 (label )
-titulo - titulo label - Label 
-class - form-label small fw-bold
-texto placeholder - "label bold"
-
-componente 7 (Assinatura )
-titulo - titulo label - Assinatura 
-class - form-control border-0 bg-transparent shadow-none
-texto placeholder - "null"
-
--->
-
-
-<style>
-    /* Estilo para os quadrados indicadores de seção */
-    .num-step {
-        width: 35px;
-        height: 35px;
-        background-color: #0d6efd;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        font-weight: bold;
-        margin-right: 15px;
-        flex-shrink: 0;
-    }
-
-    /* Estilo para as caixas de número único (PIN/OTP) */
-    .pin-container {
-        display: flex;
-        gap: 8px;
-    }
-
-    .pin-input {
-        width: 45px;
-        height: 45px;
-        text-align: center;
-        font-size: 1.2rem;
-        font-weight: bold;
-        border: 2px solid #dee2e6;
-        border-radius: 6px;
-        background-color: #fff;
-    }
-
-    .pin-input:focus {
-        border-color: #0d6efd;
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-    }
-
-    /* Remove setas de input type="number" */
-    .pin-input::-webkit-inner-spin-button,
-    .pin-input::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-</style>
-
-<div class="container mt-5 pb-5">
-    <div class="border-bottom mb-4 pb-3">
-        <h1 class="display-5 fw-bold text-primary">@ViewData["Title"]</h1>
-        <p class="text-secondary">Template de componentes </p>
     </div>
-
-    <div class="row g-4">
-
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0 bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="num-step">01</div>
-                        <h5 class="card-title fw-bold m-0">Número</h5>
-                    </div>
-                    <p class="small text-muted">sublabel </p>
-                    <div class="pin-container">
-                        <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
-                        <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
-                        <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
-                        <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0 bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="num-step">02</div>
-                        <h5 class="card-title fw-bold m-0">Text box placeholder</h5>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">label bold</label>
-                        <input type="email" class="form-control" >
-                    </div>
-    <section class="mb-5">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Campo de Texto (Input)</h3>
-                <p class="text-muted">Utilizado para capturar strings curtas, nomes e e-mails.</p>
-                
-                <div class="p-3 border rounded bg-light">
-                    <label for="exemploInput" class="form-label">Nome Completo</label>
-                    <input type="text" id="exemploInput" class="form-control" placeholder="Digite seu nome...">
-                </div>
-            </div>
-            
-          
-        </div>
-    </section>
 
         <div class="col-md-6">
             <div class="card h-100 shadow-sm border-0 bg-light">
@@ -286,8 +146,6 @@ texto placeholder - "null"
                     </select>
                 </div>
             </div>
-            
-
         </div>
 
         <div class="col-md-6">
