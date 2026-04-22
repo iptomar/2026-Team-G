@@ -2,6 +2,46 @@
     ViewData["Title"] = "Componentes de Formulário";
 }
 
+<!--
+COMPONENTES PARA A BASE DE DADOS 
+componete 1 (caixa de numeros)
+titulo - titulo label - Numero
+class - pin-input
+texto placeholder - null 
+
+componente 2 (text box)
+titulo - titulo label - Nome 
+class - form-control
+texto placeholder - "insira o nome"
+
+componente 3 (combo box)
+titulo - titulo label - Combo Box 
+class - form-control
+texto placeholder - "insira o nome"
+
+componente 4 (check box switch)
+titulo - titulo label - Check box switch
+class - form-check form-switch
+texto placeholder - "insira o nome"
+
+componente 5 (check box )
+titulo - titulo label - Check box 
+class - form-check
+texto placeholder - "insira o nome"
+
+componente 6 (label )
+titulo - titulo label - Label 
+class - form-label small fw-bold
+texto placeholder - "label bold"
+
+componente 7 (Assinatura )
+titulo - titulo label - Assinatura 
+class - form-control border-0 bg-transparent shadow-none
+texto placeholder - "null"
+
+-->
+
+
 <style>
     /* Estilo para os quadrados indicadores de seção */
     .num-step {
@@ -80,7 +120,7 @@ texto placeholder - "insira o nome"
                         <div class="num-step">01</div>
                         <h5 class="card-title fw-bold m-0">Número</h5>
                     </div>
-                    <p class="small text-muted">texto placeholder</p>
+                    <p class="small text-muted">sublabel </p>
                     <div class="pin-container">
                         <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
                         <input type="number" class="pin-input" oninput="if(this.value.length > 1) this.value = this.value.slice(0, 1);">
@@ -240,9 +280,9 @@ texto placeholder - "null"
                     <label class="form-label small fw-bold">label bold</label>
                     <select class="form-select">
                         <option selected disabled>Escolha uma opção...</option>
-                        <option>TI / Desenvolvimento</option>
-                        <option>Recursos Humanos</option>
-                        <option>Marketing</option>
+                        <option>a</option>
+                        <option>b</option>
+                        <option>c</option>
                     </select>
                 </div>
             </div>
@@ -255,31 +295,20 @@ texto placeholder - "null"
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         <div class="num-step">04</div>
-                        <h5 class="card-title fw-bold m-0">Preferências</h5>
+                        <h5 class="card-title fw-bold m-0">Check Box</h5>
                     </div>
                     <div class="form-check form-switch mb-2">
                         <input class="form-check-input" type="checkbox" id="sw1" checked>
-                        <label class="form-check-label" for="sw1">Notificações Ativas</label>
+                        <label class="form-check-label" for="sw1">a</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="ck1">
-                        <label class="form-check-label" for="ck1">Aceito os termos de uso</label>
+                        <label class="form-check-label" for="ck1">b</label>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-12">
-            <div class="card shadow-sm border-0 bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="num-step">05</div>
-                        <h5 class="card-title fw-bold m-0">Observações Adicionais</h5>
-                    </div>
-                    <textarea class="form-control" rows="3" placeholder="Escreva aqui os detalhes do seu pedido..."></textarea>
-                </div>
-            </div>
-        </div>
         <div class="col-md-6">
             <div class="card h-100 shadow-sm border-0 bg-light">
                 <div class="card-body">
@@ -304,9 +333,7 @@ texto placeholder - "null"
 
                     <div class="mt-4 pt-2">
                         <div style="border-bottom: 2px solid #333; width: 100%; min-height: 40px;">
-                            <input type="text" class="form-control border-0 bg-transparent shadow-none"
-                                
-                                   style="font-family: 'Cursive', sans-serif; font-size: 1.2rem;">
+                            <input type="text" class="form-control border-0 bg-transparent shadow-none">
                         </div>
            
                     </div>
