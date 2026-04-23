@@ -11,8 +11,8 @@ using _2026_Team_G.Data;
 namespace _2026_Team_G.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260416181811_final1")]
-    partial class final1
+    [Migration("20260423173557_BD")]
+    partial class BD
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -257,7 +257,7 @@ namespace _2026_Team_G.Data.Migrations
                     b.ToTable("Logs");
                 });
 
-            modelBuilder.Entity("_2026_Team_G.Models.User", b =>
+            modelBuilder.Entity("_2026_Team_G.Models.Utilizador", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -273,7 +273,7 @@ namespace _2026_Team_G.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Utilizadores");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

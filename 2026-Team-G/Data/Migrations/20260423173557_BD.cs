@@ -5,7 +5,7 @@
 namespace _2026_Team_G.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class final3 : Migration
+    public partial class BD : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
