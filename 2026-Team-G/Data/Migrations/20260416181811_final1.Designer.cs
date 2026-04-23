@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using _2026_Team_G.Data;
 
@@ -10,9 +11,11 @@ using _2026_Team_G.Data;
 namespace _2026_Team_G.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260416181811_final1")]
+    partial class final1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
@@ -254,7 +257,7 @@ namespace _2026_Team_G.Data.Migrations
                     b.ToTable("Logs");
                 });
 
-            modelBuilder.Entity("_2026_Team_G.Models.Utilizador", b =>
+            modelBuilder.Entity("_2026_Team_G.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -270,7 +273,7 @@ namespace _2026_Team_G.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Utilizadores");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

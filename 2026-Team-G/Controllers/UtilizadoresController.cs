@@ -1,36 +1,36 @@
+﻿using _2026_Team_G.Data;
+using _2026_Team_G.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using _2026_Team_G.Data;
-using _2026_Team_G.Models;
 
 namespace _2026_Team_G.Controllers
 {
-    [Authorize] // Requer Autenticação para todas as Ações
-    public class UserController : Controller
+    [Authorize]
+    public class UtilizadoresController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-
-        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public UtilizadoresController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
+
         }
 
-        // GET: User
+        // GET: Utilizadores
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            return View(await _context.Utilizadores.ToListAsync());
         }
 
-        // GET: User/Details/5
+        // GET: Utilizadores/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -38,39 +38,39 @@ namespace _2026_Team_G.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
+            var utilizador = await _context.Utilizadores
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (utilizador == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(utilizador);
         }
 
-        // GET: User/Create
+        // GET: Utilizadores/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: User/Create
+        // POST: Utilizadores/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Nome")] User user)
+        public async Task<IActionResult> Create([Bind("Id,Nome,IdentityUserName")] Utilizador utilizador)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+                _context.Add(utilizador);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(utilizador);
         }
 
-        // GET: User/Edit/5
+        // GET: Utilizadores/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,46 +78,36 @@ namespace _2026_Team_G.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var utilizador = await _context.Utilizadores.FindAsync(id);
+            if (utilizador == null)
             {
                 return NotFound();
             }
-
-            if (!await IsUserAuthorizedToEditAsync(user))
-            {
-                return Forbid();
-            }
-            return View(user);
+            return View(utilizador);
         }
 
-        // POST: User/Edit/5
+        // POST: Utilizadores/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([FromRoute]int id, [Bind("Id,Nome")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,IdentityUserName")] Utilizador utilizador)
         {
-            if (id != user.Id)
+            if (id != utilizador.Id)
             {
                 return NotFound();
             }
 
-            if (!await IsUserAuthorizedToEditAsync(user))
-            {
-                return Forbid();
-            }
-            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(utilizador);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!UtilizadorExists(utilizador.Id))
                     {
                         return NotFound();
                     }
@@ -128,10 +118,10 @@ namespace _2026_Team_G.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(utilizador);
         }
 
-        // GET: User/Delete/5
+        // GET: Utilizadores/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -139,64 +129,34 @@ namespace _2026_Team_G.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
+            var utilizador = await _context.Utilizadores
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (utilizador == null)
             {
                 return NotFound();
             }
 
-            if (!await IsUserAuthorizedToEditAsync(user))
-            {
-                return Forbid();
-            }
-
-            return View(user);
+            return View(utilizador);
         }
 
-        // POST: User/Delete/5
+        // POST: Utilizadores/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            var utilizador = await _context.Utilizadores.FindAsync(id);
+            if (utilizador != null)
             {
-                
-                if (!await IsUserAuthorizedToEditAsync(user))
-                {
-                    return Forbid();
-                }
-
-                _context.Users.Remove(user);
+                _context.Utilizadores.Remove(utilizador);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(int id)
+        private bool UtilizadorExists(int id)
         {
-            return _context.Users.Any(e => e.Id == id);
-        }
-
-        private async Task<bool> IsUserAuthorizedToEditAsync(User targetUser)
-        {
-            var currentUser = await _userManager.GetUserAsync(User);
-            if (currentUser == null)
-            {
-                return false;
-            }
-
-            var currentUtilizador = await _context.Users.FirstOrDefaultAsync(u => u.IdentityUserName == currentUser.UserName);
-
-            if (currentUtilizador == null)
-            {
-                return false;
-            }
-
-            return currentUtilizador.Id == targetUser.Id;
-
+            return _context.Utilizadores.Any(e => e.Id == id);
         }
     }
 }
