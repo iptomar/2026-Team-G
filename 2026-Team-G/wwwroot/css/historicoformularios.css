@@ -33,6 +33,22 @@
     border: 1px solid #e0e0e0;
 }
 
+/* Dark mode */
+body.dark-mode .stat-card {
+    background: #2d2d2d;
+    border-color: #4a4a4a;
+}
+
+body.dark-mode .stat-label {
+    color: #a0a0a0;
+}
+
+body.dark-mode .search-bar input {
+    background-color: #3d3d3d;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+}
+
 .stat-number {
     font-size: 32px;
     font-weight: bold;

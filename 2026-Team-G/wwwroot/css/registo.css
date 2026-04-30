@@ -37,6 +37,20 @@
     border: 1px solid #e0e0e0;
 }
 
+/* Dark mode */
+body.dark-mode .register-card {
+    background: #2d2d2d;
+    border-color: #4a4a4a;
+}
+
+body.dark-mode .register-header h2 {
+    color: #e0e0e0;
+}
+
+body.dark-mode .register-header {
+    border-color: #4a4a4a;
+}
+
 .register-header {
     text-align: center;
     margin-bottom: 30px;

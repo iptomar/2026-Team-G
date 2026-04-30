@@ -36,6 +36,11 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="HistoricoFormulariosUtilizador">Histórico de Formulários</a>
                         </li>
+                        <li class="nav-item">
+                            <button id="darkModeToggle" class="btn btn-outline-secondary" type="button" title="Toggle dark mode">
+                                <span id="darkModeIcon">🌙</span>
+                            </button>
+                        </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -56,6 +61,25 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Dark mode toggle
+        const toggle = document.getElementById('darkModeToggle');
+        const icon = document.getElementById('darkModeIcon');
+        const body = document.body;
+
+        // Check saved preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-mode');
+            icon.textContent = '☀️';
+        }
+
+        toggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            icon.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
