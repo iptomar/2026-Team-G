@@ -55,6 +55,20 @@ body.dark-mode .page-header {
     background: linear-gradient(135deg, #4a4a6a 0%, #5a5a7a 100%);
 }
 
+body.dark-mode .form-group label {
+    color: #e0e0e0;
+}
+
+body.dark-mode .form-group .form-control {
+    background-color: #3d3d3d;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+}
+
+body.dark-mode .register-links a {
+    color: #8ab4f8;
+}
+
 .register-header {
     text-align: center;
     margin-bottom: 30px;

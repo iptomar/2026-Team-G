@@ -36,10 +36,13 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="HistoricoFormulariosUtilizador">Histórico de Formulários</a>
                         </li>
-                        <li class="nav-item">
-                            <button id="darkModeToggle" class="btn btn-outline-secondary" type="button" title="Toggle dark mode">
-                                <span id="darkModeIcon">🌙</span>
-                            </button>
+                        <li class="nav-item d-flex align-items-center ms-3">
+                            <div class="dark-mode-switch">
+                                <input class="dark-mode-checkbox" type="checkbox" id="darkModeToggle">
+                                <label class="dark-mode-slider" for="darkModeToggle">
+                                    <span class="slider-icon">🌙</span>
+                                </label>
+                            </div>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
@@ -62,21 +65,20 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
-        // Dark mode toggle
+        // Dark mode slider toggle
         const toggle = document.getElementById('darkModeToggle');
-        const icon = document.getElementById('darkModeIcon');
         const body = document.body;
 
         // Check saved preference
         if (localStorage.getItem('darkMode') === 'true') {
             body.classList.add('dark-mode');
-            icon.textContent = '☀️';
+            toggle.checked = true;
         }
 
-        toggle.addEventListener('click', () => {
+        toggle.addEventListener('change', () => {
             body.classList.toggle('dark-mode');
             const isDark = body.classList.contains('dark-mode');
-            icon.textContent = isDark ? '☀️' : '🌙';
+            toggle.checked = isDark;
             localStorage.setItem('darkMode', isDark);
         });
     </script>

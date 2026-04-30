@@ -49,6 +49,40 @@ body.dark-mode .search-bar input {
     color: #e0e0e0;
 }
 
+body.dark-mode .table-container {
+    background: #2d2d2d;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+body.dark-mode .table-container table {
+    background: #2d2d2d;
+    color: #e0e0e0;
+}
+
+body.dark-mode .table-container th {
+    background: #3d3d3d !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .table-container td {
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border-color: #4a4a4a !important;
+}
+
+body.dark-mode tr:hover {
+    background: #3d3d3d !important;
+}
+
+body.dark-mode .btn-view {
+    background: #667eea;
+}
+
+body.dark-mode .empty-state {
+    color: #a0a0a0;
+}
+
 .stat-number {
     font-size: 32px;
     font-weight: bold;
@@ -131,6 +165,22 @@ tr:hover {
 .badge-rejected {
     background: #f8d7da;
     color: #721c24;
+}
+
+/* Dark mode badges */
+body.dark-mode .badge-pending {
+    background: #4a4a3a;
+    color: #ffd700;
+}
+
+body.dark-mode .badge-approved {
+    background: #2a4a3a;
+    color: #90ee90;
+}
+
+body.dark-mode .badge-rejected {
+    background: #4a3a3a;
+    color: #ff6b6b;
 }
 
 .btn-view {

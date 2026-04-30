@@ -9,14 +9,164 @@ body.dark-mode {
   --bs-secondary-bg: #2d2d2d;
   --bs-tertiary-bg: #3d3d3d;
   --bs-border-color: #4a4a4a;
+  background-color: #1a1a1a;
+}
+
+body.dark-mode {
+  background-color: #1a1a1a !important;
+}
+
+body.dark-mode .container {
+  background-color: transparent;
 }
 
 body.dark-mode .bg-white {
   background-color: #2d2d2d !important;
 }
 
+body.dark-mode .bg-light {
+  background-color: #2d2d2d !important;
+}
+
 body.dark-mode .navbar {
   background-color: #2d2d2d !important;
+}
+
+body.dark-mode .navbar-light {
+  background-color: #2d2d2d !important;
+}
+
+body.dark-mode .navbar-toggler {
+  border-color: #4a4a4a;
+}
+
+body.dark-mode .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* Toggle switch styling */
+body.dark-mode .form-check-input {
+  background-color: #4a4a4a;
+  border-color: #4a4a4a;
+}
+
+body.dark-mode .form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+/* Dark mode slider switch */
+.dark-mode-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 26px;
+}
+
+.dark-mode-checkbox {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.dark-mode-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 4px;
+}
+
+.dark-mode-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.dark-mode-checkbox:checked + .dark-mode-slider {
+  background-color: #667eea;
+}
+
+.dark-mode-checkbox:checked + .dark-mode-slider:before {
+  transform: translateX(26px);
+}
+
+.slider-icon {
+  font-size: 14px;
+  margin-left: 2px;
+  z-index: 1;
+}
+
+body.dark-mode .slider-icon {
+  margin-left: auto;
+  margin-right: 4px;
+}
+
+/* Aggressive dark mode overrides */
+body.dark-mode > * {
+  background-color: transparent !important;
+}
+
+body.dark-mode .card {
+  background-color: #2d2d2d !important;
+  border-color: #4a4a4a !important;
+}
+
+body.dark-mode .card-body {
+  background-color: #2d2d2d !important;
+}
+
+body.dark-mode .shadow-sm {
+  box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.3) !important;
+}
+
+body.dark-mode .shadow-lg {
+  box-shadow: 0 1rem 3rem rgba(0,0,0,0.3) !important;
+}
+
+/* Formularios Index aggressive dark mode */
+body.dark-mode .form-builder-container {
+  background: transparent;
+}
+
+body.dark-mode .toolbox {
+  background: #2d2d2d !important;
+  border-color: #4a4a4a !important;
+}
+
+body.dark-mode .toolbox-item {
+  background: #2d2d2d !important;
+  border-color: #4a4a4a !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .toolbox-item:hover {
+  background: #3d3d3d !important;
+  color: #8ab4f8 !important;
+}
+
+body.dark-mode .dropzone-container {
+  background: #2d2d2d !important;
+  border-color: #4a4a4a !important;
+}
+
+body.dark-mode .dropzone {
+  background: #2d2d2d !important;
+  border-color: #4a4a4a !important;
 }
 
 body.dark-mode .navbar-brand,
