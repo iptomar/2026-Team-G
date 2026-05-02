@@ -216,5 +216,6 @@ namespace _2026_Team_G.Data.Migrations
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
         }
+       }
     }
-}
+

@@ -20,7 +20,10 @@ namespace _2026_Team_G.Controllers
         {
             return View();
         }
-
+        public IActionResult Formulario()
+        {
+            return View();
+        }
         public IActionResult HistoricoFormulariosUtilizador()
         {
             return View();

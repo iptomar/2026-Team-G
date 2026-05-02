@@ -11,14 +11,14 @@ using _2026_Team_G.Data;
 namespace _2026_Team_G.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260416181811_final1")]
-    partial class final1
+    [Migration("20260423181406_Base")]
+    partial class Base
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -218,7 +218,7 @@ namespace _2026_Team_G.Data.Migrations
 
             modelBuilder.Entity("_2026_Team_G.Models.Component", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -226,14 +226,14 @@ namespace _2026_Team_G.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Components");
                 });
 
             modelBuilder.Entity("_2026_Team_G.Models.Form", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -241,9 +241,74 @@ namespace _2026_Team_G.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Forms");
+                });
+
+            modelBuilder.Entity("_2026_Team_G.Models.FormFieldModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FieldId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("FormularioId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Options")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Placeholder")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FormularioId");
+
+                    b.ToTable("FormFieldModels");
+                });
+
+            modelBuilder.Entity("_2026_Team_G.Models.Formulario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Formularios");
                 });
 
             modelBuilder.Entity("_2026_Team_G.Models.Log", b =>
@@ -257,7 +322,7 @@ namespace _2026_Team_G.Data.Migrations
                     b.ToTable("Logs");
                 });
 
-            modelBuilder.Entity("_2026_Team_G.Models.User", b =>
+            modelBuilder.Entity("_2026_Team_G.Models.Utilizador", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -273,7 +338,7 @@ namespace _2026_Team_G.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Utilizadores");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -325,6 +390,18 @@ namespace _2026_Team_G.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("_2026_Team_G.Models.FormFieldModel", b =>
+                {
+                    b.HasOne("_2026_Team_G.Models.Formulario", null)
+                        .WithMany("Fields")
+                        .HasForeignKey("FormularioId");
+                });
+
+            modelBuilder.Entity("_2026_Team_G.Models.Formulario", b =>
+                {
+                    b.Navigation("Fields");
                 });
 #pragma warning restore 612, 618
         }
