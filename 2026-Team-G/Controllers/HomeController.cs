@@ -11,10 +11,7 @@ namespace _2026_Team_G.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+  
         
         public IActionResult Componentes()
         {
