@@ -1,7 +1,7 @@
-﻿@page
+@page
 @model RegisterModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Registar";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -22,28 +22,34 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             
             <div class="form-group">
+                <label asp-for="Input.Username">Nome de Utilizador</label>
+                <input asp-for="Input.Username" class="form-control" autocomplete="username" aria-required="true" placeholder="o_seu_username" />
+                <span asp-validation-for="Input.Username" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
                 <label asp-for="Input.Email">Email</label>
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="nome@exemplo.com" />
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Input.Password">Password</label>
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Palavra-passe</label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="palavra-passe" />
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
-                <small class="form-hint">A password deve ter pelo menos 6 caracteres</small>
+                <small class="form-hint">A palavra-passe deve ter pelo menos 6 caracteres</small>
             </div>
 
             <div class="form-group">
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword">Confirmar Palavra-passe</label>
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="palavra-passe" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
 
-            <button id="registerSubmit" type="submit" class="btn-register">Register</button>
+            <button id="registerSubmit" type="submit" class="btn-register">Registar</button>
 
             <div class="register-links">
-                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Already have an account? Log in</a>
+                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Já tem uma conta? Iniciar Sessão</a>
             </div>
         </form>
     </div>
@@ -52,14 +58,14 @@
     {
         <div class="external-register-card">
             <div class="external-header">
-                <h3>Use another service to register</h3>
+                <h3>Use outro serviço para se registar</h3>
                 <p>Registe-se usando uma conta externa</p>
             </div>
             <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                 <div class="external-buttons">
                     @foreach (var provider in Model.ExternalLogins!)
                     {
-                        <button type="submit" class="btn-external" name="provider" value="@provider.Name" title="Register using your @provider.DisplayName account">
+                        <button type="submit" class="btn-external" name="provider" value="@provider.Name" title="Registe-se com a sua conta @provider.DisplayName">
                             @provider.DisplayName
                         </button>
                     }
@@ -70,7 +76,7 @@
 </div>
 
 <div class="register-footer">
-    <p>© 2026 - Team_G - Privacy</p>
+    <p>© 2026 - Team_G - Privacidade</p>
 </div>
 
 @section Scripts {
