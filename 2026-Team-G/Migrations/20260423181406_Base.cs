@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace _2026_Team_G.Migrations
+namespace _2026_Team_G.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Base : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -54,27 +54,29 @@ namespace _2026_Team_G.Migrations
                 name: "Components",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Components", x => x.ID);
+                    table.PrimaryKey("PK_Components", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Forms",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     nameForm = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Forms", x => x.ID);
+                    table.PrimaryKey("PK_Forms", x => x.Id);
                 });
+
+           
 
             migrationBuilder.CreateTable(
                 name: "Logs",
@@ -208,6 +210,8 @@ namespace _2026_Team_G.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -244,6 +248,8 @@ namespace _2026_Team_G.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+     
         }
 
         /// <inheritdoc />
@@ -268,6 +274,9 @@ namespace _2026_Team_G.Migrations
                 name: "Components");
 
             migrationBuilder.DropTable(
+                name: "FormFieldModels");
+
+            migrationBuilder.DropTable(
                 name: "Forms");
 
             migrationBuilder.DropTable(
@@ -281,7 +290,9 @@ namespace _2026_Team_G.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-        }
-       }
-    }
 
+            migrationBuilder.DropTable(
+                name: "Formularios");
+        }
+    }
+}

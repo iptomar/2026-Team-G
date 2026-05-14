@@ -1,0 +1,144 @@
+﻿@{
+    ViewData["Title"] = "Histórico de Formulários";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/historicoformularios.css" />
+
+<div class="page-header">
+    <h1>Histórico de Formulários</h1>
+    <p>Consulte todos os formulários que já criou e o seu estado atual</p>
+</div>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Total de Formulários</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">5</div>
+        <div class="stat-label">Aprovados</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">2</div>
+        <div class="stat-label">Pendentes</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Rejeitados</div>
+    </div>
+</div>
+
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Pesquisar formulário..." onkeyup="filterTable()">
+</div>
+
+<div class="table-container">
+    <table id="formTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome do Formulário</th>
+                <th>Data de Criação</th>
+                <th>Data de Atualização</th>
+                <th>Status</th>
+                <th>Ações</th>
+                <th>Utilizador</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>001</td>
+                <td>Formulário de Contrato</td>
+                <td>15/04/2026 10:30</td>
+                <td>16/04/2026 09:15</td>
+                <td><span class="badge badge-approved">Aprovado</span></td>
+                <td><button class="btn-view" onclick="verDetalhes(1)">Ver Detalhes</button></td>
+                <td>joao</td>
+
+            </tr>
+            <tr>
+                <td>002</td>
+                <td>Pedido de Férias</td>
+                <td>10/04/2026 14:20</td>
+                <td>12/04/2026 11:00</td>
+                <td><span class="badge badge-pending">Pendente</span></td>
+                <td><button class="btn-view" onclick="verDetalhes(2)">Ver Detalhes</button></td>
+                <td>joao</td>
+
+            </tr>
+            <tr>
+                <td>003</td>
+                <td>Registo de Despesas</td>
+                <td>05/04/2026 09:00</td>
+                <td>-</td>
+                <td><span class="badge badge-pending">Pendente</span></td>
+                <td><button class="btn-view" onclick="verDetalhes(3)">Ver Detalhes</button></td>
+                <td>joao</td>
+
+            </tr>
+            <tr>
+                <td>004</td>
+                <td>Formulário de Avaliação</td>
+                <td>01/04/2026 16:45</td>
+                <td>08/04/2026 10:30</td>
+                <td><span class="badge badge-approved">Aprovado</span></td>
+                <td><button class="btn-view" onclick="verDetalhes(4)">Ver Detalhes</button></td>
+            </tr>
+            <tr>
+                <td>005</td>
+                <td>Reclamação de Serviço</td>
+                <td>28/03/2026 11:15</td>
+                <td>30/03/2026 14:00</td>
+                <td><span class="badge badge-rejected">Rejeitado</span></td>
+                <td><button class="btn-view" onclick="verDetalhes(5)">Ver Detalhes</button></td>
+            </tr>
+            <tr>
+                <td>006</td>
+                <td>Formulário de Inscrição</td>
+                <td>20/03/2026 08:00</td>
+                <td>25/03/2026 17:30</td>
+                <td><span class="badge badge-approved">Aprovado</span></td>
+                <td><button class="btn-view" onclick="verDetalhes(6)">Ver Detalhes</button></td>
+            </tr>
+            <tr>
+                <td>007</td>
+                <td>Pedido de Reembolso</td>
+                <td>15/03/2026 13:20</td>
+                <td>18/03/2026 09:45</td>
+                <td><span class="badge badge-approved">Aprovado</span></td>
+                <td><button class="btn-view" onclick="verDetalhes(7)">Ver Detalhes</button></td>
+            </tr>
+            <tr>
+                <td>008</td>
+                <td>Formulário de Feedback</td>
+                <td>10/03/2026 10:00</td>
+                <td>10/03/2026 10:00</td>
+                <td><span class="badge badge-pending">Pendente</span></td>
+                <td><button class="btn-view" onclick="verDetalhes(8)">Ver Detalhes</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function filterTable() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('formTable');
+        const tr = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < tr.length; i++) {
+            const tdNome = tr[i].getElementsByTagName('td')[1];
+            if (tdNome) {
+                const txtValue = tdNome.textContent || tdNome.innerText;
+                tr[i].style.display = txtValue.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+            }
+        }
+    }
+
+    function verDetalhes(id) {
+        alert('Ver detalhes do formulário ' + id);
+        // window.location.href = '/Home/DetalhesFormulario/' + id;
+    }
+</script>

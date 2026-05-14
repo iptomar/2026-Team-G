@@ -21,5 +21,9 @@ public class ApplicationDbContext : IdentityDbContext
 
     public DbSet<Utilizador> Utilizadores { get; set; }
 
+    public DbSet<Formulario> Formularios { get; set; }
+
+    public DbSet<FormFieldModel> FormFieldModels { get; set; }
+
 }
 

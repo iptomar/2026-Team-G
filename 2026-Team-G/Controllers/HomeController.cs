@@ -11,12 +11,17 @@ namespace _2026_Team_G.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+  
+        
+        public IActionResult Componentes()
         {
             return View();
         }
-        
-        public IActionResult Componentes()
+        public IActionResult Formulario()
+        {
+            return View();
+        }
+        public IActionResult HistoricoFormulariosUtilizador()
         {
             return View();
         }
