@@ -8,11 +8,11 @@ using _2026_Team_G.Data;
 
 #nullable disable
 
-namespace _2026_Team_G.Data.Migrations
+namespace _2026_Team_G.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260416185216_final3")]
-    partial class final3
+    [Migration("20260514151352_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
