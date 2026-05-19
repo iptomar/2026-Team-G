@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace _2026_Team_G.Data.Migrations
+namespace _2026_Team_G.Migrations
 {
     /// <inheritdoc />
-    public partial class Base : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -76,7 +76,20 @@ namespace _2026_Team_G.Data.Migrations
                     table.PrimaryKey("PK_Forms", x => x.Id);
                 });
 
-           
+            migrationBuilder.CreateTable(
+                name: "Formularios",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 150, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Formularios", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Logs",
@@ -210,7 +223,30 @@ namespace _2026_Team_G.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            
+            migrationBuilder.CreateTable(
+                name: "FormFieldModels",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FieldId = table.Column<string>(type: "TEXT", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", nullable: false),
+                    Label = table.Column<string>(type: "TEXT", nullable: false),
+                    Placeholder = table.Column<string>(type: "TEXT", nullable: false),
+                    IsRequired = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Options = table.Column<string>(type: "TEXT", nullable: false),
+                    OrderIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    FormularioId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FormFieldModels", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FormFieldModels_Formularios_FormularioId",
+                        column: x => x.FormularioId,
+                        principalTable: "Formularios",
+                        principalColumn: "Id");
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -249,7 +285,10 @@ namespace _2026_Team_G.Data.Migrations
                 column: "NormalizedUserName",
                 unique: true);
 
-     
+            migrationBuilder.CreateIndex(
+                name: "IX_FormFieldModels_FormularioId",
+                table: "FormFieldModels",
+                column: "FormularioId");
         }
 
         /// <inheritdoc />

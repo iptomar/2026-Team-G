@@ -7,4 +7,7 @@ public class Component
     public int Id { get; set; }
     public string name { get; set; }
     
+    //Alterações ----
+    
+    public string componentClass { get; set; }
 }

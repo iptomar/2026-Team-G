@@ -8,11 +8,11 @@ using _2026_Team_G.Data;
 
 #nullable disable
 
-namespace _2026_Team_G.Data.Migrations
+namespace _2026_Team_G.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260423181406_Base")]
-    partial class Base
+    [Migration("20260519194302_AddDescriptionToComponents")]
+    partial class AddDescriptionToComponents
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -221,6 +221,10 @@ namespace _2026_Team_G.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("componentClass")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("name")
                         .IsRequired()
