@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _2026_Team_G.Data;
 using _2026_Team_G.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace _2026_Team_G.Controllers
 {
@@ -22,7 +23,11 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Formularios.ToListAsync());
+            // Vai buscar os componentes e passa-os para a View
+            ViewBag.ComponentesDisponiveis = await _context.Components.ToListAsync();
+
+            var formularios = await _context.Formularios.ToListAsync();
+            return View(formularios);
         }
 
         // GET: Formularios/Details/5
