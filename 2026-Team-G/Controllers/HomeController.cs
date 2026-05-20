@@ -8,6 +8,7 @@ namespace _2026_Team_G.Controllers
     {
         public IActionResult Index()
         {
+            ViewBag.ActivePage = "Home";
             return View();
         }
 
@@ -15,6 +16,7 @@ namespace _2026_Team_G.Controllers
         
         public IActionResult Componentes()
         {
+            ViewBag.ActivePage = "Componentes";
             return View();
         }
         public IActionResult Formulario()
@@ -23,6 +25,7 @@ namespace _2026_Team_G.Controllers
         }
         public IActionResult HistoricoFormulariosUtilizador()
         {
+            ViewBag.ActivePage = "Historico";
             return View();
         }
 
