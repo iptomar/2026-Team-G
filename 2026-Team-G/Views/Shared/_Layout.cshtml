@@ -20,25 +20,20 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     @{
-                        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
-                        var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
-                        var isHome = currentController == "Home" && (currentAction == "Index" || string.IsNullOrEmpty(currentAction));
-                        var isComponentes = currentController == "Home" && currentAction == "Componentes";
-                        var isFormularios = currentController == "Formularios";
-                        var isHistorico = currentController == "Home" && currentAction == "HistoricoFormulariosUtilizador";
+                        var activePage = ViewBag.ActivePage?.ToString();
                     }
                     <ul class="navbar-nav flex-grow-1 ms-3 gap-1">
                         <li class="nav-item">
-                            <a class="nav-link py-2 px-3 text-dark @(isHome ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link py-2 px-3 text-dark @(activePage == "Home" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link py-2 px-3 text-dark @(isComponentes ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="Componentes">Componentes</a>
+                            <a class="nav-link py-2 px-3 text-dark @(activePage == "Componentes" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="Componentes">Componentes</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link py-2 px-3 text-dark @(isFormularios ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Formularios" asp-action="Index">Formulários</a>
+                            <a class="nav-link py-2 px-3 text-dark @(activePage == "Formularios" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Formularios" asp-action="Index">Formulários</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link py-2 px-3 text-dark @(isHistorico ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="HistoricoFormulariosUtilizador">Histórico de Formulários</a>
+                            <a class="nav-link py-2 px-3 text-dark @(activePage == "Historico" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="HistoricoFormulariosUtilizador">Histórico de Formulários</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />

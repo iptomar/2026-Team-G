@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,12 +22,14 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios
         public async Task<IActionResult> Index()
         {
+            ViewBag.ActivePage = "Formularios";
             return View(await _context.Formularios.ToListAsync());
         }
 
         // GET: Formularios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();
@@ -46,6 +48,7 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios/Create
         public IActionResult Create()
         {
+            ViewBag.ActivePage = "Formularios";
             return View();
         }
 
@@ -56,6 +59,7 @@ namespace _2026_Team_G.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,IsActive")] Formulario formulario)
         {
+            ViewBag.ActivePage = "Formularios";
             if (ModelState.IsValid)
             {
                 _context.Add(formulario);
@@ -68,6 +72,7 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();
@@ -88,6 +93,7 @@ namespace _2026_Team_G.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,IsActive")] Formulario formulario)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id != formulario.Id)
             {
                 return NotFound();
@@ -119,6 +125,7 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();
