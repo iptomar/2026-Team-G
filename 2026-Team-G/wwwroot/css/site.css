@@ -29,3 +29,85 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* --- IPT Green Theme Design System --- */
+:root {
+  --ipt-green: #7cb13b;
+  --ipt-green-hover: #6ea32f;
+  --ipt-green-light: #f4faeb;
+  --ipt-dark: #1f2937;
+  --ipt-gray: #f8f9fa;
+  --ipt-border: #e5e7eb;
+}
+
+/* Custom IPT Nav links */
+.ipt-nav-link {
+  color: var(--ipt-dark) !important;
+  font-size: 0.95rem;
+  transition: all 0.2s ease-in-out !important;
+  border-bottom: 3px solid transparent;
+}
+.ipt-nav-link:hover {
+  background-color: var(--ipt-green-light) !important;
+  color: var(--ipt-green) !important;
+}
+
+/* Active IPT Nav Tab */
+.ipt-active-tab {
+  background-color: var(--ipt-green) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-bottom: 3px solid var(--ipt-green-hover);
+}
+.ipt-active-tab:hover {
+  color: #ffffff !important;
+  background-color: var(--ipt-green-hover) !important;
+}
+
+/* Buttons */
+.btn-ipt-green {
+  background-color: var(--ipt-green) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.8rem;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px rgba(124, 177, 59, 0.15);
+}
+.btn-ipt-green:hover {
+  background-color: var(--ipt-green-hover) !important;
+  box-shadow: 0 6px 12px rgba(124, 177, 59, 0.25);
+  transform: translateY(-1px);
+}
+.btn-ipt-green:active {
+  transform: translateY(0);
+}
+
+.btn-ipt-outline {
+  background-color: transparent !important;
+  color: var(--ipt-green) !important;
+  font-weight: 600;
+  border: 2px solid var(--ipt-green) !important;
+  border-radius: 8px;
+  padding: 0.7rem 1.7rem;
+  transition: all 0.2s ease-in-out;
+}
+.btn-ipt-outline:hover {
+  background-color: var(--ipt-green-light) !important;
+  color: var(--ipt-green-hover) !important;
+  border-color: var(--ipt-green-hover) !important;
+}
+
+/* Header tweaks */
+.ipt-login-section .nav-link {
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ipt-dark) !important;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+}
+.ipt-login-section .nav-link:hover {
+  color: var(--ipt-green) !important;
+}
