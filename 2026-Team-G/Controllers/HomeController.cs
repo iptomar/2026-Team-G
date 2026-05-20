@@ -74,6 +74,13 @@ namespace _2026_Team_G.Controllers
                 // Fallback to empty list if there's any database issues
                 return View(new List<Formulario>());
             }
+<<<<<<< Updated upstream
+=======
+
+            ViewBag.ActivePage = "Historico";
+            return View();
+
+>>>>>>> Stashed changes
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
