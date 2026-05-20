@@ -58,7 +58,12 @@ namespace _2026_Team_G.Controllers
             }
         }
 
-        public async Task<IActionResult> HistoricoFormulariosUtilizador()
+        public dynamic GetViewBag()
+        {
+            return ViewBag;
+        }
+
+        public async Task<IActionResult> HistoricoFormulariosUtilizador(dynamic viewBag)
         {
             try
             {
@@ -74,13 +79,11 @@ namespace _2026_Team_G.Controllers
                 // Fallback to empty list if there's any database issues
                 return View(new List<Formulario>());
             }
-<<<<<<< Updated upstream
-=======
 
-            ViewBag.ActivePage = "Historico";
+            viewBag.ActivePage = "Historico";
             return View();
 
->>>>>>> Stashed changes
+
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
