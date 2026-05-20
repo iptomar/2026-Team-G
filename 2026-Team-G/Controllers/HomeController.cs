@@ -18,11 +18,13 @@ namespace _2026_Team_G.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.ActivePage = "Home";
             return View();
         }
         
         public IActionResult Componentes()
         {
+            ViewBag.ActivePage = "Componentes";
             return View();
         }
 
@@ -35,6 +37,7 @@ namespace _2026_Team_G.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SalvarFormulario([FromBody] Formulario formulario)
         {
+<<<<<<< HEAD
             if (formulario == null)
             {
                 return BadRequest(new { success = false, message = "Dados inválidos do formulário." });
@@ -74,6 +77,10 @@ namespace _2026_Team_G.Controllers
                 // Fallback to empty list if there's any database issues
                 return View(new List<Formulario>());
             }
+=======
+            ViewBag.ActivePage = "Historico";
+            return View();
+>>>>>>> 4d7885be9f93ee8b89ef8bb195781dfc0f498020
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
