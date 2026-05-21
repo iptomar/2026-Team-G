@@ -1,8 +1,8 @@
-﻿@page
+@page
 @model LoginModel
 
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Iniciar Sessão";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -20,14 +20,14 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             
             <div class="form-group">
-                <label asp-for="Input.Email">Email</label>
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email">Nome de Utilizador ou Email</label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="username ou email" />
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Input.Password">Password</label>
-                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Palavra-passe</label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="palavra-passe" />
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
 
@@ -38,12 +38,12 @@
                 </label>
             </div>
 
-            <button id="login-submit" type="submit" class="btn-login">Log in</button>
+            <button id="login-submit" type="submit" class="btn-login">Iniciar Sessão</button>
 
             <div class="login-links">
-                <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+                <a id="forgot-password" asp-page="./ForgotPassword">Esqueceu a sua palavra-passe?</a>
+                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registar como novo utilizador</a>
+                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Reenviar email de confirmação</a>
             </div>
         </form>
     </div>
@@ -52,13 +52,13 @@
     {
         <div class="external-login-card">
             <div class="external-header">
-                <h3>Use another service to log in</h3>
+                <h3>Use outro serviço para iniciar sessão</h3>
             </div>
             <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                 <div class="external-buttons">
                     @foreach (var provider in Model.ExternalLogins!)
                     {
-                        <button type="submit" class="btn-external" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                        <button type="submit" class="btn-external" name="provider" value="@provider.Name" title="Inicie sessão usando a sua conta @provider.DisplayName">
                             @provider.DisplayName
                         </button>
                     }
@@ -69,7 +69,7 @@
 </div>
 
 <div class="login-footer">
-    <p>© 2026 - Team_G - Privacy</p>
+    <p>© 2026 - Team_G - Privacidade</p>
 </div>
 
 @section Scripts {
