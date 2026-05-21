@@ -1,0 +1,618 @@
+﻿@model IEnumerable<_2026_Team_G.Models.Formulario>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+
+
+<table class="table">
+
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+            <td>@Html.DisplayFor(modelItem => item.IsActive)</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+<style>
+    :root {
+        --fb-primary: #4361ee;
+        --fb-primary-hover: #3a56d4;
+        --fb-bg: #f8f9fa;
+        --fb-surface: #ffffff;
+        --fb-border: #e9ecef;
+        --fb-text: #2b2d42;
+        --fb-text-muted: #6c757d;
+    }
+
+    body {
+        background-color: var(--fb-bg);
+    }
+
+    .form-builder-container {
+        display: flex;
+        height: 75vh;
+        gap: 24px;
+        margin-top: 24px;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Toolbox Styles */
+    .toolbox {
+        width: 280px;
+        background: var(--fb-surface);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+        padding: 24px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .toolbox-item {
+        background: var(--fb-surface);
+        border: 1px solid var(--fb-border);
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        font-weight: 500;
+        color: var(--fb-text);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .toolbox-item:hover {
+        background: #f0f4ff;
+        border-color: #b6ccfe;
+        color: var(--fb-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(67, 97, 238, 0.1);
+    }
+
+    .toolbox-item i {
+        font-size: 1.25rem;
+        color: var(--fb-primary);
+        opacity: 0.8;
+    }
+
+    /* Dropzone Styles */
+    .dropzone-container {
+        flex-grow: 1;
+        background: var(--fb-surface);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .dropzone {
+        flex-grow: 1;
+        border: 2px dashed #ced4da;
+        border-radius: 12px;
+        padding: 24px;
+        overflow-y: auto;
+        min-height: 300px;
+        position: relative;
+        transition: all 0.3s ease;
+        background-color: #fdfdfd;
+    }
+
+    .dropzone.dragover {
+        border-color: var(--fb-primary);
+        background-color: rgba(67, 97, 238, 0.04);
+    }
+
+    .dropzone:empty::before {
+        content: "Clique ou arraste os componentes da esquerda para aqui";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #adb5bd;
+        font-size: 1.1rem;
+        font-weight: 500;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .dropzone:empty::after {
+        content: "\F28C";
+        font-family: "bootstrap-icons";
+        position: absolute;
+        top: calc(50% - 40px);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2.5rem;
+        color: #dee2e6;
+        pointer-events: none;
+    }
+
+    /* Form Item Styles */
+    .form-item {
+        position: relative;
+        padding: 20px;
+        background: var(--fb-surface);
+        border: 1px solid var(--fb-border);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .form-item:hover {
+        border-color: #b6ccfe;
+        background-color: #fcfeff;
+    }
+
+    .form-item.selected {
+        border-color: var(--fb-primary);
+        background-color: rgba(67, 97, 238, 0.02);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+
+    .form-item-actions {
+        position: absolute;
+        top: -12px;
+        right: 16px;
+        display: none;
+        background: var(--fb-surface);
+        border: 1px solid var(--fb-border);
+        border-radius: 20px;
+        padding: 4px 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        z-index: 10;
+    }
+
+    .form-item:hover .form-item-actions {
+        display: flex;
+        gap: 12px;
+        animation: fadeInDown 0.2s ease;
+    }
+
+    .form-item-actions i {
+        cursor: pointer;
+        color: var(--fb-text-muted);
+        font-size: 1rem;
+        transition: color 0.2s ease;
+    }
+
+    .form-item-actions i:hover {
+        color: #ef233c;
+    }
+
+    /* Properties Panel Styles */
+    .properties-panel {
+        width: 320px;
+        background: var(--fb-surface);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+        padding: 24px;
+        flex-shrink: 0;
+        display: none;
+        overflow-y: auto;
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .properties-panel.active {
+        display: block;
+        animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .header-title {
+        font-weight: 700;
+        color: var(--fb-text);
+        margin-bottom: 24px;
+        font-size: 1.15rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--fb-border);
+    }
+
+    .header-title i {
+        color: var(--fb-primary);
+        background: rgba(67, 97, 238, 0.1);
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    /* Input Overrides for Builder */
+    .form-label {
+        color: var(--fb-text);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .form-item input[disabled],
+    .form-item textarea[disabled],
+    .form-item select[disabled] {
+        cursor: pointer;
+        opacity: 0.9;
+    }
+
+    /* Animations Escaped for Razor */
+    @@keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @@keyframes slideInRight {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* SortableJS Ghost Class */
+    .sortable-ghost {
+        opacity: 0.4;
+        background-color: #f0f4ff !important;
+        border: 2px dashed var(--fb-primary) !important;
+    }
+
+    .btn-primary-custom {
+        background-color: var(--fb-primary);
+        border-color: var(--fb-primary);
+        font-weight: 500;
+        padding: 8px 20px;
+        border-radius: 8px;
+    }
+
+    .btn-primary-custom:hover {
+        background-color: var(--fb-primary-hover);
+        border-color: var(--fb-primary-hover);
+    }
+</style>
+
+<div class="container-fluid py-2">
+    <div class="row align-items-center mb-2 mt-4">
+        <div class="col">
+            <h2 class="fw-bold" style="color: var(--fb-text); letter-spacing: -0.5px;">
+                <i class="bi bi-layout-wtf text-primary me-2"></i>Construtor de Formulários
+            </h2>
+            <p class="text-muted mb-0" style="font-size: 1.05rem;">Clique ou arraste os elementos para criar o formulário.</p>
+        </div>
+        <div class="col-auto d-flex gap-3">
+            <button class="btn btn-outline-secondary rounded-3 px-4 fw-medium">
+                <i class="bi bi-eye me-2"></i> Pré-visualizar
+            </button>
+            <button class="btn btn-primary-custom text-white shadow-sm" id="btnSaveForm">
+                <i class="bi bi-cloud-arrow-up me-2"></i> Guardar Formulário
+            </button>
+        </div>
+    </div>
+
+    <div class="form-builder-container">
+        <div class="toolbox">
+            <div class="header-title">
+                <i class="bi bi-grid-1x2"></i> Componentes
+            </div>
+
+            @if (ViewBag.ComponentesDisponiveis != null)
+            {
+                @foreach (_2026_Team_G.Models.Component comp in ViewBag.ComponentesDisponiveis)
+                {
+                    var nomeLower = comp.name.ToLower();
+
+                    // Ícones com base no nome do componente
+                    var classeIcone = nomeLower switch
+                    {
+                        "texto" => "bi-input-cursor-text",
+                        "numero" => "bi-123",
+                        "check box" => "bi-check-square",
+                        "check box switch" => "bi-toggle-on",
+                        "label" => "bi-type",
+                        "assinatura" => "bi-pencil-square",
+                        _ => "bi-box-seam"
+                    };
+
+                    @* Guardamos o nome purificado no data-type e as classes Bootstrap da BD no data-css *@
+                    <div class="toolbox-item shadow-sm" data-type="@nomeLower" data-css="@comp.componentClass">
+                        <i class="bi @classeIcone"></i> @comp.name
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-muted small p-2">Nenhum componente carregado da BD.</div>
+            }
+        </div>
+
+        <div class="dropzone-container">
+            <div class="header-title">
+                <i class="bi bi-window-sidebar"></i> Tela de Desenho
+            </div>
+            <div class="dropzone" id="formDropzone">
+            </div>
+        </div>
+
+        <div class="properties-panel" id="propertiesPanel">
+            <div class="header-title">
+                <i class="bi bi-sliders2-vertical"></i> Propriedades
+            </div>
+            <form id="propForm">
+                <div class="mb-4">
+                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Rótulo (Label)</label>
+                    <input type="text" class="form-control" id="propLabel" />
+                </div>
+                <div class="mb-4" id="propPlaceholderContainer">
+                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Texto Fantasma (Placeholder)</label>
+                    <input type="text" class="form-control" id="propPlaceholder" />
+                </div>
+                <div class="mb-4 p-3 rounded bg-light border border-light">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
+                        <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
+                        <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
+                    </div>
+                </div>
+                <div class="mb-4" id="propOptionsContainer" style="display: none;">
+                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Opções</label>
+                    <div class="text-muted small mb-2">Separe as opções com vírgula</div>
+                    <textarea class="form-control" id="propOptions" rows="4" style="resize:none;"></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            function generateId() {
+                return 'field_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            // Inicializar arrastar da Toolbox (Mantém clonagem se arrastar)
+            new Sortable(document.querySelector('.toolbox'), {
+                group: {
+                    name: 'shared',
+                    pull: 'clone',
+                    put: false
+                },
+                animation: 150,
+                sort: false,
+            });
+
+            const dropzone = document.getElementById('formDropzone');
+            const propertiesPanel = document.getElementById('propertiesPanel');
+            let currentSelected = null;
+
+            // Inicializar a Dropzone para aceitar arrasto
+            new Sortable(dropzone, {
+                group: 'shared',
+                animation: 200,
+                ghostClass: 'sortable-ghost',
+                onAdd: function (evt) {
+                    const item = evt.item;
+                    const type = item.getAttribute('data-type');
+                    const cssClass = item.getAttribute('data-css');
+                    createAndAppendField(type, cssClass, item, true);
+                }
+            });
+
+            // ESCUTA DE CLIQUES: Cria instantaneamente com base nos atributos passados pela DB
+            document.querySelector('.toolbox').addEventListener('click', function (e) {
+                const toolboxItem = e.target.closest('.toolbox-item');
+                if (toolboxItem) {
+                    const type = toolboxItem.getAttribute('data-type');
+                    const cssClass = toolboxItem.getAttribute('data-css');
+                    createAndAppendField(type, cssClass, null, false);
+                }
+            });
+
+            // Criação centralizada do componente no HTML da Tela de desenho
+            function createAndAppendField(type, cssClass, draggedItem, isDragged) {
+                const newEl = document.createElement('div');
+                newEl.className = 'form-item shadow-sm';
+                newEl.id = generateId();
+                newEl.setAttribute('data-type', type);
+
+                // Passa a classe CSS da BD diretamente para o gerador de template
+                const content = getHtmlTemplate(type, cssClass);
+                newEl.innerHTML = `
+                    <div class="form-item-actions">
+                        <i class="bi bi-trash-fill btn-delete" title="Remover"></i>
+                    </div>
+                    <div class="field-content">
+                        ${content}
+                    </div>
+                `;
+
+                if (isDragged && draggedItem) {
+                    draggedItem.parentNode.insertBefore(newEl, draggedItem);
+                    draggedItem.parentNode.removeChild(draggedItem);
+                } else {
+                    dropzone.appendChild(newEl);
+                    newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+
+                selectField(newEl);
+            }
+
+            // Seleção de itens e remoção na Tela
+            dropzone.addEventListener('click', function(e) {
+                if(e.target.classList.contains('btn-delete') || e.target.closest('.btn-delete')) {
+                    const field = e.target.closest('.form-item');
+                    if(currentSelected === field) {
+                        unselectField();
+                    }
+                    field.style.opacity = '0';
+                    field.style.transform = 'scale(0.95)';
+                    setTimeout(() => field.remove(), 200);
+                    e.stopPropagation();
+                    return;
+                }
+
+                const field = e.target.closest('.form-item');
+                if(field) {
+                    selectField(field);
+                } else {
+                    unselectField();
+                }
+            });
+
+            // GERAÇÃO DO HTML INJETANDO AS CLASSES DA DB (`cssClass`)
+            function getHtmlTemplate(type, cssClass) {
+                const t = type.trim().toLowerCase();
+                const css = cssClass || 'form-control'; // Fallback de segurança
+
+                switch(t) {
+                    case 'texto':
+                        return `<label class="form-label control-label">Texto Curto</label><input type="text" class="${css}" placeholder="Digite o texto aqui..." disabled />`;
+
+                    case 'numero':
+                        return `<label class="form-label control-label">Número</label><input type="number" class="${css}" placeholder="0" disabled />`;
+
+                    case 'check box':
+                        return `
+                            <div class="${css}">
+                                <input class="form-check-input" type="checkbox" disabled id="check_preview">
+                                <label class="form-check-label control-label" for="check_preview">Caixa de Seleção</label>
+                            </div>`;
+
+                    case 'check box switch':
+                        return `
+                            <div class="${css}">
+                                <input class="form-check-input" type="checkbox" role="switch" disabled id="switch_preview" checked>
+                                <label class="form-check-label control-label" for="switch_preview">Ativar Opção (Switch)</label>
+                            </div>`;
+
+                    case 'label':
+                        return `<label class="${css} control-label">Aviso / Texto Informativo Fixo</label>`;
+
+                    case 'assinatura':
+                        return `
+                            <label class="form-label control-label d-block text-muted">Assinatura Digital</label>
+                            <div class="${css}" style="border-bottom: 2px dashed #ccc !important; min-height: 60px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius:6px;">
+                                <span class="text-muted small"><i class="bi bi-pencil-fill me-1"></i> Zona de Assinatura</span>
+                            </div>`;
+
+                    default:
+                        console.warn("Tipo não reconhecido, usando fallback genérico:", type);
+                        return `<label class="form-label control-label">Componente (${type})</label><input type="text" class="${css}" disabled />`;
+                }
+            }
+
+            // --- Painel de Propriedades Laterais ---
+            const propLabel = document.getElementById('propLabel');
+            const propPlaceholder = document.getElementById('propPlaceholder');
+            const propPlaceholderContainer = document.getElementById('propPlaceholderContainer');
+            const propRequired = document.getElementById('propRequired');
+            const propOptionsContainer = document.getElementById('propOptionsContainer');
+            const propOptions = document.getElementById('propOptions');
+
+            function selectField(field) {
+                if(currentSelected) currentSelected.classList.remove('selected');
+                currentSelected = field;
+                field.classList.add('selected');
+                propertiesPanel.classList.add('active');
+
+                const type = field.getAttribute('data-type');
+                const labelEl = field.querySelector('.control-label');
+                const inputEl = field.querySelector('input, textarea');
+
+                let cleanedName = labelEl ? labelEl.innerText.replace(' *', '') : 'Rótulo';
+                propLabel.value = cleanedName;
+
+                if(['texto', 'numero'].includes(type) && inputEl) {
+                    propPlaceholderContainer.style.display = 'block';
+                    propPlaceholder.value = inputEl.getAttribute('placeholder') || '';
+                } else {
+                    propPlaceholderContainer.style.display = 'none';
+                }
+
+                if(!['label', 'assinatura'].includes(type)) {
+                    propRequired.disabled = false;
+                    propRequired.checked = labelEl && labelEl.innerText.includes('*');
+                } else {
+                    propRequired.disabled = true;
+                    propRequired.checked = false;
+                }
+            }
+
+            function unselectField() {
+                if(currentSelected) currentSelected.classList.remove('selected');
+                currentSelected = null;
+                propertiesPanel.classList.remove('active');
+            }
+
+            propLabel.addEventListener('input', function() {
+                if(currentSelected) {
+                    const labelEl = currentSelected.querySelector('.control-label');
+                    if(labelEl) {
+                        labelEl.innerText = this.value + (propRequired.checked ? ' *' : '');
+                    }
+                }
+            });
+
+            propPlaceholder.addEventListener('input', function() {
+                if(currentSelected) {
+                    const inputEl = currentSelected.querySelector('input, textarea');
+                    if(inputEl) inputEl.setAttribute('placeholder', this.value);
+                }
+            });
+
+            propRequired.addEventListener('change', function() {
+                if(currentSelected) {
+                    const labelEl = currentSelected.querySelector('.control-label');
+                    if(labelEl) {
+                        let text = labelEl.innerText.replace(' *', '');
+                        if(this.checked) text += ' *';
+                        labelEl.innerText = text;
+
+                        if(this.checked) {
+                            labelEl.innerHTML = labelEl.innerText.replace('*', '<span class="text-danger">*</span>');
+                        }
+                    }
+                }
+            });
+
+            // Simulação de Salvamento de dados
+            document.getElementById('btnSaveForm').addEventListener('click', function() {
+                const btn = this;
+                const originalContent = btn.innerHTML;
+
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Guardando...';
+                btn.disabled = true;
+
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Guardado com Sucesso!';
+                    btn.classList.add('bg-success', 'border-success');
+
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                        btn.classList.remove('bg-success', 'border-success');
+                        btn.disabled = false;
+                    }, 2500);
+                }, 1200);
+            });
+        });
+    </script>
+}

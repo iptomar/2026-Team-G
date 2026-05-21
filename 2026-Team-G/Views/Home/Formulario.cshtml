@@ -1,18 +1,21 @@
-<!--@{
+@{
         ViewData["Title"] = "Construtor de Formulários";
-    }
+ }
+@Html.AntiForgeryToken()
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 
 <style>
     :root {
-        --fb-primary: #4361ee;
-        --fb-primary-hover: #3a56d4;
-        --fb-bg: #f8f9fa;
+        --fb-primary: #7966f1; /* Lavender / Purple from main page */
+        --fb-primary-hover: #5d4cd4;
+        --fb-bg: #f3f2fa; /* Soft lavender background from main page */
         --fb-surface: #ffffff;
-        --fb-border: #e9ecef;
-        --fb-text: #2b2d42;
-        --fb-text-muted: #6c757d;
+        --fb-border: #e2e0f3; /* Soft purple borders */
+        --fb-text: #0f172a; /* Slate dark text from main page */
+        --fb-text-muted: #475569;
+        --fb-accent-blue: #4285f4;
+        --fb-accent-blue-hover: #2b75f3;
     }
 
     body {
@@ -31,12 +34,12 @@
     .toolbox {
         width: 280px;
         background: var(--fb-surface);
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(121, 102, 241, 0.05);
         padding: 24px;
         flex-shrink: 0;
         overflow-y: auto;
-        border: 1px solid rgba(0,0,0,0.03);
+        border: 1px solid rgba(121, 102, 241, 0.08);
     }
 
     .toolbox-item {
@@ -44,7 +47,7 @@
         border: 1px solid var(--fb-border);
         padding: 14px 16px;
         margin-bottom: 12px;
-        border-radius: 10px;
+        border-radius: 12px;
         cursor: grab;
         display: flex;
         align-items: center;
@@ -52,15 +55,15 @@
         transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
         font-weight: 500;
         color: var(--fb-text);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.01);
     }
 
     .toolbox-item:hover {
-        background: #f0f4ff;
-        border-color: #b6ccfe;
+        background: #f5f3ff;
+        border-color: #d8d4fd;
         color: var(--fb-primary);
         transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(67, 97, 238, 0.1);
+        box-shadow: 0 6px 12px rgba(121, 102, 241, 0.1);
     }
 
     .toolbox-item i {
@@ -73,12 +76,12 @@
     .dropzone-container {
         flex-grow: 1;
         background: var(--fb-surface);
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(121, 102, 241, 0.05);
         padding: 32px;
         display: flex;
         flex-direction: column;
-        border: 1px solid rgba(0,0,0,0.03);
+        border: 1px solid rgba(121, 102, 241, 0.08);
     }
 
     .dropzone {
@@ -91,11 +94,15 @@
         position: relative;
         transition: all 0.3s ease;
         background-color: #fdfdfd;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 16px;
     }
 
     .dropzone.dragover {
         border-color: var(--fb-primary);
-        background-color: rgba(67, 97, 238, 0.04);
+        background-color: rgba(121, 102, 241, 0.04);
     }
 
     .dropzone:empty::before {
@@ -133,21 +140,27 @@
         background: var(--fb-surface);
         border: 1px solid var(--fb-border);
         border-radius: 12px;
-        margin-bottom: 16px;
         cursor: pointer;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.01);
     }
 
+    /* Width Utility Classes for dynamic resizing in wrap flexbox */
+    .form-item.w-100 { width: 100%; }
+    .form-item.w-75 { width: calc(75% - 12px); }
+    .form-item.w-50 { width: calc(50% - 8px); }
+    .form-item.w-33 { width: calc(33.333% - 11px); }
+    .form-item.w-25 { width: calc(25% - 12px); }
+
     .form-item:hover {
-        border-color: #b6ccfe;
-        background-color: #fcfeff;
+        border-color: #c7c2fa;
+        background-color: #faf9ff;
     }
 
     .form-item.selected {
         border-color: var(--fb-primary);
-        background-color: rgba(67, 97, 238, 0.02);
-        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        background-color: rgba(121, 102, 241, 0.02);
+        box-shadow: 0 0 0 3px rgba(121, 102, 241, 0.15);
     }
 
     .form-item-actions {
@@ -184,13 +197,13 @@
     .properties-panel {
         width: 320px;
         background: var(--fb-surface);
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(121, 102, 241, 0.05);
         padding: 24px;
         flex-shrink: 0;
         display: none;
         overflow-y: auto;
-        border: 1px solid rgba(0,0,0,0.03);
+        border: 1px solid rgba(121, 102, 241, 0.08);
     }
 
     .properties-panel.active {
@@ -212,7 +225,7 @@
 
     .header-title i {
         color: var(--fb-primary);
-        background: rgba(67, 97, 238, 0.1);
+        background: rgba(121, 102, 241, 0.1);
         padding: 8px;
         border-radius: 8px;
     }
@@ -234,11 +247,11 @@
     }
 
     /* Animations */
-    keyframes fadeInDown {
+    @@keyframes fadeInDown {
         from { opacity: 0; transform: translateY(5px); }
         to { opacity: 1; transform: translateY(0); }
     }
-   keyframes slideInRight {
+    @@keyframes slideInRight {
         from { opacity: 0; transform: translateX(20px); }
         to { opacity: 1; transform: translateX(0); }
     }
@@ -246,21 +259,23 @@
     /* SortableJS Ghost Class */
     .sortable-ghost {
         opacity: 0.4;
-        background-color: #f0f4ff !important;
+        background-color: #f5f3ff !important;
         border: 2px dashed var(--fb-primary) !important;
     }
     
     .btn-primary-custom {
-        background-color: var(--fb-primary);
-        border-color: var(--fb-primary);
+        background-color: var(--fb-accent-blue);
+        border-color: var(--fb-accent-blue);
         font-weight: 500;
-        padding: 8px 20px;
-        border-radius: 8px;
+        padding: 10px 24px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
     }
     
     .btn-primary-custom:hover {
-        background-color: var(--fb-primary-hover);
-        border-color: var(--fb-primary-hover);
+        background-color: var(--fb-accent-blue-hover);
+        border-color: var(--fb-accent-blue-hover);
+        transform: translateY(-1px);
     }
 </style>
 
@@ -329,31 +344,64 @@
             </div>
         </div>
 
-        <div class="properties-panel" id="propertiesPanel">
-            <div class="header-title">
-                <i class="bi bi-sliders2-vertical"></i> Propriedades
-            </div>
-            <form id="propForm">
-                <div class="mb-4">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Rótulo (Label)</label>
-                    <input type="text" class="form-control" id="propLabel" />
+        <div class="properties-panel active" id="propertiesPanel">
+            <!-- Form Properties Group (Default) -->
+            <div id="formPropsGroup">
+                <div class="header-title">
+                    <i class="bi bi-gear-fill"></i> Propriedades do Formulário
                 </div>
-                <div class="mb-4" id="propPlaceholderContainer">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Texto Fantasma (Placeholder)</label>
-                    <input type="text" class="form-control" id="propPlaceholder" />
-                </div>
-                <div class="mb-4 p-3 rounded bg-light border border-light">
-                    <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
-                        <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
-                        <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
+                <form id="formGlobalForm">
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Título do Formulário</label>
+                        <input type="text" class="form-control" id="formTitleInput" value="Novo Formulário" placeholder="Insira o título do formulário..." />
                     </div>
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Descrição</label>
+                        <textarea class="form-control" id="formDescInput" rows="4" style="resize:none;" placeholder="Insira a descrição do formulário...">Descrição do meu formulário</textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Field Properties Group (Shown on Selection) -->
+            <div id="fieldPropsGroup" style="display: none;">
+                <div class="header-title">
+                    <i class="bi bi-sliders2-vertical"></i> Propriedades do Campo
                 </div>
-                <div class="mb-4" id="propOptionsContainer" style="display: none;">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Opções</label>
-                    <div class="text-muted small mb-2">Separe as opções com vírgula</div>
-                    <textarea class="form-control" id="propOptions" rows="4" style="resize:none;"></textarea>
-                </div>
-            </form>
+                <form id="propForm">
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Rótulo (Label)</label>
+                        <input type="text" class="form-control" id="propLabel" />
+                    </div>
+                    <div class="mb-4" id="propPlaceholderContainer">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Texto Fantasma (Placeholder)</label>
+                        <input type="text" class="form-control" id="propPlaceholder" />
+                    </div>
+                    <div class="mb-4" id="propWidthContainer">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Largura do Componente</label>
+                        <select class="form-select" id="propWidth">
+                            <option value="w-100">100% (Largura Total)</option>
+                            <option value="w-75">75% (Três Quartos)</option>
+                            <option value="w-50">50% (Metade)</option>
+                            <option value="w-33">33% (Um Terço)</option>
+                            <option value="w-25">25% (Um Quarto)</option>
+                        </select>
+                    </div>
+                    <div class="mb-4 p-3 rounded bg-light border border-light">
+                        <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
+                            <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
+                            <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
+                        </div>
+                    </div>
+                    <div class="mb-4" id="propOptionsContainer" style="display: none;">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Opções</label>
+                        <div class="text-muted small mb-2">Separe as opções com vírgula</div>
+                        <textarea class="form-control" id="propOptions" rows="4" style="resize:none;"></textarea>
+                    </div>
+                </form>
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2 rounded-3" id="btnUnselectField">
+                    <i class="bi bi-x-circle me-1"></i> Voltar ao Formulário
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -383,6 +431,10 @@
             // Initialize Dropzone
             const dropzone = document.getElementById('formDropzone');
             const propertiesPanel = document.getElementById('propertiesPanel');
+            const formPropsGroup = document.getElementById('formPropsGroup');
+            const fieldPropsGroup = document.getElementById('fieldPropsGroup');
+            const btnUnselectField = document.getElementById('btnUnselectField');
+            
             let currentSelected = null;
 
             new Sortable(dropzone, {
@@ -395,7 +447,7 @@
                     
                     // Build the actual HTML element
                     const newEl = document.createElement('div');
-                    newEl.className = 'form-item shadow-sm';
+                    newEl.className = 'form-item shadow-sm w-100'; // Default width is 100%
                     newEl.id = generateId();
                     newEl.setAttribute('data-type', type);
 
@@ -443,6 +495,14 @@
                 }
             });
 
+            // Unselect on button click
+            if (btnUnselectField) {
+                btnUnselectField.addEventListener('click', function(e) {
+                    unselectField();
+                    e.stopPropagation();
+                });
+            }
+
             // Form element templates based on toolbox type
             function getHtmlTemplate(type) {
                 switch(type) {
@@ -457,7 +517,7 @@
                     case 'select':
                         return `<label class="form-label control-label">Lista Suspensa</label><select class="form-select form-select-lg" disabled><option>Opção 1</option><option>Opção 2</option><option>Opção 3</option></select>`;
                     case 'checkbox':
-                        return `<label class="form-label control-label d-block mb-2">Permissões</label><div class="form-check mb-1"><input class="form-check-input" type="checkbox" checked disabled><label class="form-check-label">Opção 1 (Ler)</label></div><div class="form-check"><input class="form-check-input" type="checkbox" disabled><label class="form-check-label">Opção 2 (Escrever)</label></div>`;
+                        return `<label class="form-label control-label d-block mb-2">Permissões</label><div class="form-check mb-1"><input class="form-check-input" type="checkbox" checked disabled><label class="form-check-label">Opção 1</label></div><div class="form-check"><input class="form-check-input" type="checkbox" disabled><label class="form-check-label">Opção 2</label></div>`;
                     case 'radio':
                         return `<label class="form-label control-label d-block mb-2">Género</label><div class="form-check form-check-inline"><input class="form-check-input" type="radio" checked disabled><label class="form-check-label">Masculino</label></div><div class="form-check form-check-inline"><input class="form-check-input" type="radio" disabled><label class="form-check-label">Feminino</label></div>`;
                     case 'date':
@@ -465,7 +525,7 @@
                     case 'title':
                         return `<h3 class="control-label mb-1" style="color: var(--fb-primary);">Informação Pessoal</h3><p class="text-muted small">Preencha os dados abaixo</p><hr class="mt-2 mb-0" />`;
                     case 'button':
-                        return `<div class="d-grid mt-2"><button class="btn btn-primary btn-lg custom-btn-shape" type="button" disabled>Submeter Dados</button></div>`;
+                        return `<div class="d-grid mt-2"><button class="btn btn-primary btn-lg custom-btn-shape" type="button" style="background-color: var(--fb-primary); border-color: var(--fb-primary);" disabled>Submeter Dados</button></div>`;
                     default:
                         return `<label class="form-label control-label">Campo</label><input type="text" class="form-control form-control-lg" disabled />`;
                 }
@@ -475,6 +535,7 @@
             const propLabel = document.getElementById('propLabel');
             const propPlaceholder = document.getElementById('propPlaceholder');
             const propPlaceholderContainer = document.getElementById('propPlaceholderContainer');
+            const propWidth = document.getElementById('propWidth');
             const propRequired = document.getElementById('propRequired');
             const propOptionsContainer = document.getElementById('propOptionsContainer');
             const propOptions = document.getElementById('propOptions');
@@ -483,7 +544,10 @@
                 if(currentSelected) currentSelected.classList.remove('selected');
                 currentSelected = field;
                 field.classList.add('selected');
-                propertiesPanel.classList.add('active');
+                
+                // Toggle property panel groups
+                formPropsGroup.style.display = 'none';
+                fieldPropsGroup.style.display = 'block';
 
                 const type = field.getAttribute('data-type');
                 const labelEl = field.querySelector('.control-label');
@@ -506,6 +570,13 @@
                     propPlaceholderContainer.style.display = 'none';
                 }
 
+                // Read Width
+                let currentWidthClass = 'w-100';
+                ['w-100', 'w-75', 'w-50', 'w-33', 'w-25'].forEach(w => {
+                    if (field.classList.contains(w)) currentWidthClass = w;
+                });
+                propWidth.value = currentWidthClass;
+
                 // Required Checkbox
                 if(!['button', 'title'].includes(type)) {
                     propRequired.disabled = false;
@@ -518,8 +589,20 @@
                 // Options config
                 if(['select', 'radio', 'checkbox'].includes(type)) {
                     propOptionsContainer.style.display = 'block';
-                    // In a highly dynamic system we parse inner labels. Here we simulate:
-                    propOptions.value = "Opção 1, Opção 2, Opção 3";
+                    
+                    // Re-read existing options in the view to populate options text area
+                    let optionLabels = [];
+                    if (type === 'select') {
+                        field.querySelectorAll('option').forEach(opt => optionLabels.push(opt.innerText));
+                    } else {
+                        field.querySelectorAll('.form-check-label').forEach(lbl => optionLabels.push(lbl.innerText));
+                    }
+                    
+                    if (optionLabels.length > 0) {
+                        propOptions.value = optionLabels.join(', ');
+                    } else {
+                        propOptions.value = "Opção 1, Opção 2, Opção 3";
+                    }
                 } else {
                     propOptionsContainer.style.display = 'none';
                 }
@@ -528,7 +611,10 @@
             function unselectField() {
                 if(currentSelected) currentSelected.classList.remove('selected');
                 currentSelected = null;
-                propertiesPanel.classList.remove('active');
+                
+                // Switch back to global form properties
+                fieldPropsGroup.style.display = 'none';
+                formPropsGroup.style.display = 'block';
             }
 
             // Real-time Property Binding
@@ -562,7 +648,6 @@
                         if(this.checked) text += ' *';
                         labelEl.innerText = text;
                         
-                        // Add some visual marker for required check
                         if(this.checked) {
                             labelEl.innerHTML = labelEl.innerText.replace('*', '<span class="text-danger">*</span>');
                         }
@@ -570,29 +655,181 @@
                 }
             });
 
-            // Mock Save interaction
+            // Sizing / Width real-time change
+            propWidth.addEventListener('change', function() {
+                if (currentSelected) {
+                    currentSelected.classList.remove('w-100', 'w-75', 'w-50', 'w-33', 'w-25');
+                    currentSelected.classList.add(this.value);
+                }
+            });
+
+            // Options real-time input change
+            propOptions.addEventListener('input', function() {
+                if (currentSelected) {
+                    const type = currentSelected.getAttribute('data-type');
+                    const optionsList = this.value.split(',').map(o => o.trim()).filter(o => o.length > 0);
+                    const fieldContent = currentSelected.querySelector('.field-content');
+                    const labelEl = currentSelected.querySelector('.control-label');
+                    const labelText = labelEl ? labelEl.innerText.replace(' *', '') : 'Campo';
+                    const requiredStar = (propRequired.checked) ? ' <span class="text-danger">*</span>' : '';
+                    
+                    if (optionsList.length === 0) return;
+
+                    if (type === 'select') {
+                        let html = `<label class="form-label control-label">${labelText}${requiredStar}</label><select class="form-select form-select-lg" disabled>`;
+                        optionsList.forEach(opt => {
+                            html += `<option>${opt}</option>`;
+                        });
+                        html += `</select>`;
+                        fieldContent.innerHTML = html;
+                    } else if (type === 'checkbox') {
+                        let html = `<label class="form-label control-label d-block mb-2">${labelText}${requiredStar}</label>`;
+                        optionsList.forEach((opt, idx) => {
+                            html += `<div class="form-check mb-1">
+                                <input class="form-check-input" type="checkbox" ${idx === 0 ? 'checked' : ''} disabled>
+                                <label class="form-check-label">${opt}</label>
+                            </div>`;
+                        });
+                        fieldContent.innerHTML = html;
+                    } else if (type === 'radio') {
+                        let html = `<label class="form-label control-label d-block mb-2">${labelText}${requiredStar}</label>`;
+                        optionsList.forEach((opt, idx) => {
+                            html += `<div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" ${idx === 0 ? 'checked' : ''} disabled>
+                                <label class="form-check-label">${opt}</label>
+                            </div>`;
+                        });
+                        fieldContent.innerHTML = html;
+                    }
+                }
+            });
+
+            // Save Form to Database via AJAX
             document.getElementById('btnSaveForm').addEventListener('click', function() {
                 const btn = this;
                 const originalContent = btn.innerHTML;
                 
-                // Spin state
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Guardando...';
-                btn.disabled = true;
+                const formTitleInput = document.getElementById('formTitleInput');
+                const formDescInput = document.getElementById('formDescInput');
                 
-                setTimeout(() => {
-                    // Success state
-                    btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Guardado com Sucesso!';
-                    btn.classList.add('bg-success', 'border-success');
+                const title = formTitleInput.value.trim();
+                const description = formDescInput.value.trim();
+
+                if (!title) {
+                    alert('Por favor, defina um título para o formulário no painel de propriedades.');
+                    formTitleInput.focus();
+                    return;
+                }
+
+                // Collect fields in order
+                const fields = [];
+                const formItems = dropzone.querySelectorAll('.form-item');
+                
+                if (formItems.length === 0) {
+                    alert('Por favor, adicione pelo menos um componente ao seu formulário.');
+                    return;
+                }
+
+                formItems.forEach((item, index) => {
+                    const type = item.getAttribute('data-type');
+                    const labelEl = item.querySelector('.control-label') || item.querySelector('.btn') || item.querySelector('h3');
                     
-                    // Reset
-                    setTimeout(() => {
-                        btn.innerHTML = originalContent;
-                        btn.classList.remove('bg-success', 'border-success');
-                        btn.disabled = false;
-                    }, 2500);
-                }, 1200);
+                    let label = 'Campo';
+                    if (labelEl) {
+                        label = labelEl.innerText.replace(' *', '').trim();
+                    }
+
+                    const inputEl = item.querySelector('input, textarea');
+                    const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
+                    
+                    const isRequired = labelEl && labelEl.innerText.includes('*');
+                    
+                    // Sizing
+                    let width = 'col-12'; // EF database default matches
+                    if (item.classList.contains('w-75')) width = 'col-md-9';
+                    else if (item.classList.contains('w-50')) width = 'col-md-6';
+                    else if (item.classList.contains('w-33')) width = 'col-md-4';
+                    else if (item.classList.contains('w-25')) width = 'col-md-3';
+                    
+                    // Options
+                    let options = '';
+                    if (['select', 'radio', 'checkbox'].includes(type)) {
+                        let optArr = [];
+                        if (type === 'select') {
+                            item.querySelectorAll('option').forEach(opt => optArr.push(opt.innerText));
+                        } else {
+                            item.querySelectorAll('.form-check-label').forEach(lbl => optArr.push(lbl.innerText));
+                        }
+                        options = optArr.join(', ');
+                    }
+
+                    fields.push({
+                        FieldId: item.id,
+                        Type: type,
+                        Label: label,
+                        Placeholder: placeholder,
+                        IsRequired: isRequired,
+                        Options: options,
+                        OrderIndex: index,
+                        Width: width
+                    });
+                });
+
+                // Spin state
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> A gravar...';
+                btn.disabled = true;
+
+                // Anti forgery token
+                const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                const token = tokenElement ? tokenElement.value : '';
+
+                // AJAX POST Request
+                fetch('/Home/SalvarFormulario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify({
+                        Title: title,
+                        Description: description,
+                        IsActive: true,
+                        Fields: fields
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Falha ao gravar o formulário.');
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Success state
+                        btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Gravado com Sucesso!';
+                        btn.className = 'btn text-white shadow-sm bg-success border-success';
+                        
+                        setTimeout(() => {
+                            btn.innerHTML = originalContent;
+                            btn.className = 'btn btn-primary-custom text-white shadow-sm';
+                            btn.disabled = false;
+                            
+                            // Redirect or clear
+                            if (confirm('Formulário gravado! Deseja ir para a página de Histórico de Formulários?')) {
+                                window.location.href = '/Home/HistoricoFormulariosUtilizador';
+                            }
+                        }, 1000);
+                    } else {
+                        throw new Error(data.message || 'Erro desconhecido.');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Erro ao gravar formulário: ' + error.message);
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                });
             });
         });
     </script>
-
--->
+}

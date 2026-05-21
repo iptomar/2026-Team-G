@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using _2026_Team_G.Data;
 
@@ -10,9 +11,11 @@ using _2026_Team_G.Data;
 namespace _2026_Team_G.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260514172920_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
@@ -219,10 +222,6 @@ namespace _2026_Team_G.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("componentClass")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -279,10 +278,6 @@ namespace _2026_Team_G.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Width")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
