@@ -1,9 +1,17 @@
-﻿@{
+@model IEnumerable<_2026_Team_G.Models.Formulario>
+@{
     ViewData["Title"] = "Histórico de Formulários";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Dynamic stats calculations combining dynamic and static mock items
+    int dynamicCount = Model?.Count() ?? 0;
+    int totalForms = 8 + dynamicCount;
+    int totalApproved = 5;
+    int totalPending = 2 + dynamicCount;
+    int totalRejected = 1;
 }
 
-<link rel="stylesheet" href="~/css/historico-formularios.css" />
+<link rel="stylesheet" href="~/css/historicoformularios.css" />
 
 <div class="page-header">
     <h1>Histórico de Formulários</h1>
@@ -12,19 +20,19 @@
 
 <div class="stats-container">
     <div class="stat-card">
-        <div class="stat-number">8</div>
+        <div class="stat-number">@totalForms</div>
         <div class="stat-label">Total de Formulários</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">5</div>
+        <div class="stat-number">@totalApproved</div>
         <div class="stat-label">Aprovados</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">2</div>
+        <div class="stat-number">@totalPending</div>
         <div class="stat-label">Pendentes</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">1</div>
+        <div class="stat-number">@totalRejected</div>
         <div class="stat-label">Rejeitados</div>
     </div>
 </div>
@@ -43,9 +51,25 @@
                 <th>Data de Atualização</th>
                 <th>Status</th>
                 <th>Ações</th>
+                <th>Utilizador</th>
             </tr>
         </thead>
         <tbody>
+            @if (Model != null)
+            {
+                foreach (var form in Model)
+                {
+                    <tr>
+                        <td>@form.Id.ToString("D3")</td>
+                        <td>@form.Title</td>
+                        <td>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>-</td>
+                        <td><span class="badge badge-pending">Pendente</span></td>
+                        <td><button class="btn-view" onclick="verDetalhes(@form.Id)">Ver Detalhes</button></td>
+                        <td>joao</td>
+                    </tr>
+                }
+            }
             <tr>
                 <td>001</td>
                 <td>Formulário de Contrato</td>
@@ -53,6 +77,8 @@
                 <td>16/04/2026 09:15</td>
                 <td><span class="badge badge-approved">Aprovado</span></td>
                 <td><button class="btn-view" onclick="verDetalhes(1)">Ver Detalhes</button></td>
+                <td>joao</td>
+
             </tr>
             <tr>
                 <td>002</td>
@@ -61,6 +87,8 @@
                 <td>12/04/2026 11:00</td>
                 <td><span class="badge badge-pending">Pendente</span></td>
                 <td><button class="btn-view" onclick="verDetalhes(2)">Ver Detalhes</button></td>
+                <td>joao</td>
+
             </tr>
             <tr>
                 <td>003</td>
@@ -69,6 +97,8 @@
                 <td>-</td>
                 <td><span class="badge badge-pending">Pendente</span></td>
                 <td><button class="btn-view" onclick="verDetalhes(3)">Ver Detalhes</button></td>
+                <td>joao</td>
+
             </tr>
             <tr>
                 <td>004</td>
@@ -77,6 +107,7 @@
                 <td>08/04/2026 10:30</td>
                 <td><span class="badge badge-approved">Aprovado</span></td>
                 <td><button class="btn-view" onclick="verDetalhes(4)">Ver Detalhes</button></td>
+                <td>joao</td>
             </tr>
             <tr>
                 <td>005</td>
@@ -85,6 +116,7 @@
                 <td>30/03/2026 14:00</td>
                 <td><span class="badge badge-rejected">Rejeitado</span></td>
                 <td><button class="btn-view" onclick="verDetalhes(5)">Ver Detalhes</button></td>
+                <td>joao</td>
             </tr>
             <tr>
                 <td>006</td>
@@ -93,6 +125,7 @@
                 <td>25/03/2026 17:30</td>
                 <td><span class="badge badge-approved">Aprovado</span></td>
                 <td><button class="btn-view" onclick="verDetalhes(6)">Ver Detalhes</button></td>
+                <td>joao</td>
             </tr>
             <tr>
                 <td>007</td>
@@ -101,6 +134,7 @@
                 <td>18/03/2026 09:45</td>
                 <td><span class="badge badge-approved">Aprovado</span></td>
                 <td><button class="btn-view" onclick="verDetalhes(7)">Ver Detalhes</button></td>
+                <td>joao</td>
             </tr>
             <tr>
                 <td>008</td>
@@ -109,6 +143,7 @@
                 <td>10/03/2026 10:00</td>
                 <td><span class="badge badge-pending">Pendente</span></td>
                 <td><button class="btn-view" onclick="verDetalhes(8)">Ver Detalhes</button></td>
+                <td>joao</td>
             </tr>
         </tbody>
     </table>

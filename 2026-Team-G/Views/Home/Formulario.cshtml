@@ -1,0 +1,835 @@
+@{
+        ViewData["Title"] = "Construtor de Formulários";
+ }
+@Html.AntiForgeryToken()
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+<style>
+    :root {
+        --fb-primary: #7966f1; /* Lavender / Purple from main page */
+        --fb-primary-hover: #5d4cd4;
+        --fb-bg: #f3f2fa; /* Soft lavender background from main page */
+        --fb-surface: #ffffff;
+        --fb-border: #e2e0f3; /* Soft purple borders */
+        --fb-text: #0f172a; /* Slate dark text from main page */
+        --fb-text-muted: #475569;
+        --fb-accent-blue: #4285f4;
+        --fb-accent-blue-hover: #2b75f3;
+    }
+
+    body {
+        background-color: var(--fb-bg);
+    }
+    
+    .form-builder-container {
+        display: flex;
+        height: 75vh;
+        gap: 24px;
+        margin-top: 24px;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Toolbox Styles */
+    .toolbox {
+        width: 280px;
+        background: var(--fb-surface);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(121, 102, 241, 0.05);
+        padding: 24px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        border: 1px solid rgba(121, 102, 241, 0.08);
+    }
+
+    .toolbox-item {
+        background: var(--fb-surface);
+        border: 1px solid var(--fb-border);
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        cursor: grab;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        font-weight: 500;
+        color: var(--fb-text);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+    }
+
+    .toolbox-item:hover {
+        background: #f5f3ff;
+        border-color: #d8d4fd;
+        color: var(--fb-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(121, 102, 241, 0.1);
+    }
+
+    .toolbox-item i {
+        font-size: 1.25rem;
+        color: var(--fb-primary);
+        opacity: 0.8;
+    }
+
+    /* Dropzone Styles */
+    .dropzone-container {
+        flex-grow: 1;
+        background: var(--fb-surface);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(121, 102, 241, 0.05);
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(121, 102, 241, 0.08);
+    }
+
+    .dropzone {
+        flex-grow: 1;
+        border: 2px dashed #ced4da;
+        border-radius: 12px;
+        padding: 24px;
+        overflow-y: auto;
+        min-height: 300px;
+        position: relative;
+        transition: all 0.3s ease;
+        background-color: #fdfdfd;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 16px;
+    }
+
+    .dropzone.dragover {
+        border-color: var(--fb-primary);
+        background-color: rgba(121, 102, 241, 0.04);
+    }
+
+    .dropzone:empty::before {
+        content: "Arraste os componentes da esquerda para aqui";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #adb5bd;
+        font-size: 1.1rem;
+        font-weight: 500;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .dropzone:empty::after {
+        content: "\F28C";
+        font-family: "bootstrap-icons";
+        position: absolute;
+        top: calc(50% - 40px);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2.5rem;
+        color: #dee2e6;
+        pointer-events: none;
+    }
+
+    /* Form Item Styles */
+    .form-item {
+        position: relative;
+        padding: 20px;
+        background: var(--fb-surface);
+        border: 1px solid var(--fb-border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+    }
+
+    /* Width Utility Classes for dynamic resizing in wrap flexbox */
+    .form-item.w-100 { width: 100%; }
+    .form-item.w-75 { width: calc(75% - 12px); }
+    .form-item.w-50 { width: calc(50% - 8px); }
+    .form-item.w-33 { width: calc(33.333% - 11px); }
+    .form-item.w-25 { width: calc(25% - 12px); }
+
+    .form-item:hover {
+        border-color: #c7c2fa;
+        background-color: #faf9ff;
+    }
+
+    .form-item.selected {
+        border-color: var(--fb-primary);
+        background-color: rgba(121, 102, 241, 0.02);
+        box-shadow: 0 0 0 3px rgba(121, 102, 241, 0.15);
+    }
+
+    .form-item-actions {
+        position: absolute;
+        top: -12px;
+        right: 16px;
+        display: none;
+        background: var(--fb-surface);
+        border: 1px solid var(--fb-border);
+        border-radius: 20px;
+        padding: 4px 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        z-index: 10;
+    }
+
+    .form-item:hover .form-item-actions {
+        display: flex;
+        gap: 12px;
+        animation: fadeInDown 0.2s ease;
+    }
+
+    .form-item-actions i {
+        cursor: pointer;
+        color: var(--fb-text-muted);
+        font-size: 1rem;
+        transition: color 0.2s ease;
+    }
+
+    .form-item-actions i:hover {
+        color: #ef233c;
+    }
+
+    /* Properties Panel Styles */
+    .properties-panel {
+        width: 320px;
+        background: var(--fb-surface);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(121, 102, 241, 0.05);
+        padding: 24px;
+        flex-shrink: 0;
+        display: none;
+        overflow-y: auto;
+        border: 1px solid rgba(121, 102, 241, 0.08);
+    }
+
+    .properties-panel.active {
+        display: block;
+        animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .header-title {
+        font-weight: 700;
+        color: var(--fb-text);
+        margin-bottom: 24px;
+        font-size: 1.15rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--fb-border);
+    }
+
+    .header-title i {
+        color: var(--fb-primary);
+        background: rgba(121, 102, 241, 0.1);
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    /* Input Overrides for Builder */
+    .form-label {
+        color: var(--fb-text);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+    
+    .form-item input[disabled],
+    .form-item textarea[disabled],
+    .form-item select[disabled] {
+        background-color: #f8f9fa;
+        cursor: pointer;
+        opacity: 0.8;
+    }
+
+    /* Animations */
+    @@keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @@keyframes slideInRight {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* SortableJS Ghost Class */
+    .sortable-ghost {
+        opacity: 0.4;
+        background-color: #f5f3ff !important;
+        border: 2px dashed var(--fb-primary) !important;
+    }
+    
+    .btn-primary-custom {
+        background-color: var(--fb-accent-blue);
+        border-color: var(--fb-accent-blue);
+        font-weight: 500;
+        padding: 10px 24px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary-custom:hover {
+        background-color: var(--fb-accent-blue-hover);
+        border-color: var(--fb-accent-blue-hover);
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="container-fluid py-2">
+    Header Area 
+    <div class="row align-items-center mb-2 mt-4">
+        <div class="col">
+            <h2 class="fw-bold" style="color: var(--fb-text); letter-spacing: -0.5px;">
+                <i class="bi bi-layout-wtf text-primary me-2"></i>Construtor de Formulários
+            </h2>
+            <p class="text-muted mb-0" style="font-size: 1.05rem;">Arraste e solte elementos para criar um formulário incrível num instante.</p>
+        </div>
+        <div class="col-auto d-flex gap-3">
+            <button class="btn btn-outline-secondary rounded-3 px-4 fw-medium">
+                <i class="bi bi-eye me-2"></i> Pré-visualizar
+            </button>
+            <button class="btn btn-primary-custom text-white shadow-sm" id="btnSaveForm">
+                <i class="bi bi-cloud-arrow-up me-2"></i> Guardar Formulário
+            </button>
+        </div>
+    </div>
+
+    <div class="form-builder-container">
+        <div class="toolbox">
+            <div class="header-title">
+                <i class="bi bi-grid-1x2"></i> Componentes
+            </div>
+            
+            <div class="toolbox-item shadow-sm" data-type="text">
+                <i class="bi bi-input-cursor-text"></i> Texto Curto
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="textarea">
+                <i class="bi bi-card-text"></i> Texto Longo (Área)
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="number">
+                <i class="bi bi-123"></i> Campo Numérico
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="email">
+                <i class="bi bi-envelope-at"></i> Endereço E-mail
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="select">
+                <i class="bi bi-menu-button-wide"></i> Lista Suspensa
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="checkbox">
+                <i class="bi bi-check-all"></i> Caixas de Seleção
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="radio">
+                <i class="bi bi-ui-radios"></i> Escolha Única
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="date">
+                <i class="bi bi-calendar-event"></i> Seletor de Data
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="title">
+                <i class="bi bi-type-h1"></i> Cabeçalho / Título
+            </div>
+            <div class="toolbox-item shadow-sm" data-type="button">
+                <i class="bi bi-mouse2"></i> Botão de Ação
+            </div>
+        </div>
+
+        <div class="dropzone-container">
+            <div class="header-title">
+                <i class="bi bi-window-sidebar"></i> Tela de Desenho
+            </div>
+            <div class="dropzone" id="formDropzone">
+            </div>
+        </div>
+
+        <div class="properties-panel active" id="propertiesPanel">
+            <!-- Form Properties Group (Default) -->
+            <div id="formPropsGroup">
+                <div class="header-title">
+                    <i class="bi bi-gear-fill"></i> Propriedades do Formulário
+                </div>
+                <form id="formGlobalForm">
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Título do Formulário</label>
+                        <input type="text" class="form-control" id="formTitleInput" value="Novo Formulário" placeholder="Insira o título do formulário..." />
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Descrição</label>
+                        <textarea class="form-control" id="formDescInput" rows="4" style="resize:none;" placeholder="Insira a descrição do formulário...">Descrição do meu formulário</textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Field Properties Group (Shown on Selection) -->
+            <div id="fieldPropsGroup" style="display: none;">
+                <div class="header-title">
+                    <i class="bi bi-sliders2-vertical"></i> Propriedades do Campo
+                </div>
+                <form id="propForm">
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Rótulo (Label)</label>
+                        <input type="text" class="form-control" id="propLabel" />
+                    </div>
+                    <div class="mb-4" id="propPlaceholderContainer">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Texto Fantasma (Placeholder)</label>
+                        <input type="text" class="form-control" id="propPlaceholder" />
+                    </div>
+                    <div class="mb-4" id="propWidthContainer">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Largura do Componente</label>
+                        <select class="form-select" id="propWidth">
+                            <option value="w-100">100% (Largura Total)</option>
+                            <option value="w-75">75% (Três Quartos)</option>
+                            <option value="w-50">50% (Metade)</option>
+                            <option value="w-33">33% (Um Terço)</option>
+                            <option value="w-25">25% (Um Quarto)</option>
+                        </select>
+                    </div>
+                    <div class="mb-4 p-3 rounded bg-light border border-light">
+                        <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
+                            <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
+                            <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
+                        </div>
+                    </div>
+                    <div class="mb-4" id="propOptionsContainer" style="display: none;">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Opções</label>
+                        <div class="text-muted small mb-2">Separe as opções com vírgula</div>
+                        <textarea class="form-control" id="propOptions" rows="4" style="resize:none;"></textarea>
+                    </div>
+                </form>
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2 rounded-3" id="btnUnselectField">
+                    <i class="bi bi-x-circle me-1"></i> Voltar ao Formulário
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // Helper: Generate unique IDs for fields
+            function generateId() {
+                return 'field_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            // Initialize Draggable Toolbox Items
+            new Sortable(document.querySelector('.toolbox'), {
+                group: {
+                    name: 'shared',
+                    pull: 'clone', // Clone items from toolbox
+                    put: false     // Do not allow dropping back into toolbox
+                },
+                animation: 150,
+                sort: false,       // Prevent sorting inside toolbox
+            });
+
+            // Initialize Dropzone
+            const dropzone = document.getElementById('formDropzone');
+            const propertiesPanel = document.getElementById('propertiesPanel');
+            const formPropsGroup = document.getElementById('formPropsGroup');
+            const fieldPropsGroup = document.getElementById('fieldPropsGroup');
+            const btnUnselectField = document.getElementById('btnUnselectField');
+            
+            let currentSelected = null;
+
+            new Sortable(dropzone, {
+                group: 'shared',
+                animation: 200,
+                ghostClass: 'sortable-ghost',
+                onAdd: function (evt) {
+                    const item = evt.item;
+                    const type = item.getAttribute('data-type');
+                    
+                    // Build the actual HTML element
+                    const newEl = document.createElement('div');
+                    newEl.className = 'form-item shadow-sm w-100'; // Default width is 100%
+                    newEl.id = generateId();
+                    newEl.setAttribute('data-type', type);
+
+                    const content = getHtmlTemplate(type);
+                    newEl.innerHTML = `
+                        <div class="form-item-actions">
+                            <i class="bi bi-trash-fill btn-delete" title="Remover"></i>
+                        </div>
+                        <div class="field-content">
+                            ${content}
+                        </div>
+                    `;
+
+                    // Replace dragged toolbox item visually with our form component
+                    item.parentNode.insertBefore(newEl, item);
+                    item.parentNode.removeChild(item);
+
+                    // Auto-select to map properties
+                    selectField(newEl);
+                }
+            });
+
+            // Delegate click events for Selection and Deletion
+            dropzone.addEventListener('click', function(e) {
+                // Deletion
+                if(e.target.classList.contains('btn-delete') || e.target.closest('.btn-delete')) {
+                    const field = e.target.closest('.form-item');
+                    if(currentSelected === field) {
+                        unselectField();
+                    }
+                    // Animated removal
+                    field.style.opacity = '0';
+                    field.style.transform = 'scale(0.95)';
+                    setTimeout(() => field.remove(), 200);
+                    e.stopPropagation();
+                    return;
+                }
+
+                // Selection
+                const field = e.target.closest('.form-item');
+                if(field) {
+                    selectField(field);
+                } else {
+                    unselectField();
+                }
+            });
+
+            // Unselect on button click
+            if (btnUnselectField) {
+                btnUnselectField.addEventListener('click', function(e) {
+                    unselectField();
+                    e.stopPropagation();
+                });
+            }
+
+            // Form element templates based on toolbox type
+            function getHtmlTemplate(type) {
+                switch(type) {
+                    case 'text':
+                        return `<label class="form-label control-label">Texto Curto</label><input type="text" class="form-control form-control-lg" placeholder="Digite aqui..." disabled />`;
+                    case 'textarea':
+                        return `<label class="form-label control-label">Texto Longo</label><textarea class="form-control form-control-lg" rows="3" placeholder="Digite detalhes aqui..." disabled></textarea>`;
+                    case 'number':
+                        return `<label class="form-label control-label">Número</label><input type="number" class="form-control form-control-lg" placeholder="0" disabled />`;
+                    case 'email':
+                        return `<label class="form-label control-label">E-mail</label><input type="email" class="form-control form-control-lg" placeholder="exemplo@email.com" disabled />`;
+                    case 'select':
+                        return `<label class="form-label control-label">Lista Suspensa</label><select class="form-select form-select-lg" disabled><option>Opção 1</option><option>Opção 2</option><option>Opção 3</option></select>`;
+                    case 'checkbox':
+                        return `<label class="form-label control-label d-block mb-2">Permissões</label><div class="form-check mb-1"><input class="form-check-input" type="checkbox" checked disabled><label class="form-check-label">Opção 1</label></div><div class="form-check"><input class="form-check-input" type="checkbox" disabled><label class="form-check-label">Opção 2</label></div>`;
+                    case 'radio':
+                        return `<label class="form-label control-label d-block mb-2">Género</label><div class="form-check form-check-inline"><input class="form-check-input" type="radio" checked disabled><label class="form-check-label">Masculino</label></div><div class="form-check form-check-inline"><input class="form-check-input" type="radio" disabled><label class="form-check-label">Feminino</label></div>`;
+                    case 'date':
+                        return `<label class="form-label control-label">Data de Nascimento</label><input type="date" class="form-control form-control-lg" disabled />`;
+                    case 'title':
+                        return `<h3 class="control-label mb-1" style="color: var(--fb-primary);">Informação Pessoal</h3><p class="text-muted small">Preencha os dados abaixo</p><hr class="mt-2 mb-0" />`;
+                    case 'button':
+                        return `<div class="d-grid mt-2"><button class="btn btn-primary btn-lg custom-btn-shape" type="button" style="background-color: var(--fb-primary); border-color: var(--fb-primary);" disabled>Submeter Dados</button></div>`;
+                    default:
+                        return `<label class="form-label control-label">Campo</label><input type="text" class="form-control form-control-lg" disabled />`;
+                }
+            }
+
+            // Properties Pane Handling
+            const propLabel = document.getElementById('propLabel');
+            const propPlaceholder = document.getElementById('propPlaceholder');
+            const propPlaceholderContainer = document.getElementById('propPlaceholderContainer');
+            const propWidth = document.getElementById('propWidth');
+            const propRequired = document.getElementById('propRequired');
+            const propOptionsContainer = document.getElementById('propOptionsContainer');
+            const propOptions = document.getElementById('propOptions');
+
+            function selectField(field) {
+                if(currentSelected) currentSelected.classList.remove('selected');
+                currentSelected = field;
+                field.classList.add('selected');
+                
+                // Toggle property panel groups
+                formPropsGroup.style.display = 'none';
+                fieldPropsGroup.style.display = 'block';
+
+                const type = field.getAttribute('data-type');
+                const labelEl = field.querySelector('.control-label');
+                const inputEl = field.querySelector('input, textarea');
+
+                // Read Label
+                if (type === 'button') {
+                    const btnEl = field.querySelector('.btn');
+                    propLabel.value = btnEl ? btnEl.innerText : 'Botão';
+                } else {
+                    let cleanedName = labelEl ? labelEl.innerText.replace(' *', '') : 'Rótulo';
+                    propLabel.value = cleanedName;
+                }
+                
+                // Read/Hide Placeholder
+                if(['text', 'textarea', 'number', 'email'].includes(type) && inputEl) {
+                    propPlaceholderContainer.style.display = 'block';
+                    propPlaceholder.value = inputEl.getAttribute('placeholder') || '';
+                } else {
+                    propPlaceholderContainer.style.display = 'none';
+                }
+
+                // Read Width
+                let currentWidthClass = 'w-100';
+                ['w-100', 'w-75', 'w-50', 'w-33', 'w-25'].forEach(w => {
+                    if (field.classList.contains(w)) currentWidthClass = w;
+                });
+                propWidth.value = currentWidthClass;
+
+                // Required Checkbox
+                if(!['button', 'title'].includes(type)) {
+                    propRequired.disabled = false;
+                    propRequired.checked = labelEl && labelEl.innerText.includes('*');
+                } else {
+                    propRequired.disabled = true;
+                    propRequired.checked = false;
+                }
+
+                // Options config
+                if(['select', 'radio', 'checkbox'].includes(type)) {
+                    propOptionsContainer.style.display = 'block';
+                    
+                    // Re-read existing options in the view to populate options text area
+                    let optionLabels = [];
+                    if (type === 'select') {
+                        field.querySelectorAll('option').forEach(opt => optionLabels.push(opt.innerText));
+                    } else {
+                        field.querySelectorAll('.form-check-label').forEach(lbl => optionLabels.push(lbl.innerText));
+                    }
+                    
+                    if (optionLabels.length > 0) {
+                        propOptions.value = optionLabels.join(', ');
+                    } else {
+                        propOptions.value = "Opção 1, Opção 2, Opção 3";
+                    }
+                } else {
+                    propOptionsContainer.style.display = 'none';
+                }
+            }
+
+            function unselectField() {
+                if(currentSelected) currentSelected.classList.remove('selected');
+                currentSelected = null;
+                
+                // Switch back to global form properties
+                fieldPropsGroup.style.display = 'none';
+                formPropsGroup.style.display = 'block';
+            }
+
+            // Real-time Property Binding
+            propLabel.addEventListener('input', function() {
+                if(currentSelected) {
+                    const type = currentSelected.getAttribute('data-type');
+                    if (type === 'button') {
+                        const btnEl = currentSelected.querySelector('.btn');
+                        if(btnEl) btnEl.innerText = this.value;
+                    } else {
+                        const labelEl = currentSelected.querySelector('.control-label');
+                        if(labelEl) {
+                            labelEl.innerText = this.value + (propRequired.checked ? ' *' : '');
+                        }
+                    }
+                }
+            });
+
+            propPlaceholder.addEventListener('input', function() {
+                if(currentSelected) {
+                    const inputEl = currentSelected.querySelector('input, textarea');
+                    if(inputEl) inputEl.setAttribute('placeholder', this.value);
+                }
+            });
+
+            propRequired.addEventListener('change', function() {
+                if(currentSelected) {
+                    const labelEl = currentSelected.querySelector('.control-label');
+                    if(labelEl && currentSelected.getAttribute('data-type') !== 'button') {
+                        let text = labelEl.innerText.replace(' *', '');
+                        if(this.checked) text += ' *';
+                        labelEl.innerText = text;
+                        
+                        if(this.checked) {
+                            labelEl.innerHTML = labelEl.innerText.replace('*', '<span class="text-danger">*</span>');
+                        }
+                    }
+                }
+            });
+
+            // Sizing / Width real-time change
+            propWidth.addEventListener('change', function() {
+                if (currentSelected) {
+                    currentSelected.classList.remove('w-100', 'w-75', 'w-50', 'w-33', 'w-25');
+                    currentSelected.classList.add(this.value);
+                }
+            });
+
+            // Options real-time input change
+            propOptions.addEventListener('input', function() {
+                if (currentSelected) {
+                    const type = currentSelected.getAttribute('data-type');
+                    const optionsList = this.value.split(',').map(o => o.trim()).filter(o => o.length > 0);
+                    const fieldContent = currentSelected.querySelector('.field-content');
+                    const labelEl = currentSelected.querySelector('.control-label');
+                    const labelText = labelEl ? labelEl.innerText.replace(' *', '') : 'Campo';
+                    const requiredStar = (propRequired.checked) ? ' <span class="text-danger">*</span>' : '';
+                    
+                    if (optionsList.length === 0) return;
+
+                    if (type === 'select') {
+                        let html = `<label class="form-label control-label">${labelText}${requiredStar}</label><select class="form-select form-select-lg" disabled>`;
+                        optionsList.forEach(opt => {
+                            html += `<option>${opt}</option>`;
+                        });
+                        html += `</select>`;
+                        fieldContent.innerHTML = html;
+                    } else if (type === 'checkbox') {
+                        let html = `<label class="form-label control-label d-block mb-2">${labelText}${requiredStar}</label>`;
+                        optionsList.forEach((opt, idx) => {
+                            html += `<div class="form-check mb-1">
+                                <input class="form-check-input" type="checkbox" ${idx === 0 ? 'checked' : ''} disabled>
+                                <label class="form-check-label">${opt}</label>
+                            </div>`;
+                        });
+                        fieldContent.innerHTML = html;
+                    } else if (type === 'radio') {
+                        let html = `<label class="form-label control-label d-block mb-2">${labelText}${requiredStar}</label>`;
+                        optionsList.forEach((opt, idx) => {
+                            html += `<div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" ${idx === 0 ? 'checked' : ''} disabled>
+                                <label class="form-check-label">${opt}</label>
+                            </div>`;
+                        });
+                        fieldContent.innerHTML = html;
+                    }
+                }
+            });
+
+            // Save Form to Database via AJAX
+            document.getElementById('btnSaveForm').addEventListener('click', function() {
+                const btn = this;
+                const originalContent = btn.innerHTML;
+                
+                const formTitleInput = document.getElementById('formTitleInput');
+                const formDescInput = document.getElementById('formDescInput');
+                
+                const title = formTitleInput.value.trim();
+                const description = formDescInput.value.trim();
+
+                if (!title) {
+                    alert('Por favor, defina um título para o formulário no painel de propriedades.');
+                    formTitleInput.focus();
+                    return;
+                }
+
+                // Collect fields in order
+                const fields = [];
+                const formItems = dropzone.querySelectorAll('.form-item');
+                
+                if (formItems.length === 0) {
+                    alert('Por favor, adicione pelo menos um componente ao seu formulário.');
+                    return;
+                }
+
+                formItems.forEach((item, index) => {
+                    const type = item.getAttribute('data-type');
+                    const labelEl = item.querySelector('.control-label') || item.querySelector('.btn') || item.querySelector('h3');
+                    
+                    let label = 'Campo';
+                    if (labelEl) {
+                        label = labelEl.innerText.replace(' *', '').trim();
+                    }
+
+                    const inputEl = item.querySelector('input, textarea');
+                    const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
+                    
+                    const isRequired = labelEl && labelEl.innerText.includes('*');
+                    
+                    // Sizing
+                    let width = 'col-12'; // EF database default matches
+                    if (item.classList.contains('w-75')) width = 'col-md-9';
+                    else if (item.classList.contains('w-50')) width = 'col-md-6';
+                    else if (item.classList.contains('w-33')) width = 'col-md-4';
+                    else if (item.classList.contains('w-25')) width = 'col-md-3';
+                    
+                    // Options
+                    let options = '';
+                    if (['select', 'radio', 'checkbox'].includes(type)) {
+                        let optArr = [];
+                        if (type === 'select') {
+                            item.querySelectorAll('option').forEach(opt => optArr.push(opt.innerText));
+                        } else {
+                            item.querySelectorAll('.form-check-label').forEach(lbl => optArr.push(lbl.innerText));
+                        }
+                        options = optArr.join(', ');
+                    }
+
+                    fields.push({
+                        FieldId: item.id,
+                        Type: type,
+                        Label: label,
+                        Placeholder: placeholder,
+                        IsRequired: isRequired,
+                        Options: options,
+                        OrderIndex: index,
+                        Width: width
+                    });
+                });
+
+                // Spin state
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> A gravar...';
+                btn.disabled = true;
+
+                // Anti forgery token
+                const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                const token = tokenElement ? tokenElement.value : '';
+
+                // AJAX POST Request
+                fetch('/Home/SalvarFormulario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify({
+                        Title: title,
+                        Description: description,
+                        IsActive: true,
+                        Fields: fields
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Falha ao gravar o formulário.');
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Success state
+                        btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Gravado com Sucesso!';
+                        btn.className = 'btn text-white shadow-sm bg-success border-success';
+                        
+                        setTimeout(() => {
+                            btn.innerHTML = originalContent;
+                            btn.className = 'btn btn-primary-custom text-white shadow-sm';
+                            btn.disabled = false;
+                            
+                            // Redirect or clear
+                            if (confirm('Formulário gravado! Deseja ir para a página de Histórico de Formulários?')) {
+                                window.location.href = '/Home/HistoricoFormulariosUtilizador';
+                            }
+                        }, 1000);
+                    } else {
+                        throw new Error(data.message || 'Erro desconhecido.');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Erro ao gravar formulário: ' + error.message);
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                });
+            });
+        });
+    </script>
+}
