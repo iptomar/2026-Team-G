@@ -1,9 +1,10 @@
-﻿@model IEnumerable<_2026_Team_G.Models.Formulario>
+@model IEnumerable<_2026_Team_G.Models.Formulario>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@Html.AntiForgeryToken()
 
 <h1>Index</h1>
 
@@ -350,31 +351,54 @@
             </div>
         </div>
 
-        <div class="properties-panel" id="propertiesPanel">
-            <div class="header-title">
-                <i class="bi bi-sliders2-vertical"></i> Propriedades
-            </div>
-            <form id="propForm">
-                <div class="mb-4">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Rótulo (Label)</label>
-                    <input type="text" class="form-control" id="propLabel" />
+        <div class="properties-panel active" id="propertiesPanel">
+            <!-- Form Properties Group (Default) -->
+            <div id="formPropsGroup">
+                <div class="header-title">
+                    <i class="bi bi-gear-fill"></i> Propriedades do Formulário
                 </div>
-                <div class="mb-4" id="propPlaceholderContainer">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Texto Fantasma (Placeholder)</label>
-                    <input type="text" class="form-control" id="propPlaceholder" />
-                </div>
-                <div class="mb-4 p-3 rounded bg-light border border-light">
-                    <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
-                        <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
-                        <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
+                <form id="formGlobalForm">
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Título do Formulário</label>
+                        <input type="text" class="form-control" id="formTitleInput" value="Novo Formulário" placeholder="Insira o título do formulário..." />
                     </div>
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Descrição</label>
+                        <textarea class="form-control" id="formDescInput" rows="4" style="resize:none;" placeholder="Insira a descrição do formulário...">Descrição do meu formulário</textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Field Properties Group (Shown on Selection) -->
+            <div id="fieldPropsGroup" style="display: none;">
+                <div class="header-title">
+                    <i class="bi bi-sliders2-vertical"></i> Propriedades do Campo
                 </div>
-                <div class="mb-4" id="propOptionsContainer" style="display: none;">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Opções</label>
-                    <div class="text-muted small mb-2">Separe as opções com vírgula</div>
-                    <textarea class="form-control" id="propOptions" rows="4" style="resize:none;"></textarea>
-                </div>
-            </form>
+                <form id="propForm">
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Rótulo (Label)</label>
+                        <input type="text" class="form-control" id="propLabel" />
+                    </div>
+                    <div class="mb-4" id="propPlaceholderContainer">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Texto Fantasma (Placeholder)</label>
+                        <input type="text" class="form-control" id="propPlaceholder" />
+                    </div>
+                    <div class="mb-4 p-3 rounded bg-light border border-light">
+                        <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
+                            <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
+                            <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
+                        </div>
+                    </div>
+                    <div class="mb-4" id="propOptionsContainer" style="display: none;">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Opções</label>
+                        <div class="text-muted small mb-2">Separe as opções com vírgula</div>
+                        <textarea class="form-control" id="propOptions" rows="4" style="resize:none;"></textarea>
+                    </div>
+                </form>
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2 rounded-3" id="btnUnselectField">
+                    <i class="bi bi-x-circle me-1"></i> Voltar ao Formulário
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -521,6 +545,10 @@
             }
 
             // --- Painel de Propriedades Laterais ---
+            const formPropsGroup = document.getElementById('formPropsGroup');
+            const fieldPropsGroup = document.getElementById('fieldPropsGroup');
+            const btnUnselectField = document.getElementById('btnUnselectField');
+
             const propLabel = document.getElementById('propLabel');
             const propPlaceholder = document.getElementById('propPlaceholder');
             const propPlaceholderContainer = document.getElementById('propPlaceholderContainer');
@@ -532,7 +560,10 @@
                 if(currentSelected) currentSelected.classList.remove('selected');
                 currentSelected = field;
                 field.classList.add('selected');
-                propertiesPanel.classList.add('active');
+                
+                // Mostrar painel de propriedades do campo e ocultar as do formulário
+                formPropsGroup.style.display = 'none';
+                fieldPropsGroup.style.display = 'block';
 
                 const type = field.getAttribute('data-type');
                 const labelEl = field.querySelector('.control-label');
@@ -560,7 +591,17 @@
             function unselectField() {
                 if(currentSelected) currentSelected.classList.remove('selected');
                 currentSelected = null;
-                propertiesPanel.classList.remove('active');
+                
+                // Mostrar painel de propriedades do formulário e ocultar as do campo
+                fieldPropsGroup.style.display = 'none';
+                formPropsGroup.style.display = 'block';
+            }
+
+            if (btnUnselectField) {
+                btnUnselectField.addEventListener('click', function(e) {
+                    unselectField();
+                    e.stopPropagation();
+                });
             }
 
             propLabel.addEventListener('input', function() {
@@ -568,6 +609,9 @@
                     const labelEl = currentSelected.querySelector('.control-label');
                     if(labelEl) {
                         labelEl.innerText = this.value + (propRequired.checked ? ' *' : '');
+                        if(propRequired.checked) {
+                            labelEl.innerHTML = labelEl.innerText.replace('*', '<span class="text-danger">*</span>');
+                        }
                     }
                 }
             });
@@ -594,24 +638,112 @@
                 }
             });
 
-            // Simulação de Salvamento de dados
+            // Gravação Real do Formulário na Base de Dados via AJAX POST
             document.getElementById('btnSaveForm').addEventListener('click', function() {
                 const btn = this;
                 const originalContent = btn.innerHTML;
 
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Guardando...';
+                const formTitleInput = document.getElementById('formTitleInput');
+                const formDescInput = document.getElementById('formDescInput');
+
+                const title = formTitleInput.value.trim();
+                const description = formDescInput.value.trim();
+
+                if (!title) {
+                    alert('Por favor, defina um título para o formulário no painel de propriedades.');
+                    unselectField();
+                    formTitleInput.focus();
+                    return;
+                }
+
+                // Recolher os campos em ordem
+                const fields = [];
+                const formItems = dropzone.querySelectorAll('.form-item');
+
+                if (formItems.length === 0) {
+                    alert('Por favor, adicione pelo menos um componente ao seu formulário.');
+                    return;
+                }
+
+                formItems.forEach((item, index) => {
+                    const type = item.getAttribute('data-type');
+                    const labelEl = item.querySelector('.control-label');
+                    
+                    let label = 'Campo';
+                    if (labelEl) {
+                        label = labelEl.innerText.replace(' *', '').trim();
+                    }
+
+                    const inputEl = item.querySelector('input, textarea');
+                    const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
+                    
+                    const isRequired = labelEl && labelEl.innerText.includes('*');
+                    
+                    fields.push({
+                        FieldId: item.id,
+                        Type: type,
+                        Label: label,
+                        Placeholder: placeholder,
+                        IsRequired: isRequired,
+                        Options: '',
+                        OrderIndex: index,
+                        Width: '100%'
+                    });
+                });
+
+                // Estado de carregamento do botão
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> A gravar...';
                 btn.disabled = true;
 
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Guardado com Sucesso!';
-                    btn.classList.add('bg-success', 'border-success');
+                // Token Anti-CSRF
+                const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                const token = tokenElement ? tokenElement.value : '';
 
-                    setTimeout(() => {
-                        btn.innerHTML = originalContent;
-                        btn.classList.remove('bg-success', 'border-success');
-                        btn.disabled = false;
-                    }, 2500);
-                }, 1200);
+                // Enviar pedido via AJAX POST
+                fetch('/Home/SalvarFormulario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify({
+                        Title: title,
+                        Description: description,
+                        IsActive: true,
+                        Fields: fields
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Falha ao gravar o formulário.');
+                })
+                .then(data => {
+                    if (data.success) {
+                        btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Gravado com Sucesso!';
+                        btn.className = 'btn text-white shadow-sm bg-success border-success';
+
+                        setTimeout(() => {
+                            btn.innerHTML = originalContent;
+                            btn.className = 'btn btn-primary-custom text-white shadow-sm';
+                            btn.disabled = false;
+
+                            if (confirm('Formulário gravado com sucesso na base de dados! Deseja ir para a página de Histórico de Formulários?')) {
+                                window.location.href = '/Home/HistoricoFormulariosUtilizador';
+                            }
+                        }, 1000);
+                    } else {
+                        throw new Error(data.message || 'Erro desconhecido.');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Erro ao gravar formulário: ' + error.message);
+                    btn.innerHTML = originalContent;
+                    btn.className = 'btn btn-primary-custom text-white shadow-sm';
+                    btn.disabled = false;
+                });
             });
         });
     </script>
