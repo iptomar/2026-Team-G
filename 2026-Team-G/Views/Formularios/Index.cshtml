@@ -6,12 +6,7 @@
 }
 @Html.AntiForgeryToken()
 
-<h1>Index</h1>
-
-
-
 <table class="table">
-
     <tbody>
     @foreach (var item in Model) {
         <tr>
@@ -258,7 +253,7 @@
         opacity: 0.9;
     }
 
-    /* Animations Escaped for Razor */
+    /* FIX: Escapados os símbolos de  usando  para que o Razor não rebente */
     @@keyframes fadeInDown {
         from { opacity: 0; transform: translateY(5px); }
         to { opacity: 1; transform: translateY(0); }
@@ -319,7 +314,6 @@
                 {
                     var nomeLower = comp.name.ToLower();
 
-                    // Ícones com base no nome do componente
                     var classeIcone = nomeLower switch
                     {
                         "texto" => "bi-input-cursor-text",
@@ -331,9 +325,8 @@
                         _ => "bi-box-seam"
                     };
 
-                    @* Sem alterar propriedades no C#, passamos apenas o nome real e a classe da DB *@
                     <div class="toolbox-item shadow-sm" data-type="@nomeLower" data-css="@comp.componentClass" data-display-name="@comp.name">
-                        <i class="bi @classeIcon"></i> @comp.name
+                        <i class="bi @classeIcone"></i> @comp.name
                     </div>
                 }
             }
@@ -352,7 +345,6 @@
         </div>
 
         <div class="properties-panel active" id="propertiesPanel">
-            <!-- Form Properties Group (Default) -->
             <div id="formPropsGroup">
                 <div class="header-title">
                     <i class="bi bi-gear-fill"></i> Propriedades do Formulário
@@ -369,7 +361,6 @@
                 </form>
             </div>
 
-            <!-- Field Properties Group (Shown on Selection) -->
             <div id="fieldPropsGroup" style="display: none;">
                 <div class="header-title">
                     <i class="bi bi-sliders2-vertical"></i> Propriedades do Campo
@@ -413,7 +404,7 @@
                 return 'field_' + Math.random().toString(36).substr(2, 9);
             }
 
-            // Inicializar arrastar da Toolbox (Mantém clonagem se arrastar)
+            // Inicializar arrastar da Toolbox
             new Sortable(document.querySelector('.toolbox'), {
                 group: {
                     name: 'shared',
@@ -428,7 +419,7 @@
             const propertiesPanel = document.getElementById('propertiesPanel');
             let currentSelected = null;
 
-            // Inicializar a Dropzone para aceitar arrasto
+            // Inicializar a Dropzone
             new Sortable(dropzone, {
                 group: 'shared',
                 animation: 200,
@@ -453,14 +444,12 @@
                 }
             });
 
-            // Criação dinamica
             function createAndAppendField(type, cssClass, displayName, draggedItem, isDragged) {
                 const newEl = document.createElement('div');
                 newEl.className = 'form-item shadow-sm';
                 newEl.id = generateId();
                 newEl.setAttribute('data-type', type);
 
-                // Passa a classe CSS da BD diretamente para o gerador de template
                 const content = getHtmlTemplate(type, cssClass);
                 newEl.innerHTML = `
                     <div class="form-item-actions">
@@ -507,7 +496,7 @@
             // GERAÇÃO DO HTML INJETANDO AS CLASSES DA DB (`cssClass`)
             function getHtmlTemplate(type, cssClass) {
                 const t = type.trim().toLowerCase();
-                const css = cssClass || 'form-control'; // Fallback de segurança
+                const css = cssClass || 'form-control';
 
                 switch(t) {
                     case 'texto':
@@ -562,8 +551,7 @@
                 if(currentSelected) currentSelected.classList.remove('selected');
                 currentSelected = field;
                 field.classList.add('selected');
-                
-                // Mostrar painel de propriedades do campo e ocultar as do formulário
+
                 formPropsGroup.style.display = 'none';
                 fieldPropsGroup.style.display = 'block';
 
@@ -593,8 +581,7 @@
             function unselectField() {
                 if(currentSelected) currentSelected.classList.remove('selected');
                 currentSelected = null;
-                
-                // Mostrar painel de propriedades do formulário e ocultar as do campo
+
                 fieldPropsGroup.style.display = 'none';
                 formPropsGroup.style.display = 'block';
             }
@@ -640,7 +627,6 @@
                 }
             });
 
-            // Gravação Real do Formulário na Base de Dados via AJAX POST
             document.getElementById('btnSaveForm').addEventListener('click', function() {
                 const btn = this;
                 const originalContent = btn.innerHTML;
@@ -658,7 +644,6 @@
                     return;
                 }
 
-                // Recolher os campos em ordem
                 const fields = [];
                 const formItems = dropzone.querySelectorAll('.form-item');
 
@@ -670,7 +655,7 @@
                 formItems.forEach((item, index) => {
                     const type = item.getAttribute('data-type');
                     const labelEl = item.querySelector('.control-label');
-                    
+
                     let label = 'Campo';
                     if (labelEl) {
                         label = labelEl.innerText.replace(' *', '').trim();
@@ -678,9 +663,8 @@
 
                     const inputEl = item.querySelector('input, textarea');
                     const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
-                    
                     const isRequired = labelEl && labelEl.innerText.includes('*');
-                    
+
                     fields.push({
                         FieldId: item.id,
                         Type: type,
@@ -693,15 +677,12 @@
                     });
                 });
 
-                // Estado de carregamento do botão
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> A gravar...';
                 btn.disabled = true;
 
-                // Token Anti-CSRF
                 const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
                 const token = tokenElement ? tokenElement.value : '';
 
-                // Enviar pedido via AJAX POST
                 fetch('/Home/SalvarFormulario', {
                     method: 'POST',
                     headers: {
@@ -715,37 +696,37 @@
                         Fields: fields
                     })
                 })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    throw new Error('Falha ao gravar o formulário.');
-                })
-                .then(data => {
-                    if (data.success) {
-                        btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Gravado com Sucesso!';
-                        btn.className = 'btn text-white shadow-sm bg-success border-success';
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Falha ao gravar o formulário.');
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Gravado com Sucesso!';
+                            btn.className = 'btn text-white shadow-sm bg-success border-success';
 
-                        setTimeout(() => {
-                            btn.innerHTML = originalContent;
-                            btn.className = 'btn btn-primary-custom text-white shadow-sm';
-                            btn.disabled = false;
+                            setTimeout(() => {
+                                btn.innerHTML = originalContent;
+                                btn.className = 'btn btn-primary-custom text-white shadow-sm';
+                                btn.disabled = false;
 
-                            if (confirm('Formulário gravado com sucesso na base de dados! Deseja ir para a página de Histórico de Formulários?')) {
-                                window.location.href = '/Home/HistoricoFormulariosUtilizador';
-                            }
-                        }, 1000);
-                    } else {
-                        throw new Error(data.message || 'Erro desconhecido.');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert('Erro ao gravar formulário: ' + error.message);
-                    btn.innerHTML = originalContent;
-                    btn.className = 'btn btn-primary-custom text-white shadow-sm';
-                    btn.disabled = false;
-                });
+                                if (confirm('Formulário gravado com sucesso na base de dados! Deseja ir para a página de Histórico de Formulários?')) {
+                                    window.location.href = '/Home/HistoricoFormulariosUtilizador';
+                                }
+                            }, 1000);
+                        } else {
+                            throw new Error(data.message || 'Erro desconhecido.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert('Erro ao gravar formulário: ' + error.message);
+                        btn.innerHTML = originalContent;
+                        btn.className = 'btn btn-primary-custom text-white shadow-sm';
+                        btn.disabled = false;
+                    });
             });
         });
     </script>
