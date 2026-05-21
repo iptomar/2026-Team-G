@@ -7,10 +7,7 @@
 
 <h1>Index</h1>
 
-
-
 <table class="table">
-
     <tbody>
     @foreach (var item in Model) {
         <tr>
@@ -318,8 +315,7 @@
                 {
                     var nomeLower = comp.name.ToLower();
 
-                    // Ícones com base no nome do componente
-                    var classeIcone = nomeLower switch
+                    var classeIcon = nomeLower switch
                     {
                         "texto" => "bi-input-cursor-text",
                         "numero" => "bi-123",
@@ -330,9 +326,9 @@
                         _ => "bi-box-seam"
                     };
 
-                    @* Guardamos o nome purificado no data-type e as classes Bootstrap da BD no data-css *@
-                    <div class="toolbox-item shadow-sm" data-type="@nomeLower" data-css="@comp.componentClass">
-                        <i class="bi @classeIcone"></i> @comp.name
+                    @* Guardamos o nome, a classe CSS e o HTML cru vindo da base de dados *@
+                    <div class="toolbox-item shadow-sm" data-type="@nomeLower" data-css="@comp.componentClass" data-template="@comp.html_template">
+                        <i class="bi @classeIcon"></i> @comp.name
                     </div>
                 }
             }
@@ -344,7 +340,7 @@
 
         <div class="dropzone-container">
             <div class="header-title">
-                <i class="bi bi-window-sidebar"></i> Tela de Desenho
+                <i class="bi bi-window-sidebar"></i> Criar Formulário
             </div>
             <div class="dropzone" id="formDropzone">
             </div>
@@ -356,11 +352,11 @@
             </div>
             <form id="propForm">
                 <div class="mb-4">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Rótulo (Label)</label>
+                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Label</label>
                     <input type="text" class="form-control" id="propLabel" />
                 </div>
                 <div class="mb-4" id="propPlaceholderContainer">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Texto Fantasma (Placeholder)</label>
+                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Placeholder</label>
                     <input type="text" class="form-control" id="propPlaceholder" />
                 </div>
                 <div class="mb-4 p-3 rounded bg-light border border-light">
@@ -368,11 +364,6 @@
                         <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
                         <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
                     </div>
-                </div>
-                <div class="mb-4" id="propOptionsContainer" style="display: none;">
-                    <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Opções</label>
-                    <div class="text-muted small mb-2">Separe as opções com vírgula</div>
-                    <textarea class="form-control" id="propOptions" rows="4" style="resize:none;"></textarea>
                 </div>
             </form>
         </div>
@@ -389,7 +380,7 @@
                 return 'field_' + Math.random().toString(36).substr(2, 9);
             }
 
-            // Inicializar arrastar da Toolbox (Mantém clonagem se arrastar)
+            // Inicializar arrastar da Toolbox
             new Sortable(document.querySelector('.toolbox'), {
                 group: {
                     name: 'shared',
@@ -404,7 +395,7 @@
             const propertiesPanel = document.getElementById('propertiesPanel');
             let currentSelected = null;
 
-            // Inicializar a Dropzone para aceitar arrasto
+            // Inicializar a Dropzone
             new Sortable(dropzone, {
                 group: 'shared',
                 animation: 200,
@@ -413,29 +404,41 @@
                     const item = evt.item;
                     const type = item.getAttribute('data-type');
                     const cssClass = item.getAttribute('data-css');
-                    createAndAppendField(type, cssClass, item, true);
+                    const rawTemplate = item.getAttribute('data-template');
+                    createAndAppendField(type, cssClass, rawTemplate, item, true);
                 }
             });
 
-            // ESCUTA DE CLIQUES: Cria instantaneamente com base nos atributos passados pela DB
+            // Clique na Toolbox cria componente diretamente
             document.querySelector('.toolbox').addEventListener('click', function (e) {
                 const toolboxItem = e.target.closest('.toolbox-item');
                 if (toolboxItem) {
                     const type = toolboxItem.getAttribute('data-type');
                     const cssClass = toolboxItem.getAttribute('data-css');
-                    createAndAppendField(type, cssClass, null, false);
+                    const rawTemplate = toolboxItem.getAttribute('data-template');
+                    createAndAppendField(type, cssClass, rawTemplate, null, false);
                 }
             });
 
-            // Criação centralizada do componente no HTML da Tela de desenho
-            function createAndAppendField(type, cssClass, draggedItem, isDragged) {
+            // GERAÇÃO 100% DINÂMICA: Usa o template HTML que veio injetado do Banco de Dados
+            function createAndAppendField(type, cssClass, rawTemplate, draggedItem, isDragged) {
                 const newEl = document.createElement('div');
                 newEl.className = 'form-item shadow-sm';
                 newEl.id = generateId();
                 newEl.setAttribute('data-type', type);
 
-                // Passa a classe CSS da BD diretamente para o gerador de template
-                const content = getHtmlTemplate(type, cssClass);
+                const css = cssClass || 'form-control';
+                let content = '';
+
+                if (rawTemplate) {
+                    // Substitui dinamicamente o marcador {{CLASS}} pela classe da BD
+                    content = rawTemplate.replace(/{{CLASS}}/g, css);
+                } else {
+                    // Fallback extremo de segurança caso a BD falhe
+                    console.warn(`Template vazio para o tipo ${type}. Usando fallback.`);
+                    content = `<label class="form-label control-label">Componente (${type})</label><input type="text" class="${css}" disabled />`;
+                }
+
                 newEl.innerHTML = `
                     <div class="form-item-actions">
                         <i class="bi bi-trash-fill btn-delete" title="Remover"></i>
@@ -478,55 +481,11 @@
                 }
             });
 
-            // GERAÇÃO DO HTML INJETANDO AS CLASSES DA DB (`cssClass`)
-            function getHtmlTemplate(type, cssClass) {
-                const t = type.trim().toLowerCase();
-                const css = cssClass || 'form-control'; // Fallback de segurança
-
-                switch(t) {
-                    case 'texto':
-                        return `<label class="form-label control-label">Texto Curto</label><input type="text" class="${css}" placeholder="Digite o texto aqui..." disabled />`;
-
-                    case 'numero':
-                        return `<label class="form-label control-label">Número</label><input type="number" class="${css}" placeholder="0" disabled />`;
-
-                    case 'check box':
-                        return `
-                            <div class="${css}">
-                                <input class="form-check-input" type="checkbox" disabled id="check_preview">
-                                <label class="form-check-label control-label" for="check_preview">Caixa de Seleção</label>
-                            </div>`;
-
-                    case 'check box switch':
-                        return `
-                            <div class="${css}">
-                                <input class="form-check-input" type="checkbox" role="switch" disabled id="switch_preview" checked>
-                                <label class="form-check-label control-label" for="switch_preview">Ativar Opção (Switch)</label>
-                            </div>`;
-
-                    case 'label':
-                        return `<label class="${css} control-label">Aviso / Texto Informativo Fixo</label>`;
-
-                    case 'assinatura':
-                        return `
-                            <label class="form-label control-label d-block text-muted">Assinatura Digital</label>
-                            <div class="${css}" style="border-bottom: 2px dashed #ccc !important; min-height: 60px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius:6px;">
-                                <span class="text-muted small"><i class="bi bi-pencil-fill me-1"></i> Zona de Assinatura</span>
-                            </div>`;
-
-                    default:
-                        console.warn("Tipo não reconhecido, usando fallback genérico:", type);
-                        return `<label class="form-label control-label">Componente (${type})</label><input type="text" class="${css}" disabled />`;
-                }
-            }
-
             // --- Painel de Propriedades Laterais ---
             const propLabel = document.getElementById('propLabel');
             const propPlaceholder = document.getElementById('propPlaceholder');
             const propPlaceholderContainer = document.getElementById('propPlaceholderContainer');
             const propRequired = document.getElementById('propRequired');
-            const propOptionsContainer = document.getElementById('propOptionsContainer');
-            const propOptions = document.getElementById('propOptions');
 
             function selectField(field) {
                 if(currentSelected) currentSelected.classList.remove('selected');
