@@ -326,8 +326,8 @@
                         _ => "bi-box-seam"
                     };
 
-                    @* Guardamos o nome, a classe CSS e o HTML cru vindo da base de dados *@
-                    <div class="toolbox-item shadow-sm" data-type="@nomeLower" data-css="@comp.componentClass" data-template="@comp.html_template">
+                    @* Sem alterar propriedades no C#, passamos apenas o nome real e a classe da DB *@
+                    <div class="toolbox-item shadow-sm" data-type="@nomeLower" data-css="@comp.componentClass" data-display-name="@comp.name">
                         <i class="bi @classeIcon"></i> @comp.name
                     </div>
                 }
@@ -404,8 +404,8 @@
                     const item = evt.item;
                     const type = item.getAttribute('data-type');
                     const cssClass = item.getAttribute('data-css');
-                    const rawTemplate = item.getAttribute('data-template');
-                    createAndAppendField(type, cssClass, rawTemplate, item, true);
+                    const displayName = item.getAttribute('data-display-name');
+                    createAndAppendField(type, cssClass, displayName, item, true);
                 }
             });
 
@@ -415,38 +415,93 @@
                 if (toolboxItem) {
                     const type = toolboxItem.getAttribute('data-type');
                     const cssClass = toolboxItem.getAttribute('data-css');
-                    const rawTemplate = toolboxItem.getAttribute('data-template');
-                    createAndAppendField(type, cssClass, rawTemplate, null, false);
+                    const displayName = toolboxItem.getAttribute('data-display-name');
+                    createAndAppendField(type, cssClass, displayName, null, false);
                 }
             });
 
-            // GERAÇÃO 100% DINÂMICA: Usa o template HTML que veio injetado do Banco de Dados
-            function createAndAppendField(type, cssClass, rawTemplate, draggedItem, isDragged) {
+            // Criação dinamica
+            function createAndAppendField(type, cssClass, displayName, draggedItem, isDragged) {
                 const newEl = document.createElement('div');
                 newEl.className = 'form-item shadow-sm';
                 newEl.id = generateId();
                 newEl.setAttribute('data-type', type);
 
                 const css = cssClass || 'form-control';
-                let content = '';
+                
+                // Content Wrapper onde vamos injetar os nós criados organicamente
+                const fieldContent = document.createElement('div');
+                fieldContent.className = 'field-content';
 
-                if (rawTemplate) {
-                    // Substitui dinamicamente o marcador {{CLASS}} pela classe da BD
-                    content = rawTemplate.replace(/{{CLASS}}/g, css);
+                // 1. Criar o Label descritivo geral
+                const label = document.createElement('label');
+                label.className = 'form-label control-label';
+                label.innerText = displayName || 'Campo';
+
+                // 2. Construir organicamente a estrutura com base puramente nas propriedades nativas
+                if (type === 'label') {
+                    // É um rótulo de texto puro customizado
+                    label.className = `${css} control-label`;
+                    label.innerText = "Aviso / Texto Informativo Fixo";
+                    fieldContent.appendChild(label);
+
+                } else if (type === 'assinatura') {
+                    // Campo customizado de assinatura
+                    label.className = "form-label control-label d-block text-muted";
+                    label.innerText = "Assinatura Digital";
+                    
+                    const signZone = document.createElement('div');
+                    signZone.className = css;
+                    signZone.style.cssText = "border-bottom: 2px dashed #ccc !important; min-height: 60px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius:6px;";
+                    signZone.innerHTML = '<span class="text-muted small"><i class="bi bi-pencil-fill me-1"></i> Zona de Assinatura</span>';
+                    
+                    fieldContent.appendChild(label);
+                    fieldContent.appendChild(signZone);
+
+                } else if (type.includes('check box')) {
+                    // Trata checkboxes e switches de forma abstrata injetando a classe wrapper da DB
+                    const wrapper = document.createElement('div');
+                    wrapper.className = css;
+
+                    const input = document.createElement('input');
+                    input.className = 'form-check-input';
+                    input.type = 'checkbox';
+                    input.disabled = true;
+                    input.id = 'check_' + newEl.id;
+
+                    if (type.includes('switch')) {
+                        input.setAttribute('role', 'switch');
+                        input.checked = true;
+                    }
+
+                    const checkLabel = document.createElement('label');
+                    checkLabel.className = 'form-check-label control-label';
+                    checkLabel.setAttribute('for', input.id);
+                    checkLabel.innerText = displayName;
+
+                    wrapper.appendChild(input);
+                    wrapper.appendChild(checkLabel);
+                    fieldContent.appendChild(wrapper);
+
                 } else {
-                    // Fallback extremo de segurança caso a BD falhe
-                    console.warn(`Template vazio para o tipo ${type}. Usando fallback.`);
-                    content = `<label class="form-label control-label">Componente (${type})</label><input type="text" class="${css}" disabled />`;
+                    // Inputs normais (texto, numero, etc.) estruturados dinamicamente pelas classes da DB
+                    const input = document.createElement('input');
+                    input.type = type === 'numero' ? 'number' : 'text';
+                    input.className = css;
+                    input.disabled = true;
+                    input.placeholder = type === 'numero' ? '0' : 'Digite o texto aqui...';
+
+                    fieldContent.appendChild(label);
+                    fieldContent.appendChild(input);
                 }
 
+                // Injetar os botões de ação estruturais padrão e o conteúdo orgânico recém-gerado
                 newEl.innerHTML = `
                     <div class="form-item-actions">
                         <i class="bi bi-trash-fill btn-delete" title="Remover"></i>
                     </div>
-                    <div class="field-content">
-                        ${content}
-                    </div>
                 `;
+                newEl.appendChild(fieldContent);
 
                 if (isDragged && draggedItem) {
                     draggedItem.parentNode.insertBefore(newEl, draggedItem);
