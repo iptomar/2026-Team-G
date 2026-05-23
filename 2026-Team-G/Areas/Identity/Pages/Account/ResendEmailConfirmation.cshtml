@@ -1,0 +1,48 @@
+﻿@page
+@model ResendEmailConfirmationModel
+@{
+    ViewData["Title"] = "Reenviar confirmação de email";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/resend-email-confirmation.css" />
+
+<div class="page-header">
+    <h1>Reenviar confirmação de email</h1>
+    <p>Insira o seu email para receber um novo link de confirmação</p>
+</div>
+
+<div class="resend-container">
+    <div class="resend-card">
+        <div class="resend-header">
+            <h2>Confirme o seu email</h2>
+            <p>Se ainda não recebeu o link de confirmação, solicite um novo.</p>
+        </div>
+
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="Input.Email">Email</label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="nome@exemplo.com" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn-resend">Reenviar confirmação</button>
+
+            <div class="resend-links">
+                <a asp-page="./Login">Voltar ao Login</a>
+                <a asp-page="./Register">Registar nova conta</a>
+                <a asp-page="./ForgotPassword">Esqueceu a palavra-passe?</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="resend-footer">
+    <p>© 2026 - Team_G - Privacidade</p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
