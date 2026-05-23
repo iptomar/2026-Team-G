@@ -22,9 +22,14 @@ namespace _2026_Team_G.Controllers
             return View();
         }
         
-        public IActionResult Componentes()
+        public async Task<IActionResult> Componentes()
         {
-            ViewBag.ActivePage = "Componentes";
+            // 1. Vai buscar a lista à base de dados usando o teu DbContext
+            var componentes = await _context.Components.ToListAsync();
+
+            // 2. Guarda na ViewBag com o nome EXATO que usamos na View
+            ViewBag.ComponentesDisponiveis = componentes;
+
             return View();
         }
 
@@ -78,6 +83,8 @@ namespace _2026_Team_G.Controllers
                 return View(new List<Formulario>());
             }
         }
+        
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
