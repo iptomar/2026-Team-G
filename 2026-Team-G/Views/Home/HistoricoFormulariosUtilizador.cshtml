@@ -49,7 +49,7 @@
                 <th>Nome do Formulário</th>
                 <th>Data de Criação</th>
                 <th>Data de Atualização</th>
-                <th>Status</th>
+                <th>Estado</th>
                 <th>Ações</th>
                 <th>Utilizador</th>
             </tr>
@@ -65,7 +65,7 @@
                         <td>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>-</td>
                         <td><span class="badge badge-pending">Pendente</span></td>
-                        <td><button class="btn-view" onclick="verDetalhes(@form.Id)">Ver Detalhes</button></td>
+                        <td><button class="btn-view" onclick="Editar(@form.Id)">Editar</button></td>
                         <td>joao</td>
                     </tr>
                 }
@@ -76,7 +76,7 @@
                 <td>15/04/2026 10:30</td>
                 <td>16/04/2026 09:15</td>
                 <td><span class="badge badge-approved">Aprovado</span></td>
-                <td><button class="btn-view" onclick="verDetalhes(1)">Ver Detalhes</button></td>
+                <td><button class="btn-view" onclick="Editar(1)">Editar</button></td>
                 <td>joao</td>
 
             </tr>
@@ -86,7 +86,7 @@
                 <td>10/04/2026 14:20</td>
                 <td>12/04/2026 11:00</td>
                 <td><span class="badge badge-pending">Pendente</span></td>
-                <td><button class="btn-view" onclick="verDetalhes(2)">Ver Detalhes</button></td>
+                <td><button class="btn-view" onclick="Editar(2)">Editar</button></td>
                 <td>joao</td>
 
             </tr>
@@ -96,7 +96,7 @@
                 <td>05/04/2026 09:00</td>
                 <td>-</td>
                 <td><span class="badge badge-pending">Pendente</span></td>
-                <td><button class="btn-view" onclick="verDetalhes(3)">Ver Detalhes</button></td>
+                <td><button class="btn-view" onclick="Editar(3)">Editar</button></td>
                 <td>joao</td>
 
             </tr>
@@ -106,7 +106,7 @@
                 <td>01/04/2026 16:45</td>
                 <td>08/04/2026 10:30</td>
                 <td><span class="badge badge-approved">Aprovado</span></td>
-                <td><button class="btn-view" onclick="verDetalhes(4)">Ver Detalhes</button></td>
+                <td><button class="btn-view" onclick="Editar(4)">Editar</button></td>
                 <td>joao</td>
             </tr>
             <tr>
@@ -115,7 +115,7 @@
                 <td>28/03/2026 11:15</td>
                 <td>30/03/2026 14:00</td>
                 <td><span class="badge badge-rejected">Rejeitado</span></td>
-                <td><button class="btn-view" onclick="verDetalhes(5)">Ver Detalhes</button></td>
+                <td><button class="btn-view" onclick="Editar(5)">Editar</button></td>
                 <td>joao</td>
             </tr>
             <tr>
@@ -124,7 +124,7 @@
                 <td>20/03/2026 08:00</td>
                 <td>25/03/2026 17:30</td>
                 <td><span class="badge badge-approved">Aprovado</span></td>
-                <td><button class="btn-view" onclick="verDetalhes(6)">Ver Detalhes</button></td>
+                <td><button class="btn-view" onclick="Editar(6)">Editar</button></td>
                 <td>joao</td>
             </tr>
             <tr>
@@ -133,7 +133,7 @@
                 <td>15/03/2026 13:20</td>
                 <td>18/03/2026 09:45</td>
                 <td><span class="badge badge-approved">Aprovado</span></td>
-                <td><button class="btn-view" onclick="verDetalhes(7)">Ver Detalhes</button></td>
+                <td><button class="btn-view" onclick="Editar(7)">Editar</button></td>
                 <td>joao</td>
             </tr>
             <tr>
@@ -142,7 +142,7 @@
                 <td>10/03/2026 10:00</td>
                 <td>10/03/2026 10:00</td>
                 <td><span class="badge badge-pending">Pendente</span></td>
-                <td><button class="btn-view" onclick="verDetalhes(8)">Ver Detalhes</button></td>
+                <td><button class="btn-view" onclick="Editar(8)">Editar</button></td>
                 <td>joao</td>
             </tr>
         </tbody>
@@ -165,7 +165,7 @@
         }
     }
 
-    function verDetalhes(id) {
+    function Editar(id) {
         alert('Ver detalhes do formulário ' + id);
         // window.location.href = '/Home/DetalhesFormulario/' + id;
     }
