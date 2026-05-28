@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _2026_Team_G.Data;
 using _2026_Team_G.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace _2026_Team_G.Controllers
 {

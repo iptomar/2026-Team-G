@@ -27,23 +27,11 @@ namespace _2026_Team_G.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [EmailAddress]
             public string Email { get; set; }
@@ -54,14 +42,14 @@ namespace _2026_Team_G.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+
+                // REMOVIDA a verificação de confirmação de email
+                if (user == null)
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
+                    // Não revelar que o utilizador não existe
                     return RedirectToPage("./ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
@@ -72,8 +60,19 @@ namespace _2026_Team_G.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Reset Password - 2026 Team G",
+                    $@"<html>
+                        <body style='font-family: Arial, sans-serif;'>
+                            <h2 style='color: #7cb13b;'>Recuperação de Palavra-passe</h2>
+                            <p>Recebemos um pedido para redefinir a sua palavra-passe.</p>
+                            <p>Clique no link abaixo para criar uma nova palavra-passe:</p>
+                            <p><a href='{HtmlEncoder.Default.Encode(callbackUrl)}' style='background-color: #7cb13b; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Redefinir Palavra-passe</a></p>
+                            <p>Se não foi você que pediu, ignore este email.</p>
+                            <p>O link é válido por 24 horas.</p>
+                            <br>
+                            <p>Equipa 2026 Team G</p>
+                        </body>
+                    </html>");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
