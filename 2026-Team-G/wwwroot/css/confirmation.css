@@ -1,0 +1,151 @@
+:root {
+    --ipt-green: #7cb13b;
+    --ipt-green-hover: #6ea32f;
+    --ipt-dark: #1f2937;
+    --ipt-gray: #f8f9fa;
+    --ipt-border: #e5e7eb;
+}
+
+body {
+    background-color: var(--ipt-gray);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.page-header {
+    background: linear-gradient(135deg, var(--ipt-green) 0%, var(--ipt-green-hover) 100%);
+    padding: 24px 20px;
+    border-radius: 1rem;
+    color: white;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .page-header p {
+        font-size: 0.85rem;
+        opacity: 0.9;
+    }
+
+.confirmation-container {
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.confirmation-card {
+    max-width: 450px;
+    width: 100%;
+    background: white;
+    border-radius: 1rem;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--ipt-border);
+}
+
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    background: var(--ipt-green-light, #f4faeb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+    .icon-circle i {
+        font-size: 35px;
+        color: var(--ipt-green);
+    }
+
+.confirmation-card h2 {
+    color: var(--ipt-dark);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.confirmation-card p {
+    color: var(--ipt-dark);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.confirmation-links {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-login {
+    background-color: var(--ipt-green);
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .btn-login:hover {
+        background-color: var(--ipt-green-hover);
+        transform: translateY(-1px);
+    }
+
+.link-help {
+    color: var(--ipt-green);
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+    .link-help:hover {
+        text-decoration: underline;
+    }
+
+.confirmation-footer {
+    text-align: center;
+    padding: 24px 20px 20px;
+    color: var(--ipt-dark);
+    opacity: 0.7;
+    font-size: 0.75rem;
+    border-top: 1px solid var(--ipt-border);
+    margin-top: 30px;
+}
+
+@media (max-width: 550px) {
+    .page-header {
+        margin: 16px;
+        padding: 16px;
+    }
+
+    .confirmation-card {
+        margin: 0 16px;
+        padding: 24px;
+    }
+
+    .icon-circle {
+        width: 55px;
+        height: 55px;
+    }
+
+        .icon-circle i {
+            font-size: 28px;
+        }
+
+    .confirmation-card h2 {
+        font-size: 1.3rem;
+    }
+}
