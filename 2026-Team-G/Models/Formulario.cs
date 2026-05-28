@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace _2026_Team_G.Models
 {
@@ -18,6 +18,9 @@ namespace _2026_Team_G.Models
 
         // Representa a lista de componentes que foram arrastados na UI
         public List<FormFieldModel> Fields { get; set; } = new List<FormFieldModel>();
+
+        // Nome de utilizador do login atual que criou o formulário
+        public string? CreatorUserName { get; set; }
     }
 }
 

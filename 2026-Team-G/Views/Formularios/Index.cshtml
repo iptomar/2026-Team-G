@@ -23,6 +23,14 @@
         background-color: var(--fb-bg);
     }
 
+    /* Wide layout override for this page */
+    @@media (min-width: 1200px) {
+        body .container, body .container-fluid {
+            max-width: 96% !important;
+            width: 96% !important;
+        }
+    }
+
     .form-builder-container {
         display: flex;
         height: 75vh;
@@ -33,7 +41,7 @@
 
     /* Toolbox Styles */
     .toolbox {
-        width: 280px;
+        width: 240px;
         background: var(--fb-surface);
         border-radius: 16px;
         box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
@@ -95,6 +103,10 @@
         position: relative;
         transition: all 0.3s ease;
         background-color: #fdfdfd;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 16px 2%;
     }
 
     .dropzone.dragover {
@@ -137,10 +149,22 @@
         background: var(--fb-surface);
         border: 1px solid var(--fb-border);
         border-radius: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 0px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        min-width: 150px;
+        max-width: 100%;
+        min-height: 60px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .form-item.resizing {
+        transition: none !important;
+        user-select: none;
+        border-color: var(--fb-primary) !important;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1) !important;
     }
 
     .form-item:hover {
@@ -152,6 +176,36 @@
         border-color: var(--fb-primary);
         background-color: rgba(67, 97, 238, 0.02);
         box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+
+    /* Custom Resize Handle Styles */
+    .resize-handle {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 14px;
+        height: 14px;
+        cursor: se-resize;
+        background: linear-gradient(135deg, transparent 45%, var(--fb-primary) 50%, transparent 55%, var(--fb-primary) 60%, transparent 65%, var(--fb-primary) 70%);
+        border-bottom-right-radius: 11px;
+        z-index: 15;
+        opacity: 0.4;
+        transition: opacity 0.2s;
+    }
+
+    .form-item:hover .resize-handle {
+        opacity: 1;
+    }
+
+    /* Size stats indicator overlay */
+    .size-indicator {
+        background: var(--fb-text);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
     .form-item-actions {
@@ -186,7 +240,7 @@
 
     /* Properties Panel Styles */
     .properties-panel {
-        width: 320px;
+        width: 290px;
         background: var(--fb-surface);
         border-radius: 16px;
         box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
@@ -349,7 +403,7 @@
                     <i class="bi bi-sliders2-vertical"></i> Propriedades do Campo
                 </div>
                 <form id="propForm">
-                    <div class="mb-4">
+                    <div class="mb-4" id="propLabelContainer">
                         <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Label</label>
                         <input type="text" class="form-control" id="propLabel" />
                     </div>
@@ -458,6 +512,14 @@
                 newEl.id = generateId();
                 newEl.setAttribute('data-type', type);
 
+                // Set default width: 49% for input components, 100% for informational labels
+                const t = type.trim().toLowerCase();
+                let defaultWidth = '49%';
+                if (t === 'label') {
+                    defaultWidth = '100%';
+                }
+                newEl.style.width = defaultWidth;
+
                 const content = getHtmlTemplate(type, cssClass);
                 newEl.innerHTML = `
                     <div class="form-item-actions">
@@ -466,6 +528,7 @@
                     <div class="field-content">
                         ${content}
                     </div>
+                    <div class="resize-handle" title="Arraste para redimensionar com o rato"></div>
                 `;
 
                 if (isDragged && draggedItem) {
@@ -478,6 +541,76 @@
 
                 selectField(newEl);
             }
+
+            // Redimensionamento dos Componentes com o Rato
+            dropzone.addEventListener('mousedown', function(e) {
+                const handle = e.target.closest('.resize-handle');
+                if (!handle) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                const item = handle.closest('.form-item');
+                const startWidth = item.offsetWidth;
+                const startHeight = item.offsetHeight;
+                const startX = e.clientX;
+                const startY = e.clientY;
+                const parentWidth = dropzone.offsetWidth - 48; // padding correction
+
+                item.classList.add('resizing');
+                selectField(item);
+
+                // Criar indicador visual de dimensões
+                const sizeIndicator = document.createElement('div');
+                sizeIndicator.className = 'size-indicator';
+                sizeIndicator.style.position = 'absolute';
+                sizeIndicator.style.bottom = '-35px';
+                sizeIndicator.style.right = '0';
+                sizeIndicator.style.zIndex = '100';
+                sizeIndicator.style.pointerEvents = 'none';
+                
+                const widthPercent = (startWidth / parentWidth) * 100;
+                sizeIndicator.innerText = `${widthPercent.toFixed(0)}% x ${startHeight}px`;
+                item.appendChild(sizeIndicator);
+
+                function doDrag(ev) {
+                    const dx = ev.clientX - startX;
+                    const dy = ev.clientY - startY;
+
+                    let newWidth = startWidth + dx;
+                    let newHeight = startHeight + dy;
+
+                    // Restrições de tamanho
+                    if (newWidth < 150) newWidth = 150;
+                    if (newWidth > parentWidth) newWidth = parentWidth;
+                    if (newHeight < 60) newHeight = 60;
+                    if (newHeight > 600) newHeight = 600;
+
+                    const widthPercent = (newWidth / parentWidth) * 100;
+                    item.style.width = widthPercent.toFixed(1) + '%';
+                    item.style.height = newHeight + 'px';
+
+                    sizeIndicator.innerText = `${widthPercent.toFixed(0)}% x ${newHeight}px`;
+
+                    // Ajustar a altura mínima da área de assinatura digital se for o caso
+                    const signatureZone = item.querySelector('.field-content .bi-pencil-fill')?.closest('div');
+                    if (signatureZone) {
+                        signatureZone.style.minHeight = (newHeight - 48) + 'px';
+                    }
+                }
+
+                function stopDrag() {
+                    item.classList.remove('resizing');
+                    if (sizeIndicator.parentNode) {
+                        sizeIndicator.parentNode.removeChild(sizeIndicator);
+                    }
+                    window.removeEventListener('mousemove', doDrag);
+                    window.removeEventListener('mouseup', stopDrag);
+                }
+
+                window.addEventListener('mousemove', doDrag);
+                window.addEventListener('mouseup', stopDrag);
+            });
 
             // Seleção de itens e remoção na Tela
             dropzone.addEventListener('click', function(e) {
@@ -508,7 +641,7 @@
 
                 switch(t) {
                     case 'texto':
-                        return `<label class="form-label control-label">Texto Curto</label><input type="text" class="${css}" placeholder="Digite o texto aqui..." disabled />`;
+                        return `<input type="text" class="${css}" placeholder="Digite o texto aqui..." disabled />`;
 
                     case 'numero':
                         return `<label class="form-label control-label">Número</label><input type="number" class="${css}" placeholder="0" disabled />`;
@@ -567,6 +700,14 @@
                 const labelEl = field.querySelector('.control-label');
                 const inputEl = field.querySelector('input, textarea');
 
+                // Toggle visibility of label property container
+                const propLabelContainer = document.getElementById('propLabelContainer');
+                if (type === 'texto') {
+                    propLabelContainer.style.display = 'none';
+                } else {
+                    propLabelContainer.style.display = 'block';
+                }
+
                 let cleanedName = labelEl ? labelEl.innerText.replace(' *', '') : 'Rótulo';
                 propLabel.value = cleanedName;
 
@@ -579,7 +720,7 @@
 
                 if(!['label', 'assinatura'].includes(type)) {
                     propRequired.disabled = false;
-                    propRequired.checked = labelEl && labelEl.innerText.includes('*');
+                    propRequired.checked = field.getAttribute('data-required') === 'true' || (labelEl && labelEl.innerText.includes('*') ? true : false);
                 } else {
                     propRequired.disabled = true;
                     propRequired.checked = false;
@@ -622,6 +763,7 @@
 
             propRequired.addEventListener('change', function() {
                 if(currentSelected) {
+                    currentSelected.setAttribute('data-required', this.checked ? 'true' : 'false');
                     const labelEl = currentSelected.querySelector('.control-label');
                     if(labelEl) {
                         let text = labelEl.innerText.replace(' *', '');
@@ -649,6 +791,12 @@
                 if(formItems.length === 0) {
                     renderZone.innerHTML = '<div class="text-center p-4 text-muted"><i class="bi bi-info-circle me-2"></i>A dropzone está vazia. Adicione componentes primeiro.</div>';
                 } else {
+                    // Configurar renderZone como flexbox com wrap para simular exatamente o mesmo layout
+                    renderZone.style.display = 'flex';
+                    renderZone.style.flexWrap = 'wrap';
+                    renderZone.style.gap = '16px 2%';
+                    renderZone.style.alignContent = 'flex-start';
+
                     formItems.forEach((item) => {
                         // Clonar o bloco de conteúdo puro do campo (sem lixeiras nem botões de edição)
                         const contentClone = item.querySelector('.field-content').cloneNode(true);
@@ -661,8 +809,29 @@
                         // Criar uma div wrapper para espaçamento estético dentro da modal
                         const wrapperDiv = document.createElement('div');
                         wrapperDiv.className = 'mb-4 pb-3 border-bottom border-light';
+                        
+                        // Copiar a largura e a altura do elemento original
+                        wrapperDiv.style.width = item.style.width || '100%';
+                        if (item.style.height) {
+                            wrapperDiv.style.height = item.style.height;
+                            // Se tiver altura customizada, fazer com que o conteúdo do campo se estique até preencher o wrapper
+                            contentClone.style.height = '100%';
+                            contentClone.style.display = 'flex';
+                            contentClone.style.flexDirection = 'column';
+                            
+                            const control = contentClone.querySelector('input, textarea, select');
+                            if (control) {
+                                control.style.height = 'calc(100% - 28px)'; // Subtrai a altura aproximada da label
+                            }
+                            
+                            const signatureBox = contentClone.querySelector('.bi-pencil-fill')?.closest('div');
+                            if (signatureBox) {
+                                signatureBox.style.minHeight = 'unset';
+                                signatureBox.style.height = 'calc(100% - 28px)';
+                            }
+                        }
+                        
                         wrapperDiv.appendChild(contentClone);
-
                         renderZone.appendChild(wrapperDiv);
                     });
                 }
@@ -702,14 +871,20 @@
                     const type = item.getAttribute('data-type');
                     const labelEl = item.querySelector('.control-label');
 
+                    const inputEl = item.querySelector('input, textarea');
+                    const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
+
                     let label = 'Campo';
                     if (labelEl) {
                         label = labelEl.innerText.replace(' *', '').trim();
+                    } else if (type === 'texto') {
+                        label = placeholder || 'Caixa de Texto';
                     }
 
-                    const inputEl = item.querySelector('input, textarea');
-                    const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
-                    const isRequired = labelEl && labelEl.innerText.includes('*');
+                    const isRequired = item.getAttribute('data-required') === 'true' || (labelEl && labelEl.innerText.includes('*') ? true : false);
+
+                    const width = item.style.width || '100%';
+                    const height = item.style.height || 'auto';
 
                     fields.push({
                         FieldId: item.id,
@@ -719,7 +894,8 @@
                         IsRequired: isRequired,
                         Options: '',
                         OrderIndex: index,
-                        Width: '100%'
+                        Width: width,
+                        Height: height
                     });
                 });
 
@@ -736,6 +912,7 @@
                         'RequestVerificationToken': token
                     },
                     body: JSON.stringify({
+                        Id: window.editingFormId || 0,
                         Title: title,
                         Description: description,
                         IsActive: true,
@@ -774,6 +951,70 @@
                         btn.disabled = false;
                     });
             });
+
+            @if (ViewBag.FormularioEdit != null)
+            {
+                var editForm = (_2026_Team_G.Models.Formulario)ViewBag.FormularioEdit;
+                <text>
+                (function() {
+                    // Preencher metadados do formulário
+                    document.getElementById('formTitleInput').value = `@Html.Raw(editForm.Title)`;
+                    document.getElementById('formDescInput').value = `@Html.Raw(editForm.Description)`;
+                    window.editingFormId = @editForm.Id;
+
+                    // Carregar os campos
+                    @foreach (var field in editForm.Fields.OrderBy(f => f.OrderIndex))
+                    {
+                        <text>
+                        (function() {
+                            const newEl = document.createElement('div');
+                            newEl.className = 'form-item shadow-sm';
+                            newEl.id = '@field.FieldId';
+                            newEl.setAttribute('data-type', '@field.Type');
+                            newEl.setAttribute('data-required', '@(field.IsRequired ? "true" : "false")');
+                            newEl.style.width = '@field.Width';
+                            newEl.style.height = '@field.Height';
+
+                            const content = getHtmlTemplate('@field.Type', '');
+                            newEl.innerHTML = `
+                                <div class="form-item-actions">
+                                    <i class="bi bi-trash-fill btn-delete" title="Remover"></i>
+                                </div>
+                                <div class="field-content">
+                                    ${content}
+                                </div>
+                                <div class="resize-handle" title="Arraste para redimensionar com o rato"></div>
+                            `;
+
+                            // Aplicar placeholder customizado se aplicável
+                            const input = newEl.querySelector('input, textarea');
+                            if (input && '@field.Placeholder' !== '') {
+                                input.setAttribute('placeholder', `@Html.Raw(field.Placeholder)`);
+                            }
+
+                            // Aplicar label customizada
+                            const label = newEl.querySelector('.control-label');
+                            if (label) {
+                                let reqStar = @(field.IsRequired ? "true" : "false") ? ' <span class="text-danger">*</span>' : '';
+                                label.innerHTML = `@Html.Raw(field.Label)` + reqStar;
+                            }
+
+                            // Ajustar a altura da assinatura digital se for o caso
+                            if ('@field.Type' === 'assinatura' && '@field.Height' !== 'auto') {
+                                const signatureZone = newEl.querySelector('.field-content .bi-pencil-fill')?.closest('div');
+                                if (signatureZone) {
+                                    const h = parseInt('@field.Height');
+                                    signatureZone.style.minHeight = (h - 48) + 'px';
+                                }
+                            }
+
+                            document.getElementById('formDropzone').appendChild(newEl);
+                        })();
+                        </text>
+                    }
+                })();
+                </text>
+            }
         });
     </script>
 }

@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using _2026_Team_G.Data;
 using _2026_Team_G.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace _2026_Team_G.Controllers
 {
+    [Authorize]
     public class FormulariosController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,11 +21,21 @@ namespace _2026_Team_G.Controllers
             _context = context;
         }
 
-        // GET: Formularios
-        public async Task<IActionResult> Index()
+        // GET: Formularios/Index/5
+        public async Task<IActionResult> Index(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             // Vai buscar os componentes e passa-os para a View
             ViewBag.ComponentesDisponiveis = await _context.Components.ToListAsync();
+
+            Formulario? formulario = null;
+            if (id.HasValue)
+            {
+                formulario = await _context.Formularios
+                    .Include(f => f.Fields)
+                    .FirstOrDefaultAsync(f => f.Id == id.Value);
+            }
+            ViewBag.FormularioEdit = formulario;
 
             var formularios = await _context.Formularios.ToListAsync();
             return View(formularios);
@@ -33,6 +44,7 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();
@@ -51,6 +63,7 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios/Create
         public IActionResult Create()
         {
+            ViewBag.ActivePage = "Formularios";
             return View();
         }
 
@@ -73,6 +86,7 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();
@@ -124,6 +138,7 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();

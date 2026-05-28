@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using _2026_Team_G.Data;
 
@@ -10,9 +11,11 @@ using _2026_Team_G.Data;
 namespace _2026_Team_G.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260528163634_AddUtilizadorToFormulario")]
+    partial class AddUtilizadorToFormulario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
@@ -303,9 +306,6 @@ namespace _2026_Team_G.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CreatorUserName")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -318,7 +318,12 @@ namespace _2026_Team_G.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("UtilizadorId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UtilizadorId");
 
                     b.ToTable("Formularios");
                 });
@@ -409,6 +414,15 @@ namespace _2026_Team_G.Migrations
                     b.HasOne("_2026_Team_G.Models.Formulario", null)
                         .WithMany("Fields")
                         .HasForeignKey("FormularioId");
+                });
+
+            modelBuilder.Entity("_2026_Team_G.Models.Formulario", b =>
+                {
+                    b.HasOne("_2026_Team_G.Models.Utilizador", "Utilizador")
+                        .WithMany()
+                        .HasForeignKey("UtilizadorId");
+
+                    b.Navigation("Utilizador");
                 });
 
             modelBuilder.Entity("_2026_Team_G.Models.Formulario", b =>

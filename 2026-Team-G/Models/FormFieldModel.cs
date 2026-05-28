@@ -26,5 +26,8 @@ namespace _2026_Team_G.Models
 
         // Largura do componente (ex: "100%", "75%", "50%", "33%", "25%")
         public string Width { get; set; } = "100%";
+
+        // Altura do componente (ex: "120px", "auto")
+        public string Height { get; set; } = "auto";
     }
 }
