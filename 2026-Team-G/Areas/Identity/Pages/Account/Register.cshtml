@@ -37,7 +37,7 @@
                 <label asp-for="Input.Password">Palavra-passe</label>
                 <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="palavra-passe" />
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
-                <small class="form-hint">A palavra-passe deve ter pelo menos 6 caracteres</small>
+                <small class="form-hint">A palavra-passe deve incluir pelo menos um número, uma letra maiúscula, uma letra minúscula e um caractere especial</small>
             </div>
 
             <div class="form-group">
