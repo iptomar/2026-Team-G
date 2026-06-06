@@ -73,7 +73,7 @@
         opacity: 0.8;
     }
 
-    /* Dropzone Styles */
+    /* Dropzone Estrutural */
     .dropzone-container {
         flex-grow: 1;
         background: var(--fb-surface);
@@ -85,63 +85,64 @@
         border: 1px solid rgba(0,0,0,0.03);
     }
 
-    .dropzone {
+    .dropzone-scroll {
         flex-grow: 1;
-        border: 2px dashed #ced4da;
-        border-radius: 12px;
-        padding: 24px;
         overflow-y: auto;
         min-height: 300px;
-        position: relative;
-        transition: all 0.3s ease;
-        background-color: #fdfdfd;
-
-        /* Alterado: Comportamento Flexbox para suportar colunas alinhadas */
-        display: flex;
-        flex-wrap: wrap;
-        align-content: flex-start;
-        gap: 16px 0;
-    }
-
-    .dropzone.dragover {
-        border-color: var(--fb-primary);
-        background-color: rgba(67, 97, 238, 0.04);
-    }
-
-    .dropzone:empty::before {
-        content: "Clique ou arraste os componentes da esquerda para aqui";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #adb5bd;
-        font-size: 1.1rem;
-        font-weight: 500;
-        pointer-events: none;
+        padding: 10px;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        z-index: 1;
+        gap: 20px;
     }
 
-    .dropzone:empty::after {
-        content: "\F28C";
-        font-family: "bootstrap-icons";
+    /* Contentor de Linha Isolada */
+    .form-builder-row {
+        background: #fcfcfd;
+        border: 2px dashed #dee2e6;
+        border-radius: 14px;
+        padding: 20px;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+
+    .form-builder-row:hover {
+        border-color: #ced4da;
+    }
+
+    .row-dropzone {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        min-height: 80px;
+        align-items: center;
+    }
+
+    .row-actions {
         position: absolute;
-        top: calc(50% - 40px);
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 2.5rem;
-        color: #dee2e6;
-        pointer-events: none;
-        z-index: 1;
+        top: -12px;
+        left: 20px;
+        background: #fff;
+        border: 1px solid var(--fb-border);
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--fb-text-muted);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .btn-delete-row {
+        color: #ef233c;
+        cursor: pointer;
     }
 
     /* Form Item Styles */
     .form-item {
         position: relative;
-        padding: 20px;
+        padding: 16px;
         background: var(--fb-surface);
         border: 1px solid var(--fb-border);
         border-radius: 12px;
@@ -149,8 +150,11 @@
         transition: all 0.2s ease;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         box-sizing: border-box;
-        padding-left: 12px;
-        padding-right: 12px;
+
+        /* Ocupa espaço fluido proporcional (Máx 5 por linha) */
+        flex-grow: 1;
+        flex-basis: calc(18% - 16px);
+        min-width: 18%;
     }
 
     .form-item:hover {
@@ -164,22 +168,15 @@
         box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
     }
 
-    /* Definição estrita de larguras dinâmicas (Até 5 por linha) */
-    .col-12 { width: 100%; }
-    .col-6  { width: 50%; }
-    .col-4  { width: 33.3333%; }
-    .col-3  { width: 25%; }
-    .col-2p4 { width: 20%; }
-
     .form-item-actions {
         position: absolute;
         top: -12px;
-        right: 16px;
+        right: 12px;
         display: none;
         background: var(--fb-surface);
         border: 1px solid var(--fb-border);
         border-radius: 20px;
-        padding: 4px 12px;
+        padding: 2px 10px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         z-index: 10;
     }
@@ -193,7 +190,7 @@
     .form-item-actions i {
         cursor: pointer;
         color: var(--fb-text-muted);
-        font-size: 1rem;
+        font-size: 0.9rem;
         transition: color 0.2s ease;
     }
 
@@ -238,12 +235,14 @@
         border-radius: 8px;
     }
 
-    /* Input Overrides for Builder */
     .form-label {
         color: var(--fb-text);
         font-weight: 600;
-        font-size: 0.95rem;
-        margin-bottom: 8px;
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .form-item input[disabled],
@@ -262,7 +261,6 @@
         to { opacity: 1; transform: translateX(0); }
     }
 
-    /* SortableJS Ghost Class */
     .sortable-ghost {
         opacity: 0.4;
         background-color: #f0f4ff !important;
@@ -281,6 +279,18 @@
         background-color: var(--fb-primary-hover);
         border-color: var(--fb-primary-hover);
     }
+
+    /* CORREÇÃO DO BUG: Forçar os inputs a diminuir proporcionalmente sem travar */
+    .form-item input,
+    .form-item textarea,
+    .form-item select,
+    #modalFormRenderZone input,
+    #modalFormRenderZone textarea,
+    #modalFormRenderZone select {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+    }
 </style>
 
 <div class="container-fluid py-2">
@@ -289,9 +299,12 @@
             <h2 class="fw-bold" style="color: var(--fb-text); letter-spacing: -0.5px;">
                 <i class="bi bi-layout-wtf text-primary me-2"></i>Construtor de Formulários
             </h2>
-            <p class="text-muted mb-0" style="font-size: 1.05rem;">Clique ou arraste os elementos para criar o formulário.</p>
+            <p class="text-muted mb-0" style="font-size: 1.05rem;">Linhas isoladas. Componentes adaptáveis (1 item ocupa tudo, máx. 5 por linha).</p>
         </div>
         <div class="col-auto d-flex gap-3">
+            <button class="btn btn-outline-primary rounded-3 px-3 fw-medium" id="btnAddRow">
+                <i class="bi bi-plus-circle me-2"></i> Nova Linha
+            </button>
             <button class="btn btn-outline-secondary rounded-3 px-4 fw-medium" id="btnPreviewForm">
                 <i class="bi bi-eye me-2"></i> Pré-visualizar
             </button>
@@ -339,7 +352,7 @@
             <div class="header-title">
                 <i class="bi bi-window-sidebar"></i> Tela de Desenho
             </div>
-            <div class="dropzone" id="formDropzone">
+            <div class="dropzone-scroll" id="mainDropzoneScroll">
             </div>
         </div>
 
@@ -374,26 +387,10 @@
                         <input type="text" class="form-control" id="propPlaceholder" />
                     </div>
                     <div class="mb-4 p-3 rounded bg-light border border-light">
-                        <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0 mb-3">
+                        <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
                             <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
                             <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
                         </div>
-
-                        <div class="mt-2">
-                            <label class="form-label text-uppercase text-muted small" style="font-size:0.72rem; letter-spacing:0.5px;">Largura do Campo</label>
-                            <select class="form-select form-select-sm" id="propWidth">
-                                <option value="col-12">Total (1 Linha - 100%)</option>
-                                <option value="col-6">Metade (2 por linha - 50%)</option>
-                                <option value="col-4">Terço (3 por linha - 33.3%)</option>
-                                <option value="col-3">Quarto (4 por linha - 25%)</option>
-                                <option value="col-2p4">Quinto (5 por linha - 20%)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-4" id="propOptionsContainer" style="display: none;">
-                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Opções</label>
-                        <div class="text-muted small mb-2">Separe as opções com vírgula</div>
-                        <textarea class="form-control" id="propOptions" rows="4" style="resize:none;"></textarea>
                     </div>
                 </form>
                 <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2 rounded-3" id="btnUnselectField">
@@ -405,7 +402,7 @@
 </div>
 
 <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow rounded-4">
             <div class="modal-header border-bottom-0 pt-4 px-4">
                 <h4 class="modal-title fw-bold text-dark" id="previewModalLabel">Pré-visualização do Formulário</h4>
@@ -417,7 +414,7 @@
                     <p class="text-muted mb-0" id="modalFormDesc"></p>
                 </div>
                 <div class="card border-0 rounded-3 shadow-sm p-4">
-                    <form id="modalFormRenderZone" class="row" onsubmit="return false;">
+                    <form id="modalFormRenderZone" style="display: flex; flex-direction: column; gap: 20px;" onsubmit="return false;">
                     </form>
                 </div>
             </div>
@@ -433,12 +430,78 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            let rowCounter = 0;
+            const mainDropzoneScroll = document.getElementById('mainDropzoneScroll');
+            let currentSelected = null;
 
             function generateId() {
                 return 'field_' + Math.random().toString(36).substr(2, 9);
             }
 
-            // Inicializar arrastar da Toolbox
+            // Criar uma Linha Estrutural Isolada
+            function createNewRow() {
+                rowCounter++;
+                const rowId = 'row_' + rowCounter;
+
+                const rowEl = document.createElement('div');
+                rowEl.className = 'form-builder-row shadow-sm';
+                rowEl.id = rowId;
+                rowEl.innerHTML = `
+                    <div class="row-actions">
+                        <span><i class="bi bi-grid-3x2-gap-vertical me-1"></i> Linha ${rowCounter}</span>
+                        <i class="bi bi-trash3-fill btn-delete-row" title="Remover Linha Completa"></i>
+                    </div>
+                    <div class="row-dropzone" id="dropzone_${rowId}"></div>
+                `;
+
+                mainDropzoneScroll.appendChild(rowEl);
+
+                // Configurar SortableJS para a dropzone interna desta linha específica
+                new Sortable(document.getElementById(`dropzone_${rowId}`), {
+                    group: 'shared',
+                    animation: 200,
+                    ghostClass: 'sortable-ghost',
+                    onAdd: function (evt) {
+                        const targetDropzone = evt.to;
+
+                        // Validação estrita de no máximo 5 componentes por linha
+                        if (targetDropzone.children.length > 5) {
+                            alert("Não é permitido colocar mais do que 5 componentes na mesma linha.");
+                            evt.item.remove();
+                            return;
+                        }
+
+                        const item = evt.item;
+                        if (item.classList.contains('toolbox-item')) {
+                            const type = item.getAttribute('data-type');
+                            const cssClass = item.getAttribute('data-css');
+                            const displayName = item.getAttribute('data-display-name');
+                            createAndAppendField(type, cssClass, displayName, item, targetDropzone);
+                        }
+                    }
+                });
+
+                // Evento para remover a linha completa
+                rowEl.querySelector('.btn-delete-row').addEventListener('click', function() {
+                    if(confirm("Deseja mesmo remover esta linha e todos os componentes dentro dela?")) {
+                        rowEl.remove();
+                        unselectField();
+                    }
+                });
+
+                return rowEl;
+            }
+
+            // Inicializar o ecrã com a primeira linha ativa
+            createNewRow();
+
+            // Botão manual de Adicionar Nova Linha
+            document.getElementById('btnAddRow').addEventListener('click', function() {
+                const newRow = createNewRow();
+                newRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+
+            // Inicializar a Toolbox esquerda para arrastar
             new Sortable(document.querySelector('.toolbox'), {
                 group: {
                     name: 'shared',
@@ -449,83 +512,76 @@
                 sort: false,
             });
 
-            const dropzone = document.getElementById('formDropzone');
-            const propertiesPanel = document.getElementById('propertiesPanel');
-            let currentSelected = null;
-
-            // Inicializar a Dropzone
-            new Sortable(dropzone, {
-                group: 'shared',
-                animation: 200,
-                ghostClass: 'sortable-ghost',
-                onAdd: function (evt) {
-                    const item = evt.item;
-                    const type = item.getAttribute('data-type');
-                    const cssClass = item.getAttribute('data-css');
-                    const displayName = item.getAttribute('data-display-name');
-                    createAndAppendField(type, cssClass, displayName, item, true);
-                }
-            });
-
-            // Clique na Toolbox cria componente diretamente
+            // Clique direto nos itens da Toolbox (coloca na última linha disponível)
             document.querySelector('.toolbox').addEventListener('click', function (e) {
                 const toolboxItem = e.target.closest('.toolbox-item');
                 if (toolboxItem) {
                     const type = toolboxItem.getAttribute('data-type');
                     const cssClass = toolboxItem.getAttribute('data-css');
                     const displayName = toolboxItem.getAttribute('data-display-name');
-                    createAndAppendField(type, cssClass, displayName, null, false);
+
+                    const rows = mainDropzoneScroll.querySelectorAll('.row-dropzone');
+                    const lastRowZone = rows[rows.length - 1];
+
+                    // Se a última linha já tiver 5 elementos, cria uma nova linha automaticamente
+                    if(lastRowZone.children.length >= 5) {
+                        const autoRow = createNewRow();
+                        const autoZone = autoRow.querySelector('.row-dropzone');
+                        createAndAppendField(type, cssClass, displayName, null, autoZone);
+                        autoRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        createAndAppendField(type, cssClass, displayName, null, lastRowZone);
+                    }
                 }
             });
 
-            function createAndAppendField(type, cssClass, displayName, draggedItem, isDragged) {
+            function createAndAppendField(type, cssClass, displayName, draggedItem, targetDropzone) {
                 const newEl = document.createElement('div');
-                // Alterado: Adicionada por padrão a classe de largura total (col-12)
-                newEl.className = 'form-item shadow-sm col-12';
+                newEl.className = 'form-item shadow-sm';
                 newEl.id = generateId();
                 newEl.setAttribute('data-type', type);
-                newEl.setAttribute('data-width', 'col-12');
 
                 const content = getHtmlTemplate(type, cssClass);
                 newEl.innerHTML = `
                     <div class="form-item-actions">
-                        <i class="bi bi-trash-fill btn-delete" title="Remover"></i>
+                        <i class="bi bi-trash-fill btn-delete" title="Remover Componente"></i>
                     </div>
                     <div class="field-content">
                         ${content}
                     </div>
                 `;
 
-                if (isDragged && draggedItem) {
+                if (draggedItem) {
                     draggedItem.parentNode.insertBefore(newEl, draggedItem);
                     draggedItem.parentNode.removeChild(draggedItem);
                 } else {
-                    dropzone.appendChild(newEl);
-                    newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    targetDropzone.appendChild(newEl);
                 }
 
                 selectField(newEl);
             }
 
-            // Seleção de itens e remoção na Tela
-            dropzone.addEventListener('click', function(e) {
+            // Delegação de cliques a partir do contentor de scroll global
+            mainDropzoneScroll.addEventListener('click', function(e) {
+                // Remover componente individual
                 if(e.target.classList.contains('btn-delete') || e.target.closest('.btn-delete')) {
                     const field = e.target.closest('.form-item');
                     if(currentSelected === field) {
                         unselectField();
                     }
-                    field.style.opacity = '0';
-                    field.style.transform = 'scale(0.95)';
-                    setTimeout(() => field.remove(), 200);
+                    field.remove();
                     e.stopPropagation();
                     return;
                 }
 
+                // Selecionar componente para propriedades
                 const field = e.target.closest('.form-item');
                 if(field) {
                     selectField(field);
                 } else {
-                    unselectField();
+                    if(!e.target.closest('.form-item-actions') && !e.target.closest('#propertiesPanel')) {
+                        unselectField();
+                    }
                 }
             });
 
@@ -535,42 +591,35 @@
 
                 switch(t) {
                     case 'texto':
-                        return `<label class="form-label control-label">Texto Curto</label><input type="text" class="${css}" placeholder="Digite o texto aqui..." disabled />`;
-
+                        return `<label class="form-label control-label">Texto Curto</label><input type="text" class="${css}" placeholder="Digite..." disabled />`;
                     case 'numero':
                         return `<label class="form-label control-label">Número</label><input type="number" class="${css}" placeholder="0" disabled />`;
-
                     case 'check box':
                         return `
                             <div class="${css}">
                                 <input class="form-check-input" type="checkbox" disabled id="check_preview">
-                                <label class="form-check-label control-label" for="check_preview">Caixa de Seleção</label>
+                                <label class="form-check-label control-label" for="check_preview">Caixa Seleção</label>
                             </div>`;
-
                     case 'check box switch':
                         return `
                             <div class="${css}">
                                 <input class="form-check-input" type="checkbox" role="switch" disabled id="switch_preview" checked>
-                                <label class="form-check-label control-label" for="switch_preview">Ativar Opção (Switch)</label>
+                                <label class="form-check-label control-label" for="switch_preview">Opção (Switch)</label>
                             </div>`;
-
                     case 'label':
-                        return `<label class="${css} control-label">Aviso / Texto Informativo Fixo</label>`;
-
+                        return `<label class="${css} control-label">Texto Fixo</label>`;
                     case 'assinatura':
                         return `
-                            <label class="form-label control-label d-block text-muted">Assinatura Digital</label>
-                            <div class="${css}" style="border-bottom: 2px dashed #ccc !important; min-height: 60px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius:6px;">
-                                <span class="text-muted small"><i class="bi bi-pencil-fill me-1"></i> Zona de Assinatura</span>
+                            <label class="form-label control-label d-block text-muted">Assinatura</label>
+                            <div class="${css}" style="border-bottom: 2px dashed #ccc !important; min-height: 50px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius:6px;">
+                                <span class="text-muted small" style="font-size:0.75rem;"><i class="bi bi-pencil-fill me-1"></i> Assinatura</span>
                             </div>`;
-
                     default:
-                        console.warn("Tipo não reconhecido, usando fallback genérico:", type);
                         return `<label class="form-label control-label">Componente (${type})</label><input type="text" class="${css}" disabled />`;
                 }
             }
 
-            // --- Painel de Propriedades Laterais ---
+            // --- Gestão do Painel Lateral de Propriedades ---
             const formPropsGroup = document.getElementById('formPropsGroup');
             const fieldPropsGroup = document.getElementById('fieldPropsGroup');
             const btnUnselectField = document.getElementById('btnUnselectField');
@@ -579,9 +628,6 @@
             const propPlaceholder = document.getElementById('propPlaceholder');
             const propPlaceholderContainer = document.getElementById('propPlaceholderContainer');
             const propRequired = document.getElementById('propRequired');
-            const propWidth = document.getElementById('propWidth');
-            const propOptionsContainer = document.getElementById('propOptionsContainer');
-            const propOptions = document.getElementById('propOptions');
 
             function selectField(field) {
                 if(currentSelected) currentSelected.classList.remove('selected');
@@ -597,10 +643,6 @@
 
                 let cleanedName = labelEl ? labelEl.innerText.replace(' *', '') : 'Rótulo';
                 propLabel.value = cleanedName;
-
-                // Recuperar e marcar a largura guardada no elemento
-                const currentWidth = field.getAttribute('data-width') || 'col-12';
-                propWidth.value = currentWidth;
 
                 if(['texto', 'numero'].includes(type) && inputEl) {
                     propPlaceholderContainer.style.display = 'block';
@@ -667,103 +709,105 @@
                 }
             });
 
-            // Escuta a alteração do seletor de largura e muda as classes em real-time
-            propWidth.addEventListener('change', function() {
-                if (currentSelected) {
-                    currentSelected.classList.remove('col-12', 'col-6', 'col-4', 'col-3', 'col-2p4');
-
-                    const selectedWidth = this.value;
-                    currentSelected.classList.add(selectedWidth);
-                    currentSelected.setAttribute('data-width', selectedWidth);
-                }
-            });
-
-            // Motor de Renderização de Pré-Visualização Dinâmica Adaptado à Grelha
+            // Motor de Renderização de Pré-Visualização Dinâmica (Respeitando as Linhas)
             document.getElementById('btnPreviewForm').addEventListener('click', function() {
                 const renderZone = document.getElementById('modalFormRenderZone');
                 renderZone.innerHTML = '';
-                renderZone.className = "row"; // Garante flex-wrap nativo na modal
 
                 document.getElementById('modalFormTitle').innerText = document.getElementById('formTitleInput').value || 'Formulário Sem Título';
                 document.getElementById('modalFormDesc').innerText = document.getElementById('formDescInput').value || '';
 
-                const formItems = dropzone.querySelectorAll('.form-item');
+                const activeRows = mainDropzoneScroll.querySelectorAll('.form-builder-row');
+                let zeroElements = true;
 
-                if(formItems.length === 0) {
-                    renderZone.innerHTML = '<div class="text-center p-4 text-muted col-12"><i class="bi bi-info-circle me-2"></i>A dropzone está vazia. Adicione componentes primeiro.</div>';
-                } else {
-                    formItems.forEach((item) => {
-                        const contentClone = item.querySelector('.field-content').cloneNode(true);
+                activeRows.forEach((rowVisual) => {
+                    const internalItems = rowVisual.querySelectorAll('.form-item');
+                    if (internalItems.length > 0) {
+                        zeroElements = false;
 
-                        contentClone.querySelectorAll('input, select, textarea').forEach(input => {
-                            input.removeAttribute('disabled');
+                        // Cria a estrutura exata da linha na modal de preview
+                        const previewRowDiv = document.createElement('div');
+                        previewRowDiv.style.display = 'flex';
+                        previewRowDiv.style.flexWrap = 'wrap';
+                        previewRowDiv.style.gap = '16px';
+                        previewRowDiv.style.width = '100%';
+
+                        internalItems.forEach((item) => {
+                            const contentClone = item.querySelector('.field-content').cloneNode(true);
+                            contentClone.querySelectorAll('input, select, textarea').forEach(input => {
+                                input.removeAttribute('disabled');
+                            });
+
+                            const fieldWrapper = document.createElement('div');
+                            fieldWrapper.className = 'p-3 border rounded-3 bg-white shadow-sm';
+                            fieldWrapper.style.flexGrow = '1';
+                            fieldWrapper.style.flexBasis = 'calc(18% - 16px)';
+                            fieldWrapper.style.minWidth = '18%';
+                            fieldWrapper.appendChild(contentClone);
+
+                            previewRowDiv.appendChild(fieldWrapper);
                         });
 
-                        const itemWidthClass = item.getAttribute('data-width') || 'col-12';
+                        renderZone.appendChild(previewRowDiv);
+                    }
+                });
 
-                        const wrapperDiv = document.createElement('div');
-                        wrapperDiv.className = `${itemWidthClass} mb-4 pb-3`;
-                        wrapperDiv.appendChild(contentClone);
-
-                        renderZone.appendChild(wrapperDiv);
-                    });
+                if(zeroElements) {
+                    renderZone.innerHTML = '<div class="text-center p-4 text-muted w-100"><i class="bi bi-info-circle me-2"></i>Nenhum componente detetado nas linhas.</div>';
                 }
 
                 const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
                 previewModal.show();
             });
 
-            // Gravação Real do Formulário na Base de Dados via AJAX POST
+            // Gravação Estruturada enviando o RowIndex para a Base de Dados via AJAX
             document.getElementById('btnSaveForm').addEventListener('click', function() {
                 const btn = this;
                 const originalContent = btn.innerHTML;
 
-                const formTitleInput = document.getElementById('formTitleInput');
-                const formDescInput = document.getElementById('formDescInput');
-
-                const title = formTitleInput.value.trim();
-                const description = formDescInput.value.trim();
+                const title = document.getElementById('formTitleInput').value.trim();
+                const description = document.getElementById('formDescInput').value.trim();
 
                 if (!title) {
-                    alert('Por favor, defina um título para o formulário no painel de propriedades.');
+                    alert('Por favor, defina um título para o formulário.');
                     unselectField();
-                    formTitleInput.focus();
+                    document.getElementById('formTitleInput').focus();
                     return;
                 }
 
                 const fields = [];
-                const formItems = dropzone.querySelectorAll('.form-item');
+                const activeRows = mainDropzoneScroll.querySelectorAll('.form-builder-row');
+                let globalIndex = 0;
 
-                if (formItems.length === 0) {
+                activeRows.forEach((rowVisual, rowIndex) => {
+                    const internalItems = rowVisual.querySelectorAll('.form-item');
+
+                    internalItems.forEach((item) => {
+                        const type = item.getAttribute('data-type');
+                        const labelEl = item.querySelector('.control-label');
+                        let label = labelEl ? labelEl.innerText.replace(' *', '').trim() : 'Campo';
+
+                        const inputEl = item.querySelector('input, textarea');
+                        const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
+                        const isRequired = labelEl && labelEl.innerText.includes('*');
+
+                        fields.push({
+                            FieldId: item.id,
+                            Type: type,
+                            Label: label,
+                            Placeholder: placeholder,
+                            IsRequired: isRequired,
+                            Options: rowIndex.toString(), // Guarda o índice estrutural da linha (ex: "0", "1", "2")
+                            OrderIndex: globalIndex
+                        });
+                        globalIndex++;
+                    });
+                });
+
+                if (fields.length === 0) {
                     alert('Por favor, adicione pelo menos um componente ao seu formulário.');
                     return;
                 }
-
-                formItems.forEach((item, index) => {
-                    const type = item.getAttribute('data-type');
-                    const labelEl = item.querySelector('.control-label');
-
-                    let label = 'Campo';
-                    if (labelEl) {
-                        label = labelEl.innerText.replace(' *', '').trim();
-                    }
-
-                    const inputEl = item.querySelector('input, textarea');
-                    const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
-                    const isRequired = labelEl && labelEl.innerText.includes('*');
-                    const widthClass = item.getAttribute('data-width') || 'col-12';
-
-                    fields.push({
-                        FieldId: item.id,
-                        Type: type,
-                        Label: label,
-                        Placeholder: placeholder,
-                        IsRequired: isRequired,
-                        Options: '',
-                        OrderIndex: index,
-                        Width: widthClass // Mapeamento da classe correta para a BD
-                    });
-                });
 
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> A gravar...';
                 btn.disabled = true;
@@ -785,9 +829,7 @@
                     })
                 })
                     .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        }
+                        if (response.ok) return response.json();
                         throw new Error('Falha ao gravar o formulário.');
                     })
                     .then(data => {
@@ -800,7 +842,7 @@
                                 btn.className = 'btn btn-primary-custom text-white shadow-sm';
                                 btn.disabled = false;
 
-                                if (confirm('Formulário gravado com sucesso na base de dados! Deseja ir para a página de Histórico de Formulários?')) {
+                                if (confirm('Formulário gravado com sucesso! Deseja ir para a página de Histórico?')) {
                                     window.location.href = '/Home/HistoricoFormulariosUtilizador';
                                 }
                             }, 1000);
