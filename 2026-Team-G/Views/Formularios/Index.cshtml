@@ -430,6 +430,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
+            // NOVO: Injetar e trancar o estado de login do utilizador vindo do Servidor ASP.NET
+            const isUserLoggedIn = @(Context.User.Identity.IsAuthenticated ? "true" : "false");
+
             let rowCounter = 0;
             const mainDropzoneScroll = document.getElementById('mainDropzoneScroll');
             let currentSelected = null;
@@ -762,6 +766,17 @@
 
             // Gravação Estruturada enviando o RowIndex para a Base de Dados via AJAX
             document.getElementById('btnSaveForm').addEventListener('click', function() {
+
+                // -------------------------------------------------------------
+                // CORREÇÃO: Bloqueio estrito no cliente caso o utilizador não esteja logado
+                // -------------------------------------------------------------
+                if (!isUserLoggedIn) {
+                    alert('Operação Inválida! Precisa de iniciar sessão na sua conta para conseguir guardar o formulário.');
+                    // Altera o redirecionamento abaixo caso o teu path de login seja diferente (ex: /Identity/Account/Login)
+                    window.location.href = '/Identity/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+
                 const btn = this;
                 const originalContent = btn.innerHTML;
 
@@ -829,6 +844,10 @@
                     })
                 })
                     .then(response => {
+                        // Se o servidor responder com 401 ou 403 (Caso o token expire ou não esteja autenticado no back-end)
+                        if (response.status === 401 || response.status === 403) {
+                            throw new Error('Não autorizado! A sua sessão pode ter expirado.');
+                        }
                         if (response.ok) return response.json();
                         throw new Error('Falha ao gravar o formulário.');
                     })
@@ -856,6 +875,10 @@
                         btn.innerHTML = originalContent;
                         btn.className = 'btn btn-primary-custom text-white shadow-sm';
                         btn.disabled = false;
+
+                        if (error.message.includes('Não autorizado')) {
+                            window.location.href = '/Identity/Account/Login';
+                        }
                     });
             });
         });
