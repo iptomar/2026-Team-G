@@ -95,6 +95,12 @@
         position: relative;
         transition: all 0.3s ease;
         background-color: #fdfdfd;
+
+        /* Alterado: Comportamento Flexbox para suportar colunas alinhadas */
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 16px 0;
     }
 
     .dropzone.dragover {
@@ -116,6 +122,7 @@
         flex-direction: column;
         align-items: center;
         gap: 10px;
+        z-index: 1;
     }
 
     .dropzone:empty::after {
@@ -128,6 +135,7 @@
         font-size: 2.5rem;
         color: #dee2e6;
         pointer-events: none;
+        z-index: 1;
     }
 
     /* Form Item Styles */
@@ -137,10 +145,12 @@
         background: var(--fb-surface);
         border: 1px solid var(--fb-border);
         border-radius: 12px;
-        margin-bottom: 16px;
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        box-sizing: border-box;
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
     .form-item:hover {
@@ -153,6 +163,13 @@
         background-color: rgba(67, 97, 238, 0.02);
         box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
     }
+
+    /* Definição estrita de larguras dinâmicas (Até 5 por linha) */
+    .col-12 { width: 100%; }
+    .col-6  { width: 50%; }
+    .col-4  { width: 33.3333%; }
+    .col-3  { width: 25%; }
+    .col-2p4 { width: 20%; }
 
     .form-item-actions {
         position: absolute;
@@ -275,7 +292,6 @@
             <p class="text-muted mb-0" style="font-size: 1.05rem;">Clique ou arraste os elementos para criar o formulário.</p>
         </div>
         <div class="col-auto d-flex gap-3">
-            @* ADICIONADO: Id identificador neste botão *@
             <button class="btn btn-outline-secondary rounded-3 px-4 fw-medium" id="btnPreviewForm">
                 <i class="bi bi-eye me-2"></i> Pré-visualizar
             </button>
@@ -358,9 +374,20 @@
                         <input type="text" class="form-control" id="propPlaceholder" />
                     </div>
                     <div class="mb-4 p-3 rounded bg-light border border-light">
-                        <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
+                        <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0 mb-3">
                             <label class="form-check-label fw-bold flex-grow-1 m-0" for="propRequired">Campo Obrigatório</label>
                             <input class="form-check-input m-0 fs-5" type="checkbox" id="propRequired" role="switch">
+                        </div>
+
+                        <div class="mt-2">
+                            <label class="form-label text-uppercase text-muted small" style="font-size:0.72rem; letter-spacing:0.5px;">Largura do Campo</label>
+                            <select class="form-select form-select-sm" id="propWidth">
+                                <option value="col-12">Total (1 Linha - 100%)</option>
+                                <option value="col-6">Metade (2 por linha - 50%)</option>
+                                <option value="col-4">Terço (3 por linha - 33.3%)</option>
+                                <option value="col-3">Quarto (4 por linha - 25%)</option>
+                                <option value="col-2p4">Quinto (5 por linha - 20%)</option>
+                            </select>
                         </div>
                     </div>
                     <div class="mb-4" id="propOptionsContainer" style="display: none;">
@@ -377,7 +404,6 @@
     </div>
 </div>
 
-@* ADICIONADO: Modal Estrutural de Pré-Visualização Dinâmica *@
 <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow rounded-4">
@@ -391,7 +417,7 @@
                     <p class="text-muted mb-0" id="modalFormDesc"></p>
                 </div>
                 <div class="card border-0 rounded-3 shadow-sm p-4">
-                    <form id="modalFormRenderZone" onsubmit="return false;">
+                    <form id="modalFormRenderZone" class="row" onsubmit="return false;">
                     </form>
                 </div>
             </div>
@@ -454,9 +480,11 @@
 
             function createAndAppendField(type, cssClass, displayName, draggedItem, isDragged) {
                 const newEl = document.createElement('div');
-                newEl.className = 'form-item shadow-sm';
+                // Alterado: Adicionada por padrão a classe de largura total (col-12)
+                newEl.className = 'form-item shadow-sm col-12';
                 newEl.id = generateId();
                 newEl.setAttribute('data-type', type);
+                newEl.setAttribute('data-width', 'col-12');
 
                 const content = getHtmlTemplate(type, cssClass);
                 newEl.innerHTML = `
@@ -501,7 +529,6 @@
                 }
             });
 
-            // GERAÇÃO DO HTML INJETANDO AS CLASSES DA DB (`cssClass`)
             function getHtmlTemplate(type, cssClass) {
                 const t = type.trim().toLowerCase();
                 const css = cssClass || 'form-control';
@@ -552,6 +579,7 @@
             const propPlaceholder = document.getElementById('propPlaceholder');
             const propPlaceholderContainer = document.getElementById('propPlaceholderContainer');
             const propRequired = document.getElementById('propRequired');
+            const propWidth = document.getElementById('propWidth');
             const propOptionsContainer = document.getElementById('propOptionsContainer');
             const propOptions = document.getElementById('propOptions');
 
@@ -569,6 +597,10 @@
 
                 let cleanedName = labelEl ? labelEl.innerText.replace(' *', '') : 'Rótulo';
                 propLabel.value = cleanedName;
+
+                // Recuperar e marcar a largura guardada no elemento
+                const currentWidth = field.getAttribute('data-width') || 'col-12';
+                propWidth.value = currentWidth;
 
                 if(['texto', 'numero'].includes(type) && inputEl) {
                     propPlaceholderContainer.style.display = 'block';
@@ -635,39 +667,48 @@
                 }
             });
 
-            @* ADICIONADO: Motor de Renderização de Pré-Visualização Dinâmica *@
+            // Escuta a alteração do seletor de largura e muda as classes em real-time
+            propWidth.addEventListener('change', function() {
+                if (currentSelected) {
+                    currentSelected.classList.remove('col-12', 'col-6', 'col-4', 'col-3', 'col-2p4');
+
+                    const selectedWidth = this.value;
+                    currentSelected.classList.add(selectedWidth);
+                    currentSelected.setAttribute('data-width', selectedWidth);
+                }
+            });
+
+            // Motor de Renderização de Pré-Visualização Dinâmica Adaptado à Grelha
             document.getElementById('btnPreviewForm').addEventListener('click', function() {
                 const renderZone = document.getElementById('modalFormRenderZone');
-                renderZone.innerHTML = ''; // Limpar antiga preview
+                renderZone.innerHTML = '';
+                renderZone.className = "row"; // Garante flex-wrap nativo na modal
 
-                // Capturar metadados do cabeçalho
                 document.getElementById('modalFormTitle').innerText = document.getElementById('formTitleInput').value || 'Formulário Sem Título';
                 document.getElementById('modalFormDesc').innerText = document.getElementById('formDescInput').value || '';
 
                 const formItems = dropzone.querySelectorAll('.form-item');
 
                 if(formItems.length === 0) {
-                    renderZone.innerHTML = '<div class="text-center p-4 text-muted"><i class="bi bi-info-circle me-2"></i>A dropzone está vazia. Adicione componentes primeiro.</div>';
+                    renderZone.innerHTML = '<div class="text-center p-4 text-muted col-12"><i class="bi bi-info-circle me-2"></i>A dropzone está vazia. Adicione componentes primeiro.</div>';
                 } else {
                     formItems.forEach((item) => {
-                        // Clonar o bloco de conteúdo puro do campo (sem lixeiras nem botões de edição)
                         const contentClone = item.querySelector('.field-content').cloneNode(true);
 
-                        // Ativar os inputs funcionais para teste na visualização (remover disabled)
                         contentClone.querySelectorAll('input, select, textarea').forEach(input => {
                             input.removeAttribute('disabled');
                         });
 
-                        // Criar uma div wrapper para espaçamento estético dentro da modal
+                        const itemWidthClass = item.getAttribute('data-width') || 'col-12';
+
                         const wrapperDiv = document.createElement('div');
-                        wrapperDiv.className = 'mb-4 pb-3 border-bottom border-light';
+                        wrapperDiv.className = `${itemWidthClass} mb-4 pb-3`;
                         wrapperDiv.appendChild(contentClone);
 
                         renderZone.appendChild(wrapperDiv);
                     });
                 }
 
-                // Chamar nativamente o gatilho da Modal do Bootstrap
                 const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
                 previewModal.show();
             });
@@ -710,6 +751,7 @@
                     const inputEl = item.querySelector('input, textarea');
                     const placeholder = inputEl ? (inputEl.getAttribute('placeholder') || '') : '';
                     const isRequired = labelEl && labelEl.innerText.includes('*');
+                    const widthClass = item.getAttribute('data-width') || 'col-12';
 
                     fields.push({
                         FieldId: item.id,
@@ -719,7 +761,7 @@
                         IsRequired: isRequired,
                         Options: '',
                         OrderIndex: index,
-                        Width: '100%'
+                        Width: widthClass // Mapeamento da classe correta para a BD
                     });
                 });
 
