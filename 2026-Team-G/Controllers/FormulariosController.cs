@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using _2026_Team_G.Data;
 using _2026_Team_G.Models;
 
@@ -25,6 +26,7 @@ namespace _2026_Team_G.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
+            ViewBag.ActivePage = "Formularios";
             // Vai buscar os componentes e passa-os para a View
             ViewBag.ComponentesDisponiveis = await _context.Components.ToListAsync();
 
@@ -35,6 +37,7 @@ namespace _2026_Team_G.Controllers
         // GET: Formularios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();
@@ -54,17 +57,17 @@ namespace _2026_Team_G.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            ViewBag.ActivePage = "Formularios";
             return View();
         }
 
         // POST: Formularios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,IsActive")] Formulario formulario)
         {
+            ViewBag.ActivePage = "Formularios";
             if (ModelState.IsValid)
             {
                 _context.Add(formulario);
@@ -78,6 +81,7 @@ namespace _2026_Team_G.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();
@@ -92,13 +96,12 @@ namespace _2026_Team_G.Controllers
         }
 
         // POST: Formularios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,IsActive")] Formulario formulario)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id != formulario.Id)
             {
                 return NotFound();
@@ -131,6 +134,7 @@ namespace _2026_Team_G.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
+            ViewBag.ActivePage = "Formularios";
             if (id == null)
             {
                 return NotFound();
@@ -152,6 +156,7 @@ namespace _2026_Team_G.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            ViewBag.ActivePage = "Formularios";
             var formulario = await _context.Formularios.FindAsync(id);
             if (formulario != null)
             {
@@ -160,6 +165,101 @@ namespace _2026_Team_G.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Formularios/Disponiveis
+        [Authorize]
+        public async Task<IActionResult> Disponiveis()
+        {
+            ViewBag.ActivePage = "Disponiveis";
+            var formularios = await _context.Formularios
+                .Where(f => f.IsActive)
+                .ToListAsync();
+            return View(formularios);
+        }
+
+        // GET: Formularios/Preencher/5
+        [Authorize]
+        public async Task<IActionResult> Preencher(int? id)
+        {
+            ViewBag.ActivePage = "Disponiveis";
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var formulario = await _context.Formularios
+                .Include(f => f.Fields)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (formulario == null || !formulario.IsActive)
+            {
+                return NotFound();
+            }
+
+            // Ordenar os campos pelo OrderIndex
+            formulario.Fields = formulario.Fields.OrderBy(f => f.OrderIndex).ToList();
+
+            return View(formulario);
+        }
+
+        // POST: Formularios/Submeter/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Submeter(int id, IFormCollection formCollection)
+        {
+            var formulario = await _context.Formularios
+                .Include(f => f.Fields)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (formulario == null || !formulario.IsActive)
+            {
+                return NotFound();
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            var submissao = new Submissao
+            {
+                FormularioId = id,
+                UtilizadorId = userId,
+                DataSubmissao = DateTime.Now
+            };
+
+            foreach (var field in formulario.Fields)
+            {
+                // Obter o valor submetido pelo ID do campo dinâmico
+                var valor = formCollection[field.FieldId].ToString();
+
+                if (field.IsRequired && string.IsNullOrWhiteSpace(valor))
+                {
+                    ModelState.AddModelError(field.FieldId, $"O campo '{field.Label}' é obrigatório.");
+                }
+
+                var resposta = new Resposta
+                {
+                    FormFieldModelId = field.Id,
+                    Valor = valor ?? ""
+                };
+                submissao.Respostas.Add(resposta);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ActivePage = "Disponiveis";
+                formulario.Fields = formulario.Fields.OrderBy(f => f.OrderIndex).ToList();
+                return View("Preencher", formulario);
+            }
+
+            _context.Submissoes.Add(submissao);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("HistoricoFormulariosUtilizador", "Home");
         }
 
         private bool FormularioExists(int id)

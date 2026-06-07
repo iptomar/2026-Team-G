@@ -29,9 +29,18 @@
                         <li class="nav-item">
                             <a class="nav-link py-2 px-3 text-dark @(activePage == "Componentes" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="Componentes">Componentes</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link py-2 px-3 text-dark @(activePage == "Formularios" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Formularios" asp-action="Index">Formulários</a>
-                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link py-2 px-3 text-dark @(activePage == "Formularios" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Formularios" asp-action="Index">Criar Formulário</a>
+                            </li>
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link py-2 px-3 text-dark @(activePage == "Disponiveis" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Formularios" asp-action="Disponiveis">Formulários Disponíveis</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link py-2 px-3 text-dark @(activePage == "Historico" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="HistoricoFormulariosUtilizador">Histórico de Formulários</a>
                         </li>
