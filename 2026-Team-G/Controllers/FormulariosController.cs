@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using _2026_Team_G.Data;
 using _2026_Team_G.Models;
 
 namespace _2026_Team_G.Controllers
 {
+    [Authorize]
     public class FormulariosController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,6 +22,7 @@ namespace _2026_Team_G.Controllers
         }
 
         // GET: Formularios
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             // Vai buscar os componentes e passa-os para a View
@@ -48,6 +51,7 @@ namespace _2026_Team_G.Controllers
         }
 
         // GET: Formularios/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -58,6 +62,7 @@ namespace _2026_Team_G.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,IsActive")] Formulario formulario)
         {
             if (ModelState.IsValid)
@@ -70,6 +75,7 @@ namespace _2026_Team_G.Controllers
         }
 
         // GET: Formularios/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -90,6 +96,7 @@ namespace _2026_Team_G.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,IsActive")] Formulario formulario)
         {
             if (id != formulario.Id)
@@ -121,6 +128,7 @@ namespace _2026_Team_G.Controllers
         }
 
         // GET: Formularios/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,6 +149,7 @@ namespace _2026_Team_G.Controllers
         // POST: Formularios/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var formulario = await _context.Formularios.FindAsync(id);

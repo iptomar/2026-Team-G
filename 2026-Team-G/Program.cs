@@ -13,17 +13,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Configuração do Identity - DESATIVAR confirmação de email para testes
+// Configuracao do Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
-    options.SignIn.RequireConfirmedEmail = false;  // NOVO - desativa confirmação de email
+    options.SignIn.RequireConfirmedEmail = false;
     options.User.RequireUniqueEmail = true;
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Configuração do Email
+// Configuracao do Email
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
@@ -56,5 +56,52 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
    .WithStaticAssets();
+
+// ============================================
+// SEED: Criar Roles e Utilizador Admin
+// ============================================
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    // Obter o RoleManager para gerir roles na BD
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    // Definir as roles que queremos no sistema
+    string[] roles = { "Admin", "User" };
+
+    // Para cada role, verificar se ja existe. Se nao, criar.
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // Obter o UserManager para gerir utilizadores
+    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
+    // Criar um utilizador Admin por defeito (se ainda nao existir)
+    string adminEmail = "admin@ipt.pt";
+    string adminPassword = "Admin123!";
+
+    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    {
+        var adminUser = new IdentityUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
+}
 
 app.Run();
