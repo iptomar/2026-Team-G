@@ -12,10 +12,6 @@ using _2026_Team_G.Models;
 
 namespace _2026_Team_G.Controllers
 {
-    // [Authorize(Roles = "Admin")] significa que TODAS as actions
-    // dentro deste controller so podem ser acedidas por utilizadores
-    // que tenham a role "Admin". Se um User normal tentar aceder,
-    // e redirecionado para a pagina de Login.
     [Authorize]
     public class FormulariosController : Controller
     {
