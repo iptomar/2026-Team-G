@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
@@ -26,6 +26,17 @@ public class EmailSender : IEmailSender
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
+        // Se as configurações de email estiverem vazias (desenvolvimento local), simulamos o envio
+        if (string.IsNullOrWhiteSpace(_emailSettings.SenderEmail) || string.IsNullOrWhiteSpace(_emailSettings.SmtpServer))
+        {
+            System.Diagnostics.Debug.WriteLine("========================================");
+            System.Diagnostics.Debug.WriteLine($"[EMAIL SIMULADO] Para: {email}");
+            System.Diagnostics.Debug.WriteLine($"[EMAIL SIMULADO] Assunto: {subject}");
+            System.Diagnostics.Debug.WriteLine($"[EMAIL SIMULADO] Conteúdo: {htmlMessage}");
+            System.Diagnostics.Debug.WriteLine("========================================");
+            return;
+        }
+
         using var client = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort)
         {
             Credentials = new NetworkCredential(_emailSettings.SenderEmail, _emailSettings.SenderPassword),

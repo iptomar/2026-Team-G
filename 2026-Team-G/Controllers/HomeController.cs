@@ -1,6 +1,7 @@
 using _2026_Team_G.Models;
 using _2026_Team_G.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -16,20 +17,19 @@ namespace _2026_Team_G.Controllers
             _context = context;
         }
 
+        // Pagina inicial - acessivel a todos (sem [Authorize])
         public IActionResult Index()
         {
             ViewBag.ActivePage = "Home";
             return View();
         }
-        
+
+        // Pagina de componentes - acessivel a todos
         public async Task<IActionResult> Componentes()
         {
-            // 1. Vai buscar a lista à base de dados usando o teu DbContext
+            ViewBag.ActivePage = "Componentes";
             var componentes = await _context.Components.ToListAsync();
-
-            // 2. Guarda na ViewBag com o nome EXATO que usamos na View
             ViewBag.ComponentesDisponiveis = componentes;
-
             return View();
         }
 
@@ -38,19 +38,21 @@ namespace _2026_Team_G.Controllers
             return View();
         }
 
+        // PROTEGIDO: So Admins podem gravar formularios
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SalvarFormulario([FromBody] Formulario formulario)
         {
             if (formulario == null)
             {
-                return BadRequest(new { success = false, message = "Dados inválidos do formulário." });
+                return BadRequest(new { success = false, message = "Dados invalidos do formulario." });
             }
 
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return BadRequest(new { success = false, message = "Erro de validação: " + string.Join(", ", errors) });
+                return BadRequest(new { success = false, message = "Erro de validacao: " + string.Join(", ", errors) });
             }
 
             try
@@ -61,10 +63,12 @@ namespace _2026_Team_G.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "Erro ao guardar o formulário na base de dados: " + ex.Message });
+                return StatusCode(500, new { success = false, message = "Erro ao guardar o formulario na base de dados: " + ex.Message });
             }
         }
 
+        // PROTEGIDO: So utilizadores autenticados podem ver o historico
+        [Authorize]
         public async Task<IActionResult> HistoricoFormulariosUtilizador()
         {
             ViewBag.ActivePage = "Historico";
@@ -79,11 +83,9 @@ namespace _2026_Team_G.Controllers
             }
             catch (Exception)
             {
-                // Fallback to empty list if there's any database issues
                 return View(new List<Formulario>());
             }
         }
-        
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
