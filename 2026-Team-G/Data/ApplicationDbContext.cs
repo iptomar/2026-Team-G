@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using _2026_Team_G.Models;
 using System.Linq;
@@ -25,5 +25,8 @@ public class ApplicationDbContext : IdentityDbContext
 
     public DbSet<FormFieldModel> FormFieldModels { get; set; }
 
+    public DbSet<Submissao> Submissoes { get; set; }
+
+    public DbSet<Resposta> Respostas { get; set; }
 }
 
