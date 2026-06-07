@@ -1,0 +1,108 @@
+@model _2026_Team_G.Models.Submissao
+@{
+    ViewData["Title"] = "Detalhes da Resposta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="~/css/detalhessubmissao.css" asp-append-version="true" />
+
+<div class="container pb-5">
+    <div class="details-container">
+        <div class="details-header">
+            <h1>Respostas: @Model.Formulario.Title</h1>
+            <p>Visualização das respostas submetidas pelo utilizador.</p>
+            
+            <div class="details-meta">
+                <div class="meta-item">
+                    <i class="bi bi-clock"></i>
+                    <span>Submetido em: <strong>@Model.DataSubmissao.ToString("dd/MM/yyyy HH:mm")</strong></span>
+                </div>
+                <div class="meta-item">
+                    <i class="bi bi-person"></i>
+                    <span>Submetido por: <strong>@(Model.Utilizador?.UserName ?? "Utilizador")</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-body">
+            @if (Model.Respostas != null && Model.Respostas.Any())
+            {
+                foreach (var resposta in Model.Respostas)
+                {
+                    // Encontrar o campo se existir, senão ignorar
+                    if (resposta.FormFieldModel == null) continue;
+
+                    // Se for título ou botão, apenas mostramos visualmente, não necessita de valor
+                    if (resposta.FormFieldModel.Type == "title")
+                    {
+                        <div class="border-bottom pb-2 mt-4 mb-3">
+                            <h4 class="font-weight-bold mb-0 text-dark">@resposta.FormFieldModel.Label</h4>
+                        </div>
+                        continue;
+                    }
+                    else if (resposta.FormFieldModel.Type == "button")
+                    {
+                        continue;
+                    }
+
+                    <div class="response-card">
+                        <span class="question-label">@resposta.FormFieldModel.Label</span>
+
+                        @if (resposta.FormFieldModel.Type == "checkbox")
+                        {
+                            var isChecked = resposta.Valor == "true" || resposta.Valor == "on";
+                            <div class="answer-checkbox">
+                                @if (isChecked)
+                                {
+                                    <span class="badge-check">
+                                        <i class="bi bi-check-circle-fill"></i> Selecionado
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-uncheck">
+                                        <i class="bi bi-x-circle-fill"></i> Não Selecionado
+                                    </span>
+                                }
+                                @if (!string.IsNullOrEmpty(resposta.FormFieldModel.Placeholder))
+                                {
+                                    <span class="text-secondary small">(@resposta.FormFieldModel.Placeholder)</span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            @if (string.IsNullOrWhiteSpace(resposta.Valor))
+                            {
+                                <div class="answer-value empty">
+                                    <i class="bi bi-info-circle me-2"></i> Não respondido / Em branco
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="answer-value">
+                                    @resposta.Valor
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    Não existem respostas registadas para esta submissão.
+                </div>
+            }
+
+            <div class="details-actions">
+                <a asp-controller="Home" asp-action="HistoricoFormulariosUtilizador" class="btn-back">
+                    <i class="bi bi-arrow-left"></i>
+                    Voltar ao Histórico
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

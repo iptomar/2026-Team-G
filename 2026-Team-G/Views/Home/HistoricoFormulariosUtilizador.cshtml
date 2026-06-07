@@ -1,39 +1,39 @@
-@model IEnumerable<_2026_Team_G.Models.Formulario>
+@model IEnumerable<_2026_Team_G.Models.Submissao>
 @{
     ViewData["Title"] = "Histórico de Formulários";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // Dynamic stats calculations combining dynamic and static mock items
-    int dynamicCount = Model?.Count() ?? 0;
-    int totalForms = 8 + dynamicCount;
-    int totalApproved = 5;
-    int totalPending = 2 + dynamicCount;
-    int totalRejected = 1;
+    int totalSubmissions = Model?.Count() ?? 0;
+    int activeForms = ViewBag.TotalFormulariosAtivos ?? 0;
+    string lastSubmissionDate = Model != null && Model.Any() 
+        ? Model.OrderByDescending(s => s.DataSubmissao).First().DataSubmissao.ToString("dd/MM/yyyy HH:mm") 
+        : "-";
 }
 
 <link rel="stylesheet" href="~/css/historicoformularios.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 
 <div class="page-header">
     <h1>Histórico de Formulários</h1>
-    <p>Consulte todos os formulários que já criou e o seu estado atual</p>
+    <p>Consulte todos os formulários que já submeteu e as suas respostas</p>
 </div>
 
 <div class="stats-container">
     <div class="stat-card">
-        <div class="stat-number">@totalForms</div>
-        <div class="stat-label">Total de Formulários</div>
+        <div class="stat-number">@totalSubmissions</div>
+        <div class="stat-label">Total de Respostas</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">@totalApproved</div>
-        <div class="stat-label">Aprovados</div>
+        <div class="stat-number">@activeForms</div>
+        <div class="stat-label">Formulários Disponíveis</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">@totalPending</div>
-        <div class="stat-label">Pendentes</div>
+        <div class="stat-number" style="font-size: 1.25rem; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700;">@lastSubmissionDate</div>
+        <div class="stat-label">Última Submissão</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">@totalRejected</div>
-        <div class="stat-label">Rejeitados</div>
+        <div class="stat-number" style="font-size: 1.15rem; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">@User.Identity.Name</div>
+        <div class="stat-label">Utilizador Logado</div>
     </div>
 </div>
 
@@ -45,106 +45,39 @@
     <table id="formTable">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>ID Resposta</th>
                 <th>Nome do Formulário</th>
-                <th>Data de Criação</th>
-                <th>Data de Atualização</th>
-                <th>Estado</th>
-                <th>Ações</th>
-                <th>Utilizador</th>
+                <th>Data de Submissão</th>
+                <th>Submetido por</th>
+                <th style="text-align: center;">Ações</th>
             </tr>
         </thead>
         <tbody>
-            @if (Model != null)
+            @if (Model != null && Model.Any())
             {
-                foreach (var form in Model)
+                foreach (var sub in Model)
                 {
                     <tr>
-                        <td>@form.Id.ToString("D3")</td>
-                        <td>@form.Title</td>
-                        <td>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td>-</td>
-                        <td><span class="badge badge-pending">Pendente</span></td>
-                        <td><button class="btn-view" onclick="Editar(@form.Id)">Editar</button></td>
-                        <td>joao</td>
+                        <td>@sub.Id.ToString("D3")</td>
+                        <td style="font-weight: 600;">@sub.Formulario?.Title</td>
+                        <td>@sub.DataSubmissao.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@(sub.Utilizador?.UserName ?? "Utilizador")</td>
+                        <td style="text-align: center;">
+                            <button class="btn-view" onclick="Editar(@sub.Id)" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;">
+                                <i class="bi bi-eye"></i> Ver Respostas
+                            </button>
+                        </td>
                     </tr>
                 }
             }
-            <tr>
-                <td>001</td>
-                <td>Formulário de Contrato</td>
-                <td>15/04/2026 10:30</td>
-                <td>16/04/2026 09:15</td>
-                <td><span class="badge badge-approved">Aprovado</span></td>
-                <td><button class="btn-view" onclick="Editar(1)">Editar</button></td>
-                <td>joao</td>
-
-            </tr>
-            <tr>
-                <td>002</td>
-                <td>Pedido de Férias</td>
-                <td>10/04/2026 14:20</td>
-                <td>12/04/2026 11:00</td>
-                <td><span class="badge badge-pending">Pendente</span></td>
-                <td><button class="btn-view" onclick="Editar(2)">Editar</button></td>
-                <td>joao</td>
-
-            </tr>
-            <tr>
-                <td>003</td>
-                <td>Registo de Despesas</td>
-                <td>05/04/2026 09:00</td>
-                <td>-</td>
-                <td><span class="badge badge-pending">Pendente</span></td>
-                <td><button class="btn-view" onclick="Editar(3)">Editar</button></td>
-                <td>joao</td>
-
-            </tr>
-            <tr>
-                <td>004</td>
-                <td>Formulário de Avaliação</td>
-                <td>01/04/2026 16:45</td>
-                <td>08/04/2026 10:30</td>
-                <td><span class="badge badge-approved">Aprovado</span></td>
-                <td><button class="btn-view" onclick="Editar(4)">Editar</button></td>
-                <td>joao</td>
-            </tr>
-            <tr>
-                <td>005</td>
-                <td>Reclamação de Serviço</td>
-                <td>28/03/2026 11:15</td>
-                <td>30/03/2026 14:00</td>
-                <td><span class="badge badge-rejected">Rejeitado</span></td>
-                <td><button class="btn-view" onclick="Editar(5)">Editar</button></td>
-                <td>joao</td>
-            </tr>
-            <tr>
-                <td>006</td>
-                <td>Formulário de Inscrição</td>
-                <td>20/03/2026 08:00</td>
-                <td>25/03/2026 17:30</td>
-                <td><span class="badge badge-approved">Aprovado</span></td>
-                <td><button class="btn-view" onclick="Editar(6)">Editar</button></td>
-                <td>joao</td>
-            </tr>
-            <tr>
-                <td>007</td>
-                <td>Pedido de Reembolso</td>
-                <td>15/03/2026 13:20</td>
-                <td>18/03/2026 09:45</td>
-                <td><span class="badge badge-approved">Aprovado</span></td>
-                <td><button class="btn-view" onclick="Editar(7)">Editar</button></td>
-                <td>joao</td>
-            </tr>
-            <tr>
-                <td>008</td>
-                <td>Formulário de Feedback</td>
-                <td>10/03/2026 10:00</td>
-                <td>10/03/2026 10:00</td>
-                <td><span class="badge badge-pending">Pendente</span></td>
-                <td><button class="btn-view" onclick="Editar(8)">Editar</button></td>
-                <td>joao</td>
-            </tr>
+            else
+            {
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--fb-text-muted); font-style: italic; padding: 30px;">
+                        Nenhuma submissão encontrada na base de dados.
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
@@ -166,7 +99,6 @@
     }
 
     function Editar(id) {
-        alert('Ver detalhes do formulário ' + id);
-        // window.location.href = '/Home/DetalhesFormulario/' + id;
+        window.location.href = '/Formularios/DetalhesSubmissao/' + id;
     }
 </script>
