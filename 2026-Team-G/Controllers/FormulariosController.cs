@@ -262,6 +262,36 @@ namespace _2026_Team_G.Controllers
             return RedirectToAction("HistoricoFormulariosUtilizador", "Home");
         }
 
+        // GET: Formularios/DetalhesSubmissao/5
+        [Authorize]
+        public async Task<IActionResult> DetalhesSubmissao(int? id)
+        {
+            ViewBag.ActivePage = "Historico";
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var submissao = await _context.Submissoes
+                .Include(s => s.Formulario)
+                .Include(s => s.Respostas)
+                    .ThenInclude(r => r.FormFieldModel)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (submissao == null)
+            {
+                return NotFound();
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!User.IsInRole("Admin") && submissao.UtilizadorId != userId)
+            {
+                return Challenge();
+            }
+
+            return View(submissao);
+        }
+
         private bool FormularioExists(int id)
         {
             return _context.Formularios.Any(e => e.Id == id);

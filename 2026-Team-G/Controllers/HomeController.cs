@@ -67,23 +67,37 @@ namespace _2026_Team_G.Controllers
             }
         }
 
-        // PROTEGIDO: So utilizadores autenticados podem ver o historico
+        // PROTEGIDO: So utilizadores autenticados podem ver o historico de submissoes
         [Authorize]
         public async Task<IActionResult> HistoricoFormulariosUtilizador()
         {
             ViewBag.ActivePage = "Historico";
             try
             {
-                var formularios = await _context.Formularios
-                    .Include(f => f.Fields)
-                    .OrderByDescending(f => f.Id)
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                
+                IQueryable<Submissao> query = _context.Submissoes
+                    .Include(s => s.Formulario)
+                    .Include(s => s.Utilizador);
+
+                // Utilizadores comuns apenas vêem as suas próprias submissões, admins vêem todas
+                if (!User.IsInRole("Admin"))
+                {
+                    query = query.Where(s => s.UtilizadorId == userId);
+                }
+
+                var submissoes = await query
+                    .OrderByDescending(s => s.DataSubmissao)
                     .ToListAsync();
 
-                return View(formularios);
+                // Passar o total de formulários ativos para as estatísticas
+                ViewBag.TotalFormulariosAtivos = await _context.Formularios.CountAsync(f => f.IsActive);
+
+                return View(submissoes);
             }
             catch (Exception)
             {
-                return View(new List<Formulario>());
+                return View(new List<Submissao>());
             }
         }
 
