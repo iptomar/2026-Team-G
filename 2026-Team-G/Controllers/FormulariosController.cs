@@ -174,6 +174,7 @@ namespace _2026_Team_G.Controllers
             ViewBag.ActivePage = "Disponiveis";
             var formularios = await _context.Formularios
                 .Where(f => f.IsActive)
+                .Include(f => f.Fields)
                 .ToListAsync();
             return View(formularios);
         }

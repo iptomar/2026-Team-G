@@ -37,6 +37,14 @@ namespace _2026_Team_G.Controllers
         {
             return View();
         }
+        
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DebugFormularios()
+        {
+            var todos = await _context.Formularios.ToListAsync();
+            return Json(todos);
+        }
+        
 
         // PROTEGIDO: So Admins podem gravar formularios
         [HttpPost]

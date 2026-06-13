@@ -2,10 +2,15 @@
 @{
     ViewData["Title"] = Model.Title;
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Agrupar os campos pelo RowIndex (guardado no campo Options)
+    var fieldsByRow = Model.Fields
+        .GroupBy(f => f.Options ?? "0")
+        .OrderBy(g => g.Min(f => f.OrderIndex))
+        .ToList();
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-
 <link rel="stylesheet" href="~/css/preencherformulario.css" asp-append-version="true" />
 
 <div class="container pb-5">
@@ -18,134 +23,194 @@
         <form asp-action="Submeter" asp-route-id="@Model.Id" method="post" class="form-body">
             @Html.AntiForgeryToken()
 
-            <div class="row">
-                @foreach (var field in Model.Fields)
-                {
-                    var widthClass = "col-12";
-                    if (field.Width == "75%") { widthClass = "col-md-9 col-12"; }
-                    else if (field.Width == "50%") { widthClass = "col-md-6 col-12"; }
-                    else if (field.Width == "33%") { widthClass = "col-md-4 col-12"; }
-                    else if (field.Width == "25%") { widthClass = "col-md-3 col-12"; }
+            @foreach (var row in fieldsByRow)
+            {
+                var fieldsInRow = row.OrderBy(f => f.OrderIndex).ToList();
+                var colSize = fieldsInRow.Count switch {
+                    1 => "col-12",
+                    2 => "col-md-6 col-12",
+                    3 => "col-md-4 col-12",
+                    4 => "col-md-3 col-12",
+                    _ => "col"
+                };
 
-                    var hasError = ViewData.ModelState[field.FieldId]?.Errors.Any() ?? false;
-                    var errorMsg = hasError ? ViewData.ModelState[field.FieldId].Errors.First().ErrorMessage : "";
-                    
-                    // Obter valor anterior submetido em caso de erro de validação
-                    var prevValue = Context.Request.HasFormContentType ? Context.Request.Form[field.FieldId].ToString() : "";
+                <div class="row g-3 mb-3">
+                    @foreach (var field in fieldsInRow)
+                    {
+                        var hasError = ViewData.ModelState[field.FieldId]?.Errors.Any() ?? false;
+                        var errorMsg = hasError ? ViewData.ModelState[field.FieldId].Errors.First().ErrorMessage : "";
+                        var prevValue = Context.Request.HasFormContentType ? Context.Request.Form[field.FieldId].ToString() : "";
+                        var tipo = field.Type?.Trim().ToLower() ?? "";
 
-                    <div class="@widthClass field-wrapper">
-                        @if (field.Type == "title")
-                        {
-                            <div class="title-field">
-                                <h3>@field.Label</h3>
-                                @if (!string.IsNullOrEmpty(field.Placeholder))
+                        <div class="@colSize field-wrapper">
+                            @if (tipo == "title")
+                            {
+                                <div class="title-field">
+                                    <h3>@field.Label</h3>
+                                    @if (!string.IsNullOrEmpty(field.Placeholder))
+                                    {
+                                        <p class="text-muted small mb-0">@field.Placeholder</p>
+                                    }
+                                </div>
+                            }
+                            else if (tipo == "button")
+                            {
+                                <button type="button" class="btn btn-outline-secondary mt-2">@field.Label</button>
+                            }
+                            else if (tipo == "label")
+                            {
+                                <p class="text-muted mb-0 fw-semibold">@field.Label</p>
+                            }
+                            else
+                            {
+                                @if (tipo != "check box" && tipo != "checkbox" && tipo != "check box switch")
                                 {
-                                    <p class="text-muted small mb-0">@field.Placeholder</p>
+                                    <label class="field-label" for="@field.FieldId">
+                                        @field.Label
+                                        @if (field.IsRequired)
+                                        {
+                                            <span class="field-required">*</span>
+                                        }
+                                    </label>
                                 }
-                            </div>
-                        }
-                        else if (field.Type == "button")
-                        {
-                            <button type="button" class="btn btn-outline-secondary mt-2">@field.Label</button>
-                        }
-                        else
-                        {
-                            <label class="field-label" for="@field.FieldId">
-                                @field.Label
-                                @if (field.IsRequired)
-                                {
-                                    <span class="field-required">*</span>
-                                }
-                            </label>
 
-                            @if (field.Type == "text")
-                            {
-                                <input type="text" name="@field.FieldId" id="@field.FieldId" 
-                                       class="form-control @(hasError ? "is-invalid" : "")" 
-                                       placeholder="@field.Placeholder" 
-                                       @(field.IsRequired ? "required" : "") 
-                                       value="@prevValue" />
-                            }
-                            else if (field.Type == "textarea")
-                            {
-                                <textarea name="@field.FieldId" id="@field.FieldId" 
-                                          class="form-control @(hasError ? "is-invalid" : "")" 
-                                          placeholder="@field.Placeholder" 
-                                          rows="4"
-                                          @(field.IsRequired ? "required" : "")>@prevValue</textarea>
-                            }
-                            else if (field.Type == "number")
-                            {
-                                <input type="number" name="@field.FieldId" id="@field.FieldId" 
-                                       class="form-control @(hasError ? "is-invalid" : "")" 
-                                       placeholder="@field.Placeholder" 
-                                       @(field.IsRequired ? "required" : "") 
-                                       value="@prevValue" />
-                            }
-                            else if (field.Type == "date")
-                            {
-                                <input type="date" name="@field.FieldId" id="@field.FieldId" 
-                                       class="form-control @(hasError ? "is-invalid" : "")" 
-                                       @(field.IsRequired ? "required" : "") 
-                                       value="@prevValue" />
-                            }
-                            else if (field.Type == "select")
-                            {
-                                <select name="@field.FieldId" id="@field.FieldId" 
-                                        class="form-select @(hasError ? "is-invalid" : "")" 
-                                        @(field.IsRequired ? "required" : "")>
-                                    <option value="">-- Selecione uma opção --</option>
+                                @if (tipo == "texto" || tipo == "text")
+                                {
+                                    <input type="text"
+                                           name="@field.FieldId"
+                                           id="@field.FieldId"
+                                           class="form-control @(hasError ? "is-invalid" : "")"
+                                           placeholder="@(string.IsNullOrEmpty(field.Placeholder) ? "Digite..." : field.Placeholder)"
+                                           @(field.IsRequired ? "required" : "")
+                                           value="@prevValue" />
+                                }
+                                else if (tipo == "numero" || tipo == "number")
+                                {
+                                    <input type="number"
+                                           name="@field.FieldId"
+                                           id="@field.FieldId"
+                                           class="form-control @(hasError ? "is-invalid" : "")"
+                                           placeholder="@field.Placeholder"
+                                           @(field.IsRequired ? "required" : "")
+                                           value="@prevValue" />
+                                }
+                                else if (tipo == "textarea")
+                                {
+                                    <textarea name="@field.FieldId"
+                                              id="@field.FieldId"
+                                              class="form-control @(hasError ? "is-invalid" : "")"
+                                              placeholder="@field.Placeholder"
+                                              rows="4"
+                                              @(field.IsRequired ? "required" : "")>@prevValue</textarea>
+                                }
+                                else if (tipo == "date" || tipo == "data")
+                                {
+                                    <input type="date"
+                                           name="@field.FieldId"
+                                           id="@field.FieldId"
+                                           class="form-control @(hasError ? "is-invalid" : "")"
+                                           @(field.IsRequired ? "required" : "")
+                                           value="@prevValue" />
+                                }
+                                else if (tipo == "select")
+                                {
+                                    <select name="@field.FieldId"
+                                            id="@field.FieldId"
+                                            class="form-select @(hasError ? "is-invalid" : "")"
+                                            @(field.IsRequired ? "required" : "")>
+                                        <option value="">-- Selecione uma opção --</option>
+                                        @if (!string.IsNullOrEmpty(field.Options))
+                                        {
+                                            foreach (var opt in field.Options.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                            {
+                                                var optTrim = opt.Trim();
+                                                <option value="@optTrim" selected="@(prevValue == optTrim)">@optTrim</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                                else if (tipo == "check box" || tipo == "checkbox")
+                                {
+                                    var isChecked = prevValue == "true" || prevValue == "on";
+                                    <div class="form-check mt-2">
+                                        <input type="checkbox"
+                                               name="@field.FieldId"
+                                               id="@field.FieldId"
+                                               value="true"
+                                               class="form-check-input @(hasError ? "is-invalid" : "")"
+                                               @(isChecked ? "checked" : "") />
+                                        <label class="form-check-label" for="@field.FieldId">
+                                            @field.Label
+                                            @if (field.IsRequired) { <span class="field-required">*</span> }
+                                        </label>
+                                    </div>
+                                }
+                                else if (tipo == "check box switch")
+                                {
+                                    var isChecked = prevValue == "true" || prevValue == "on";
+                                    <div class="form-check form-switch mt-2">
+                                        <input type="checkbox"
+                                               name="@field.FieldId"
+                                               id="@field.FieldId"
+                                               value="true"
+                                               role="switch"
+                                               class="form-check-input @(hasError ? "is-invalid" : "")"
+                                               @(isChecked ? "checked" : "") />
+                                        <label class="form-check-label" for="@field.FieldId">
+                                            @field.Label
+                                            @if (field.IsRequired) { <span class="field-required">*</span> }
+                                        </label>
+                                    </div>
+                                }
+                                else if (tipo == "radio")
+                                {
                                     @if (!string.IsNullOrEmpty(field.Options))
                                     {
                                         foreach (var opt in field.Options.Split(',', StringSplitOptions.RemoveEmptyEntries))
                                         {
                                             var optTrim = opt.Trim();
-                                            var isSelected = prevValue == optTrim;
-                                            <option value="@optTrim" selected="@isSelected">@optTrim</option>
+                                            <div class="form-check">
+                                                <input type="radio"
+                                                       name="@field.FieldId"
+                                                       id="@(field.FieldId + "_" + optTrim)"
+                                                       value="@optTrim"
+                                                       class="form-check-input @(hasError ? "is-invalid" : "")"
+                                                       @(prevValue == optTrim ? "checked" : "") />
+                                                <label class="form-check-label" for="@(field.FieldId + "_" + optTrim)">
+                                                    @optTrim
+                                                </label>
+                                            </div>
                                         }
                                     }
-                                </select>
-                            }
-                            else if (field.Type == "checkbox")
-                            {
-                                var isChecked = prevValue == "true" || prevValue == "on";
-                                <div class="form-check">
-                                    <input type="checkbox" name="@field.FieldId" id="@field.FieldId" value="true"
-                                           class="form-check-input @(hasError ? "is-invalid" : "")" 
-                                           @(isChecked ? "checked" : "") />
-                                    <label class="form-check-label text-muted" for="@field.FieldId">
-                                        @(string.IsNullOrEmpty(field.Placeholder) ? "Confirmar seleção" : field.Placeholder)
-                                    </label>
-                                </div>
-                            }
-                            else if (field.Type == "radio")
-                            {
-                                @if (!string.IsNullOrEmpty(field.Options))
+                                }
+                                else if (tipo == "assinatura")
                                 {
-                                    foreach (var opt in field.Options.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                                    {
-                                        var optTrim = opt.Trim();
-                                        var isRadioChecked = prevValue == optTrim;
-                                        <div class="form-check">
-                                            <input type="radio" name="@field.FieldId" id="@(field.FieldId + "_" + optTrim)" value="@optTrim"
-                                                   class="form-check-input @(hasError ? "is-invalid" : "")" 
-                                                   @(isRadioChecked ? "checked" : "") />
-                                            <label class="form-check-label text-muted" for="@(field.FieldId + "_" + optTrim)">
-                                                @optTrim
-                                            </label>
-                                        </div>
-                                    }
+                                    <div style="border-bottom: 2px solid #ccc; min-height: 60px; background: #fafafa; border-radius: 6px; display:flex; align-items:center; justify-content:center;">
+                                        <span class="text-muted small">
+                                            <i class="bi bi-pencil-fill me-1"></i> Área de Assinatura
+                                        </span>
+                                    </div>
+                                    <input type="hidden" name="@field.FieldId" value="assinatura-pendente" />
+                                }
+                                else
+                                {
+                                    <input type="text"
+                                           name="@field.FieldId"
+                                           id="@field.FieldId"
+                                           class="form-control @(hasError ? "is-invalid" : "")"
+                                           placeholder="@field.Placeholder"
+                                           value="@prevValue" />
+                                }
+
+                                @if (hasError)
+                                {
+                                    <span class="invalid-feedback d-block">@errorMsg</span>
                                 }
                             }
-
-                            @if (hasError)
-                            {
-                                <span class="invalid-feedback">@errorMsg</span>
-                            }
-                        }
-                    </div>
-                }
-            </div>
+                        </div>
+                    }
+                </div>
+            }
 
             <div class="form-actions">
                 <a asp-action="Disponiveis" class="btn-cancel">Cancelar</a>
