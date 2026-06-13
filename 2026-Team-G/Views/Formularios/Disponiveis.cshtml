@@ -2,10 +2,10 @@
 @{
     ViewData["Title"] = "Formulários Disponíveis";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool isAdmin = User.IsInRole("Admin");
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-
 <link rel="stylesheet" href="~/css/formulariosdisponiveis.css" asp-append-version="true" />
 
 <div class="container pb-5">
@@ -19,6 +19,7 @@
         <div class="forms-grid">
             @foreach (var form in Model)
             {
+                var tituloEscapado = form.Title.Replace("'", "\\'");
                 <div class="form-card">
                     <div>
                         <div class="form-title">@form.Title</div>
@@ -37,10 +38,21 @@
                                 Ativo
                             </div>
                         </div>
+
                         <a asp-action="Preencher" asp-route-id="@form.Id" class="btn-fill">
                             <i class="bi bi-pencil-square"></i>
                             Preencher Formulário
                         </a>
+
+                        @if (isAdmin)
+                        {
+                            <button type="button"
+                                    class="btn-delete-form"
+                                    onclick="confirmarEliminar(@form.Id, '@tituloEscapado')">
+                                <i class="bi bi-trash3"></i>
+                                Eliminar
+                            </button>
+                        }
                     </div>
                 </div>
             }
@@ -55,3 +67,93 @@
         </div>
     }
 </div>
+
+<!-- Modal de confirmação -->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Eliminar Formulário
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body px-4 pb-2">
+                <p class="text-muted mb-0">
+                    Tem a certeza que deseja eliminar o formulário <strong id="nomeFormEliminar"></strong>?
+                    Esta ação é irreversível e eliminará todas as submissões associadas.
+                </p>
+            </div>
+            <div class="modal-footer border-0 px-4 pb-4 gap-2">
+                <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-danger rounded-3 px-4" onclick="executarEliminar()">
+                    <i class="bi bi-trash3 me-1"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-delete-form {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: 1px solid #ef233c;
+        background: transparent;
+        color: #ef233c;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+    }
+
+    .btn-delete-form:hover {
+        background: #ef233c;
+        color: white;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        let idParaEliminar = null;
+
+        function confirmarEliminar(id, nome) {
+            idParaEliminar = id;
+            document.getElementById('nomeFormEliminar').innerText = '"' + nome + '"';
+            const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+            modal.show();
+        }
+
+        function executarEliminar() {
+            if (!idParaEliminar) return;
+
+            // Criar um form dinamicamente e submeter via POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Formularios/Delete/' + idParaEliminar;
+
+            // Token anti-forgery
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (token) {
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = token.value;
+                form.appendChild(tokenInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+
+    @* Token anti-forgery escondido para o JavaScript usar *@
+    @Html.AntiForgeryToken()
+}

@@ -157,16 +157,50 @@ namespace _2026_Team_G.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             ViewBag.ActivePage = "Formularios";
-            var formulario = await _context.Formularios.FindAsync(id);
+    
+            // 1. Procurar o formulário incluindo os Fields e as Submissões (com as Respostas)
+            var formulario = await _context.Formularios
+                .Include(f => f.Fields)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
             if (formulario != null)
             {
+                // 2. Procurar e apagar todas as submissões associadas a este formulário
+                // Nota: Se as Respostas tiverem Cascade Delete com a Submissão, isto basta.
+                var submissoes = await _context.Submissoes
+                    .Include(s => s.Respostas)
+                    .Where(s => s.FormularioId == id)
+                    .ToListAsync();
+
+                if (submissoes.Any())
+                {
+                    // Remover primeiro as respostas de cada submissão (para evitar o mesmo erro nas respostas)
+                    foreach (var sub in submissoes)
+                    {
+                        if (sub.Respostas != null && sub.Respostas.Any())
+                        {
+                            _context.Respostas.RemoveRange(sub.Respostas);
+                        }
+                    }
+                    // Remover as submissões em si
+                    _context.Submissoes.RemoveRange(submissoes);
+                }
+
+                // 3. Remover os campos (Fields) associados ao formulário
+                if (formulario.Fields != null && formulario.Fields.Any())
+                {
+                    _context.RemoveRange(formulario.Fields);
+                }
+
+                // 4. Por fim, apagar o próprio formulário
                 _context.Formularios.Remove(formulario);
+        
+                // Guardar todas as alterações de uma só vez na BD
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Disponiveis)); // Redireciona de volta para a lista
         }
-
         // GET: Formularios/Disponiveis
         [Authorize]
         public async Task<IActionResult> Disponiveis()
