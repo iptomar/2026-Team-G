@@ -10,8 +10,10 @@
 
 <style>
     :root {
-        --fb-primary: #4361ee;
-        --fb-primary-hover: #3a56d4;
+        --fb-primary: #3a7d44;
+        --fb-primary-hover: #2d6235;
+        --fb-primary-light: #f0f7f1;
+        --fb-primary-border: #b7d9be;
         --fb-bg: #f8f9fa;
         --fb-surface: #ffffff;
         --fb-border: #e9ecef;
@@ -60,11 +62,11 @@
     }
 
     .toolbox-item:hover {
-        background: #f0f4ff;
-        border-color: #b6ccfe;
+        background: var(--fb-primary-light);
+        border-color: var(--fb-primary-border);
         color: var(--fb-primary);
         transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(67, 97, 238, 0.1);
+        box-shadow: 0 6px 12px rgba(58, 125, 68, 0.1);
     }
 
     .toolbox-item i {
@@ -106,7 +108,7 @@
     }
 
     .form-builder-row:hover {
-        border-color: #ced4da;
+        border-color: var(--fb-primary-border);
     }
 
     .row-dropzone {
@@ -150,22 +152,20 @@
         transition: all 0.2s ease;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         box-sizing: border-box;
-
-        /* Ocupa espaço fluido proporcional (Máx 5 por linha) */
         flex-grow: 1;
         flex-basis: calc(18% - 16px);
         min-width: 18%;
     }
 
     .form-item:hover {
-        border-color: #b6ccfe;
-        background-color: #fcfeff;
+        border-color: var(--fb-primary-border);
+        background-color: var(--fb-primary-light);
     }
 
     .form-item.selected {
         border-color: var(--fb-primary);
-        background-color: rgba(67, 97, 238, 0.02);
-        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        background-color: rgba(58, 125, 68, 0.02);
+        box-shadow: 0 0 0 3px rgba(58, 125, 68, 0.15);
     }
 
     .form-item-actions {
@@ -230,7 +230,7 @@
 
     .header-title i {
         color: var(--fb-primary);
-        background: rgba(67, 97, 238, 0.1);
+        background: rgba(58, 125, 68, 0.1);
         padding: 8px;
         border-radius: 8px;
     }
@@ -263,7 +263,7 @@
 
     .sortable-ghost {
         opacity: 0.4;
-        background-color: #f0f4ff !important;
+        background-color: var(--fb-primary-light) !important;
         border: 2px dashed var(--fb-primary) !important;
     }
 
@@ -273,14 +273,28 @@
         font-weight: 500;
         padding: 8px 20px;
         border-radius: 8px;
+        color: white;
     }
 
     .btn-primary-custom:hover {
         background-color: var(--fb-primary-hover);
         border-color: var(--fb-primary-hover);
+        color: white;
     }
 
-    /* CORREÇÃO DO BUG: Forçar os inputs a diminuir proporcionalmente sem travar */
+    .btn-outline-green {
+        color: var(--fb-primary);
+        border-color: var(--fb-primary);
+        font-weight: 500;
+        padding: 8px 20px;
+        border-radius: 8px;
+    }
+
+    .btn-outline-green:hover {
+        background-color: var(--fb-primary);
+        color: white;
+    }
+
     .form-item input,
     .form-item textarea,
     .form-item select,
@@ -291,24 +305,30 @@
         min-width: 0 !important;
         box-sizing: border-box;
     }
+
+    /* Switch e checkbox com cor verde */
+    .form-check-input:checked {
+        background-color: var(--fb-primary);
+        border-color: var(--fb-primary);
+    }
 </style>
 
 <div class="container-fluid py-2">
     <div class="row align-items-center mb-2 mt-4">
         <div class="col">
             <h2 class="fw-bold" style="color: var(--fb-text); letter-spacing: -0.5px;">
-                <i class="bi bi-layout-wtf text-primary me-2"></i>Construtor de Formulários
+                <i class="bi bi-layout-wtf me-2" style="color: var(--fb-primary);"></i>Construtor de Formulários
             </h2>
             <p class="text-muted mb-0" style="font-size: 1.05rem;">Linhas isoladas. Componentes adaptáveis (1 item ocupa tudo, máx. 5 por linha).</p>
         </div>
         <div class="col-auto d-flex gap-3">
-            <button class="btn btn-outline-primary rounded-3 px-3 fw-medium" id="btnAddRow">
+            <button class="btn btn-outline-green rounded-3 px-3 fw-medium" id="btnAddRow">
                 <i class="bi bi-plus-circle me-2"></i> Nova Linha
             </button>
             <button class="btn btn-outline-secondary rounded-3 px-4 fw-medium" id="btnPreviewForm">
                 <i class="bi bi-eye me-2"></i> Pré-visualizar
             </button>
-            <button class="btn btn-primary-custom text-white shadow-sm" id="btnSaveForm">
+            <button class="btn btn-primary-custom shadow-sm" id="btnSaveForm">
                 <i class="bi bi-cloud-arrow-up me-2"></i> Guardar Formulário
             </button>
         </div>
@@ -410,7 +430,7 @@
             </div>
             <div class="modal-body p-4 bg-light">
                 <div class="card border-0 rounded-3 shadow-sm p-4 mb-3">
-                    <h3 class="fw-bold text-primary mb-1" id="modalFormTitle"></h3>
+                    <h3 class="fw-bold mb-1" style="color: var(--fb-primary);" id="modalFormTitle"></h3>
                     <p class="text-muted mb-0" id="modalFormDesc"></p>
                 </div>
                 <div class="card border-0 rounded-3 shadow-sm p-4">
@@ -431,7 +451,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            // NOVO: Injetar e trancar o estado de login do utilizador vindo do Servidor ASP.NET
             const isUserLoggedIn = @(Context.User.Identity.IsAuthenticated ? "true" : "false");
 
             let rowCounter = 0;
@@ -442,7 +461,6 @@
                 return 'field_' + Math.random().toString(36).substr(2, 9);
             }
 
-            // Criar uma Linha Estrutural Isolada
             function createNewRow() {
                 rowCounter++;
                 const rowId = 'row_' + rowCounter;
@@ -460,7 +478,6 @@
 
                 mainDropzoneScroll.appendChild(rowEl);
 
-                // Configurar SortableJS para a dropzone interna desta linha específica
                 new Sortable(document.getElementById(`dropzone_${rowId}`), {
                     group: 'shared',
                     animation: 200,
@@ -468,7 +485,6 @@
                     onAdd: function (evt) {
                         const targetDropzone = evt.to;
 
-                        // Validação estrita de no máximo 5 componentes por linha
                         if (targetDropzone.children.length > 5) {
                             alert("Não é permitido colocar mais do que 5 componentes na mesma linha.");
                             evt.item.remove();
@@ -485,7 +501,6 @@
                     }
                 });
 
-                // Evento para remover a linha completa
                 rowEl.querySelector('.btn-delete-row').addEventListener('click', function() {
                     if(confirm("Deseja mesmo remover esta linha e todos os componentes dentro dela?")) {
                         rowEl.remove();
@@ -496,16 +511,13 @@
                 return rowEl;
             }
 
-            // Inicializar o ecrã com a primeira linha ativa
             createNewRow();
 
-            // Botão manual de Adicionar Nova Linha
             document.getElementById('btnAddRow').addEventListener('click', function() {
                 const newRow = createNewRow();
                 newRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             });
 
-            // Inicializar a Toolbox esquerda para arrastar
             new Sortable(document.querySelector('.toolbox'), {
                 group: {
                     name: 'shared',
@@ -516,7 +528,6 @@
                 sort: false,
             });
 
-            // Clique direto nos itens da Toolbox (coloca na última linha disponível)
             document.querySelector('.toolbox').addEventListener('click', function (e) {
                 const toolboxItem = e.target.closest('.toolbox-item');
                 if (toolboxItem) {
@@ -527,7 +538,6 @@
                     const rows = mainDropzoneScroll.querySelectorAll('.row-dropzone');
                     const lastRowZone = rows[rows.length - 1];
 
-                    // Se a última linha já tiver 5 elementos, cria uma nova linha automaticamente
                     if(lastRowZone.children.length >= 5) {
                         const autoRow = createNewRow();
                         const autoZone = autoRow.querySelector('.row-dropzone');
@@ -565,9 +575,7 @@
                 selectField(newEl);
             }
 
-            // Delegação de cliques a partir do contentor de scroll global
             mainDropzoneScroll.addEventListener('click', function(e) {
-                // Remover componente individual
                 if(e.target.classList.contains('btn-delete') || e.target.closest('.btn-delete')) {
                     const field = e.target.closest('.form-item');
                     if(currentSelected === field) {
@@ -578,7 +586,6 @@
                     return;
                 }
 
-                // Selecionar componente para propriedades
                 const field = e.target.closest('.form-item');
                 if(field) {
                     selectField(field);
@@ -623,7 +630,6 @@
                 }
             }
 
-            // --- Gestão do Painel Lateral de Propriedades ---
             const formPropsGroup = document.getElementById('formPropsGroup');
             const fieldPropsGroup = document.getElementById('fieldPropsGroup');
             const btnUnselectField = document.getElementById('btnUnselectField');
@@ -713,7 +719,6 @@
                 }
             });
 
-            // Motor de Renderização de Pré-Visualização Dinâmica (Respeitando as Linhas)
             document.getElementById('btnPreviewForm').addEventListener('click', function() {
                 const renderZone = document.getElementById('modalFormRenderZone');
                 renderZone.innerHTML = '';
@@ -729,7 +734,6 @@
                     if (internalItems.length > 0) {
                         zeroElements = false;
 
-                        // Cria a estrutura exata da linha na modal de preview
                         const previewRowDiv = document.createElement('div');
                         previewRowDiv.style.display = 'flex';
                         previewRowDiv.style.flexWrap = 'wrap';
@@ -764,15 +768,10 @@
                 previewModal.show();
             });
 
-            // Gravação Estruturada enviando o RowIndex para a Base de Dados via AJAX
             document.getElementById('btnSaveForm').addEventListener('click', function() {
 
-                // -------------------------------------------------------------
-                // CORREÇÃO: Bloqueio estrito no cliente caso o utilizador não esteja logado
-                // -------------------------------------------------------------
                 if (!isUserLoggedIn) {
                     alert('Operação Inválida! Precisa de iniciar sessão na sua conta para conseguir guardar o formulário.');
-                    // Altera o redirecionamento abaixo caso o teu path de login seja diferente (ex: /Identity/Account/Login)
                     window.location.href = '/Identity/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
                     return;
                 }
@@ -812,7 +811,7 @@
                             Label: label,
                             Placeholder: placeholder,
                             IsRequired: isRequired,
-                            Options: rowIndex.toString(), // Guarda o índice estrutural da linha (ex: "0", "1", "2")
+                            Options: rowIndex.toString(),
                             OrderIndex: globalIndex
                         });
                         globalIndex++;
@@ -844,7 +843,6 @@
                     })
                 })
                     .then(response => {
-                        // Se o servidor responder com 401 ou 403 (Caso o token expire ou não esteja autenticado no back-end)
                         if (response.status === 401 || response.status === 403) {
                             throw new Error('Não autorizado! A sua sessão pode ter expirado.');
                         }
@@ -858,7 +856,7 @@
 
                             setTimeout(() => {
                                 btn.innerHTML = originalContent;
-                                btn.className = 'btn btn-primary-custom text-white shadow-sm';
+                                btn.className = 'btn btn-primary-custom shadow-sm';
                                 btn.disabled = false;
 
                                 if (confirm('Formulário gravado com sucesso! Deseja ir para a página de Histórico?')) {
@@ -873,7 +871,7 @@
                         console.error(error);
                         alert('Erro ao gravar formulário: ' + error.message);
                         btn.innerHTML = originalContent;
-                        btn.className = 'btn btn-primary-custom text-white shadow-sm';
+                        btn.className = 'btn btn-primary-custom shadow-sm';
                         btn.disabled = false;
 
                         if (error.message.includes('Não autorizado')) {
