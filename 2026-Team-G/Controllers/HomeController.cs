@@ -24,15 +24,6 @@ namespace _2026_Team_G.Controllers
             return View();
         }
 
-        // Pagina de componentes - acessivel a todos
-        public async Task<IActionResult> Componentes()
-        {
-            ViewBag.ActivePage = "Componentes";
-            var componentes = await _context.Components.ToListAsync();
-            ViewBag.ComponentesDisponiveis = componentes;
-            return View();
-        }
-
         public IActionResult Formulario()
         {
             return View();
