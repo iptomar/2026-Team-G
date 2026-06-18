@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "Detalhes da Resposta";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var responsesByRow = Model.Respostas
+        .Where(r => r.FormFieldModel != null)
+        .GroupBy(r => r.FormFieldModel.Options ?? "0")
+        .OrderBy(g => g.Min(r => r.FormFieldModel.OrderIndex))
+        .ToList();
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
@@ -9,11 +15,25 @@
 <link rel="stylesheet" href="~/css/detalhessubmissao.css" asp-append-version="true" />
 
 <div class="container pb-5">
+    <!-- Action Bar (Hidden in Print) -->
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+        <a asp-controller="Home" asp-action="HistoricoFormulariosUtilizador" class="btn-back">
+            <i class="bi bi-arrow-left"></i> Voltar ao Histórico
+        </a>
+        <button onclick="window.print();" class="btn btn-ipt-green px-4 py-2 d-flex align-items-center gap-2">
+            <i class="bi bi-printer-fill"></i> Imprimir
+        </button>
+        <a asp-action="ExportarPDF" asp-route-id="@Model.Id" class="btn btn-primary px-4 py-2 d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-pdf-fill"></i> Exportar PDF
+        </a>
+    </div>
+
     <div class="details-container">
+        <!-- Paper Header -->
         <div class="details-header">
-            <h1>Respostas: @Model.Formulario.Title</h1>
-            <p>Visualização das respostas submetidas pelo utilizador.</p>
-            
+            <h1 class="form-print-title">@Model.Formulario.Title</h1>
+            <p class="no-print mb-0">Visualização das respostas submetidas pelo utilizador.</p>
+
             <div class="details-meta">
                 <div class="meta-item">
                     <i class="bi bi-clock"></i>
@@ -27,65 +47,73 @@
         </div>
 
         <div class="details-body">
-            @if (Model.Respostas != null && Model.Respostas.Any())
+            @if (responsesByRow.Any())
             {
-                foreach (var resposta in Model.Respostas)
+                foreach (var row in responsesByRow)
                 {
-                    // Encontrar o campo se existir, senão ignorar
-                    if (resposta.FormFieldModel == null) continue;
-
-                    // Se for título ou botão, apenas mostramos visualmente, não necessita de valor
-                    if (resposta.FormFieldModel.Type == "title")
+                    var responsesInRow = row.OrderBy(r => r.FormFieldModel.OrderIndex).ToList();
+                    var colSize = responsesInRow.Count switch
                     {
-                        <div class="border-bottom pb-2 mt-4 mb-3">
-                            <h4 class="font-weight-bold mb-0 text-dark">@resposta.FormFieldModel.Label</h4>
-                        </div>
-                        continue;
-                    }
-                    else if (resposta.FormFieldModel.Type == "button")
-                    {
-                        continue;
-                    }
+                        1 => "col-12",
+                        2 => "col-6",
+                        3 => "col-4",
+                        4 => "col-3",
+                        _ => "col"
+                    };
 
-                    <div class="response-card">
-                        <span class="question-label">@resposta.FormFieldModel.Label</span>
-
-                        @if (resposta.FormFieldModel.Type == "checkbox")
+                    <div class="row g-3 mb-3">
+                        @foreach (var resposta in responsesInRow)
                         {
-                            var isChecked = resposta.Valor == "true" || resposta.Valor == "on";
-                            <div class="answer-checkbox">
-                                @if (isChecked)
+                            var tipo = resposta.FormFieldModel.Type?.Trim().ToLower() ?? "";
+
+                            <div class="@colSize">
+                                @if (tipo == "title")
                                 {
-                                    <span class="badge-check">
-                                        <i class="bi bi-check-circle-fill"></i> Selecionado
-                                    </span>
+                                    <div class="border-bottom pb-2 mt-3 mb-2">
+                                        <h4 class="font-weight-bold mb-0 text-dark">@resposta.FormFieldModel.Label</h4>
+                                    </div>
+                                }
+                                else if (tipo == "label")
+                                {
+                                    <p class="text-muted mb-0 fw-semibold">@resposta.FormFieldModel.Label</p>
+                                }
+                                else if (tipo == "button")
+                                {
+                                    <!-- Botões não precisam de ser impressos -->
                                 }
                                 else
                                 {
-                                    <span class="badge-uncheck">
-                                        <i class="bi bi-x-circle-fill"></i> Não Selecionado
-                                    </span>
-                                }
-                                @if (!string.IsNullOrEmpty(resposta.FormFieldModel.Placeholder))
-                                {
-                                    <span class="text-secondary small">(@resposta.FormFieldModel.Placeholder)</span>
+                                    <div class="response-card">
+                                        <span class="question-label">@resposta.FormFieldModel.Label</span>
+
+                                        @if (tipo == "checkbox" || tipo == "check box" || tipo == "check box switch")
+                                        {
+                                            var isChecked = resposta.Valor == "true" || resposta.Valor == "on";
+                                            <div class="answer-checkbox">
+                                                <div class="req-checkbox-box @(isChecked ? "checked" : "")"></div>
+                                                <span class="fw-semibold">
+                                                    @(isChecked ? "Selecionado" : "Não Selecionado")
+                                                </span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            @if (string.IsNullOrWhiteSpace(resposta.Valor))
+                                            {
+                                                <div class="answer-value empty">
+                                                    Não respondido / Em branco
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="answer-value">
+                                                    @resposta.Valor
+                                                </div>
+                                            }
+                                        }
+                                    </div>
                                 }
                             </div>
-                        }
-                        else
-                        {
-                            @if (string.IsNullOrWhiteSpace(resposta.Valor))
-                            {
-                                <div class="answer-value empty">
-                                    <i class="bi bi-info-circle me-2"></i> Não respondido / Em branco
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="answer-value">
-                                    @resposta.Valor
-                                </div>
-                            }
                         }
                     </div>
                 }
@@ -96,13 +124,7 @@
                     Não existem respostas registadas para esta submissão.
                 </div>
             }
-
-            <div class="details-actions">
-                <a asp-controller="Home" asp-action="HistoricoFormulariosUtilizador" class="btn-back">
-                    <i class="bi bi-arrow-left"></i>
-                    Voltar ao Histórico
-                </a>
-            </div>
         </div>
     </div>
 </div>
+

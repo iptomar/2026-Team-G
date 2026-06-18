@@ -39,10 +39,17 @@
                             </div>
                         </div>
 
-                        <a asp-action="Preencher" asp-route-id="@form.Id" class="btn-fill">
-                            <i class="bi bi-pencil-square"></i>
-                            Preencher Formulário
-                        </a>
+                        <div class="d-flex flex-column gap-2 mt-3">
+                            <a asp-action="Preencher" asp-route-id="@form.Id" class="btn-fill">
+                                <i class="bi bi-pencil-square"></i>
+                                Preencher Formulário
+                            </a>
+
+                            <a asp-action="ExportarFormularioPDF" asp-route-id="@form.Id" target="_blank" class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="border-radius: 8px; font-weight: 500; padding: 10px 16px;">
+                                <i class="bi bi-file-earmark-pdf me-2"></i>
+                                Descarregar PDF (Em Branco)
+                            </a>
+                        </div>
 
                         @if (isAdmin)
                         {

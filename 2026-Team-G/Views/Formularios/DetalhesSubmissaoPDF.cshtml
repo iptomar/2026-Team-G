@@ -1,0 +1,152 @@
+﻿@model _2026_Team_G.Models.Submissao
+@{
+    var formTitle = Model.Formulario?.Title ?? "Formulário";
+    ViewData["Title"] = formTitle;
+    Layout = null;
+    var responsesByRow = Model.Respostas.GroupBy(r => r.FormFieldModel.Options ?? "0").OrderBy(g => int.TryParse(g.Key, out int r) ? r : 0).ToList();
+}
+
+<style>
+    <style >
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+            margin: 20px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+            .header h1 {
+                margin: 0;
+                color: #28a745;
+            }
+
+        .meta {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .meta-item {
+            margin-bottom: 5px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        .response-container {
+            margin-bottom: 15px;
+        }
+
+        .question {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .answer {
+            padding: 8px;
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            min-height: 20px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-box {
+            width: 12px;
+            height: 12px;
+            border: 1px solid #333;
+            margin-right: 8px;
+            display: inline-block;
+        }
+
+            .checkbox-box.checked {
+                background-color: #28a745;
+            }
+
+        .row {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            border-spacing: 10px 0;
+        }
+
+        .col {
+            display: table-cell;
+            vertical-align: top;
+        }
+</style>
+
+        <div class="header">
+            <h1>@Model.Formulario.Title</h1>
+            <p>Relatório de Submissão de Formulário</p>
+        </div>
+
+        <div class="meta">
+            <div class="meta-item"><strong>ID da Submissão:</strong> @Model.Id.ToString("D3")</div>
+            <div class="meta-item"><strong>Data de Submissão:</strong> @Model.DataSubmissao.ToString("dd/MM/yyyy HH:mm")</div>
+            <div class="meta-item"><strong>Submetido por:</strong> @(Model.Utilizador?.UserName ?? "Utilizador")</div>
+        </div>
+
+        <div class="content">
+            @foreach (var row in responsesByRow)
+            {
+                var responsesInRow = row.OrderBy(r => r.FormFieldModel.OrderIndex).ToList();
+                <div class="row">
+                    @foreach (var resposta in responsesInRow)
+                    {
+                        var tipo = resposta.FormFieldModel.Type?.Trim().ToLower() ?? "";
+                        <div class="col">
+                            @if (tipo == "title")
+                            {
+                                <div class="section-title">@resposta.FormFieldModel.Label</div>
+                            }
+                            else if (tipo == "label")
+                            {
+                                <p style="font-style: italic; color: #666;">@resposta.FormFieldModel.Label</p>
+                            }
+                            else if (tipo != "button")
+                            {
+                                <div class="response-container">
+                                    <span class="question">@resposta.FormFieldModel.Label</span>
+                                    @if (tipo == "checkbox" || tipo == "check box" || tipo == "check box switch")
+                                    {
+                                        var isChecked = resposta.Valor == "true" || resposta.Valor == "on";
+                                        <div class="checkbox-container">
+                                            <div class="checkbox-box @(isChecked ? "checked" : "")"></div>
+                                            <span>@(isChecked ? "Selecionado" : "Não Selecionado")</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="answer">
+                                            @(string.IsNullOrWhiteSpace(resposta.Valor) ? "Não respondido" : resposta.Valor)
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+

@@ -1,0 +1,189 @@
+﻿@model _2026_Team_G.Models.Formulario
+@{
+    Layout = null;
+
+    var fieldsByRow = Model.Fields?
+        .GroupBy(f => f.Options ?? "0")
+        .OrderBy(g => int.TryParse(g.Key, out int r) ? r : 0)
+        .ToList() ?? new List<IGrouping<string, _2026_Team_G.Models.FormFieldModel>>();
+}
+<head>
+    <meta charset="utf-8" />
+    <title>@Model.Title</title>
+    <style>
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 13px;
+                color: #333;
+                margin: 20px;
+            }
+
+            .header {
+                text-align: center;
+                border-bottom: 2px solid #28a745;
+                padding-bottom: 10px;
+                margin-bottom: 30px;
+            }
+
+                .header h1 {
+                    margin: 0;
+                    color: #28a745;
+                    font-size: 22px;
+                    text-transform: uppercase;
+                }
+
+            .description {
+                margin-top: 10px;
+                color: #666;
+                font-size: 14px;
+            }
+
+            /* Estrutura de Grelha (Linhas e Colunas) igual ao DetalhesSubmissaoPDF */
+            .row {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+                border-spacing: 15px 0;
+                margin-bottom: 20px;
+            }
+
+            .col {
+                display: table-cell;
+                vertical-align: top;
+            }
+
+            /* Títulos e Labels Soltos */
+            .section-title {
+                font-size: 16px;
+                font-weight: bold;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 5px;
+                margin-bottom: 15px;
+                color: #444;
+            }
+
+            /* Estilos dos Campos */
+            .field-label {
+                font-weight: bold;
+                display: block;
+                margin-bottom: 6px;
+            }
+
+            .required-star {
+                color: #ef233c;
+            }
+
+            /* Caixas Vazias */
+            .box-text {
+                border: 1px solid #999;
+                border-radius: 4px;
+                height: 30px;
+                width: 100%;
+                background-color: #fafafa;
+            }
+
+            .box-textarea {
+                border: 1px solid #999;
+                border-radius: 4px;
+                height: 90px;
+                width: 100%;
+                background-color: #fafafa;
+            }
+
+            .box-signature {
+                border-bottom: 1px dotted #333;
+                height: 40px;
+                width: 100%;
+                margin-top: 20px;
+            }
+
+            .checkbox-container {
+                display: flex;
+                align-items: center;
+                margin-top: 5px;
+            }
+
+            .checkbox-box {
+                width: 14px;
+                height: 14px;
+                border: 1px solid #333;
+                display: inline-block;
+                margin-right: 8px;
+                background-color: #fafafa;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>@Model.Title</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <div class="description">@Model.Description</div>
+        }
+    </div>
+
+    <div class="content">
+        @if (fieldsByRow.Any())
+        {
+            @foreach (var row in fieldsByRow)
+            {
+                var fieldsInRow = row.OrderBy(r => r.OrderIndex).ToList();
+                <div class="row">
+                    @foreach (var field in fieldsInRow)
+                    {
+                        var tipo = field.Type?.Trim().ToLower() ?? "";
+
+                        <div class="col">
+                            @if (tipo == "title")
+                            {
+                                <div class="section-title">@field.Label</div>
+                            }
+                            else if (tipo == "label")
+                            {
+                                <p style="font-style: italic; color: #666;">@field.Label</p>
+                            }
+                            else if (tipo != "button")
+                            {
+                                <div>
+                                    <span class="field-label">
+                                        @field.Label
+                                        @if (field.IsRequired)
+                                        {
+                                            <span class="required-star">*</span>
+                                        }
+                                    </span>
+
+                                    @if (tipo == "textarea")
+                                    {
+                                        <div class="box-textarea"></div>
+                                    }
+                                    else if (tipo == "check box" || tipo == "check box switch")
+                                    {
+                                        <div class="checkbox-container">
+                                            <div class="checkbox-box"></div>
+                                        </div>
+                                    }
+                                    else if (tipo == "assinatura")
+                                    {
+                                        <div class="box-signature"></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="box-text"></div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <p><em>Este formulário ainda não tem campos configurados.</em></p>
+        }
+    </div>
+
+</body>
+
