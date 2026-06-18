@@ -29,6 +29,8 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.AddControllersWithViews();
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -44,6 +46,10 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseStaticFiles();
+
+Rotativa.AspNetCore.RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
 
 app.UseAuthorization();
 
@@ -104,4 +110,20 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.Run();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+
+        DbInitializer.Initialize(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocorreu um erro ao fazer o seed da base de dados.");
+    }
+}
+
+    app.Run();

@@ -1,14 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using _2026_Team_G.Data;
+using _2026_Team_G.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using Rotativa.AspNetCore;
+using Rotativa.AspNetCore.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
-using _2026_Team_G.Data;
-using _2026_Team_G.Models;
+using System.Threading.Tasks;
 
 namespace _2026_Team_G.Controllers
 {
@@ -325,6 +327,89 @@ namespace _2026_Team_G.Controllers
             }
 
             return View(submissao);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ExportarFormularioPDF(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var formulario = await _context.Formularios
+                .Include(f => f.Fields)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (formulario == null || !formulario.IsActive)
+            {
+                return NotFound();
+            }
+
+            // Ordenar os campos (se tiveres um OrderIndex)
+            formulario.Fields = formulario.Fields.OrderBy(f => f.OrderIndex).ToList();
+
+            // Limpar caracteres especiais do título (mesma lógica de segurança)
+            string tituloSeguro = formulario.Title
+                .Replace("á", "a").Replace("à", "a").Replace("ã", "a").Replace("â", "a").Replace("Á", "A").Replace("Ã", "A")
+                .Replace("é", "e").Replace("ê", "e").Replace("É", "E").Replace("Ê", "E")
+                .Replace("í", "i").Replace("Í", "I")
+                .Replace("ó", "o").Replace("õ", "o").Replace("ô", "o").Replace("Ó", "O").Replace("Õ", "O")
+                .Replace("ú", "u").Replace("Ú", "U")
+                .Replace("ç", "c").Replace("Ç", "C")
+                .Replace(" ", "_");
+
+            return new ViewAsPdf("FormularioVazioPDF", formulario)
+            {
+                FileName = $"Formulario_Em_Branco_{tituloSeguro}.pdf",
+                PageSize = Rotativa.AspNetCore.Options.Size.A4,
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageMargins = new Rotativa.AspNetCore.Options.Margins(15, 15, 15, 15)
+            };
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ExportarPDF (int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var submissao = await _context.Submissoes
+                .Include(s => s.Formulario)
+                .Include(s => s.Respostas)
+                    .ThenInclude(r => r.FormFieldModel)
+                .Include(s => s.Utilizador)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (submissao == null)
+            {
+                return NotFound();
+            }
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!User.IsInRole("Admin") && submissao.UtilizadorId != userId)
+            {
+                return Challenge();
+            }
+
+            string tituloSeguro = submissao.Formulario.Title
+                .Replace("á", "a").Replace("à", "a").Replace("ã", "a").Replace("â", "a").Replace("Á", "A").Replace("Ã", "A")
+                .Replace("é", "e").Replace("ê", "e").Replace("É", "E").Replace("Ê", "E")
+                .Replace("í", "i").Replace("Í", "I")
+                .Replace("ó", "o").Replace("õ", "o").Replace("ô", "o").Replace("Ó", "O").Replace("Õ", "O")
+                .Replace("ú", "u").Replace("Ú", "U")
+                .Replace("ç", "c").Replace("Ç", "C")
+                .Replace(" ", "_");
+
+            return new ViewAsPdf("DetalhesSubmissaoPDF", submissao)
+            {
+                FileName = $"Formulario_{tituloSeguro}_{submissao.Id}.pdf",
+                PageSize = Size.A4,
+                PageOrientation = Orientation.Portrait,
+                PageMargins = new Margins(10, 10, 10, 10)
+            };
+
         }
 
         private bool FormularioExists(int id)
