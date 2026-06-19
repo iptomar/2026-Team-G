@@ -17,7 +17,7 @@ namespace _2026_Team_G.Controllers
             _context = context;
         }
 
-        // Pagina inicial - acessivel a todos (sem [Authorize])
+        // Pagina inicial - acessivel a todos 
         public IActionResult Index()
         {
             ViewBag.ActivePage = "Home";
