@@ -28,5 +28,7 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Submissao> Submissoes { get; set; }
 
     public DbSet<Resposta> Respostas { get; set; }
+    
+    public DbSet<Categoria> Categorias { get; set; }
 }
 
