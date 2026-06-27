@@ -21,12 +21,14 @@ namespace _2026_Team_G.Controllers
         // GET: Categorias
         public async Task<IActionResult> Index()
         {
+            ViewBag.ActivePage = "Categorias";
             return View(await _context.Categorias.ToListAsync());
         }
 
         // GET: Categorias/Create
         public IActionResult Create()
         {
+            ViewBag.ActivePage = "Categorias";
             return View();
         }
 
@@ -35,6 +37,7 @@ namespace _2026_Team_G.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Descricao")] Categoria categoria)
         {
+            ViewBag.ActivePage = "Categorias";
             if (ModelState.IsValid)
             {
                 _context.Add(categoria);
@@ -47,6 +50,7 @@ namespace _2026_Team_G.Controllers
         // GET: Categorias/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewBag.ActivePage = "Categorias";
             if (id == null) return NotFound();
 
             var categoria = await _context.Categorias.FirstOrDefaultAsync(m => m.Id == id);
@@ -58,6 +62,7 @@ namespace _2026_Team_G.Controllers
         // GET: Categorias/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.ActivePage = "Categorias";
             if (id == null) return NotFound();
 
             var categoria = await _context.Categorias.FindAsync(id);
@@ -70,6 +75,7 @@ namespace _2026_Team_G.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Descricao")] Categoria categoria)
         {
+            ViewBag.ActivePage = "Categorias";
             if (id != categoria.Id) return NotFound();
 
             if (ModelState.IsValid)
@@ -92,6 +98,7 @@ namespace _2026_Team_G.Controllers
         // GET: Categorias/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            ViewBag.ActivePage = "Categorias";
             if (id == null) return NotFound();
 
             var categoria = await _context.Categorias.FirstOrDefaultAsync(m => m.Id == id);
@@ -105,6 +112,7 @@ namespace _2026_Team_G.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            ViewBag.ActivePage = "Categorias";
             var categoria = await _context.Categorias.FindAsync(id);
             if (categoria != null) _context.Categorias.Remove(categoria);
             await _context.SaveChangesAsync();

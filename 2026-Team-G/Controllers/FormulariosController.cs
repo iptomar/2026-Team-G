@@ -31,6 +31,7 @@ namespace _2026_Team_G.Controllers
             ViewBag.ActivePage = "Formularios";
             // Vai buscar os componentes e passa-os para a View
             ViewBag.ComponentesDisponiveis = await _context.Components.ToListAsync();
+            ViewBag.Categorias = await _context.Categorias.OrderBy(c => c.Descricao).ToListAsync();
 
             var formularios = await _context.Formularios.ToListAsync();
             return View(formularios);

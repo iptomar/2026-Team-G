@@ -14,6 +14,11 @@ namespace _2026_Team_G.Models
         [Display(Name = "Descrição")]
         public string Description { get; set; }
 
+        [Display(Name = "Categoria")]
+        public int? CategoriaId { get; set; }
+
+        public Categoria? Categoria { get; set; }
+
         public bool IsActive { get; set; } = true;
 
         // Representa a lista de componentes que foram arrastados na UI

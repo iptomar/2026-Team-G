@@ -88,6 +88,24 @@
                         <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Descrição</label>
                         <textarea class="form-control" id="formDescInput" rows="4" style="resize:none;" placeholder="Insira a descrição do formulário...">Descrição do meu formulário</textarea>
                     </div>
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-size:0.75rem; letter-spacing:1px;">Categoria</label>
+                        @{ var categorias = ViewBag.Categorias as List<_2026_Team_G.Models.Categoria>; }
+                        <select class="form-select" id="formCategoryInput" @(categorias == null || !categorias.Any() ? "disabled" : "")>
+                            <option value="">Sem categoria</option>
+                            @if (categorias != null)
+                            {
+                                foreach (var categoria in categorias)
+                                {
+                                    <option value="@categoria.Id">@categoria.Descricao</option>
+                                }
+                            }
+                        </select>
+                        @if (categorias == null || !categorias.Any())
+                        {
+                            <div class="form-text">Crie categorias em Categorias antes de selecionar aqui.</div>
+                        }
+                    </div>
                 </form>
             </div>
 
@@ -479,6 +497,8 @@
 
                 const title = document.getElementById('formTitleInput').value.trim();
                 const description = document.getElementById('formDescInput').value.trim();
+                const categoryValue = document.getElementById('formCategoryInput') ? document.getElementById('formCategoryInput').value : '';
+                const categoryId = categoryValue ? parseInt(categoryValue, 10) : null;
 
                 if (!title) {
                     alert('Por favor, defina um título para o formulário.');
@@ -536,6 +556,7 @@
                     body: JSON.stringify({
                         Title: title,
                         Description: description,
+                        CategoriaId: categoryId,
                         IsActive: true,
                         Fields: fields
                     })

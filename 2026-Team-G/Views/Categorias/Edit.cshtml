@@ -1,26 +1,27 @@
 @model _2026_Team_G.Models.Categoria
 
 @{
-    ViewData["Title"] = "Criar Categoria";
+    ViewData["Title"] = "Editar Categoria";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container pb-5">
     <div class="page-header">
-        <h1>Criar Categoria</h1>
-        <p>Defina uma nova categoria para organizar os formulários por tipo ou área.</p>
+        <h1>Editar Categoria</h1>
+        <p>Atualize o nome da categoria utilizada para agrupar os formulários.</p>
     </div>
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <form asp-action="Create">
+                    <form asp-action="Edit">
+                        <input type="hidden" asp-for="Id" />
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="mb-4">
                             <label asp-for="Descricao" class="form-label"></label>
-                            <input asp-for="Descricao" class="form-control" placeholder="Ex: Serviços Académicos" autofocus />
+                            <input asp-for="Descricao" class="form-control" />
                             <span asp-validation-for="Descricao" class="text-danger"></span>
                         </div>
 

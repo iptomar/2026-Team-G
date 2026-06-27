@@ -99,6 +99,43 @@ body {
   border-color: var(--ipt-green-hover) !important;
 }
 
+.page-header {
+  background: linear-gradient(135deg, #f4faeb 0%, #ffffff 100%);
+  border-radius: 16px;
+  padding: 32px;
+  margin-top: 24px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(124, 177, 59, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.page-header h1 {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.page-header p {
+  color: #6c757d;
+  font-size: 1.05rem;
+  margin-bottom: 0;
+}
+
+.card.border-0.shadow-sm {
+  border: 1px solid var(--ipt-border);
+}
+
+.btn-ipt-outline.text-danger {
+  color: #ef233c !important;
+  border-color: #ef233c !important;
+}
+
+.btn-ipt-outline.text-danger:hover {
+  background-color: rgba(239, 35, 60, 0.08) !important;
+}
+
 /* Header tweaks */
 .ipt-login-section .nav-link {
   font-weight: 700;
@@ -110,4 +147,4 @@ body {
 }
 .ipt-login-section .nav-link:hover {
   color: var(--ipt-green) !important;
-}
+}
