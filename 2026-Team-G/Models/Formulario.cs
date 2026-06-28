@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace _2026_Team_G.Models
 {
@@ -18,6 +19,9 @@ namespace _2026_Team_G.Models
         public int? CategoriaId { get; set; }
 
         public Categoria? Categoria { get; set; }
+
+        public string? CreatedByUserId { get; set; }
+        public IdentityUser? CreatedByUser { get; set; }
 
         public bool IsActive { get; set; } = true;
 

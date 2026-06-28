@@ -48,6 +48,14 @@ namespace _2026_Team_G.Controllers
                 return BadRequest(new { success = false, message = "Dados invalidos do formulario." });
             }
 
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { success = false, message = "Utilizador não autenticado." });
+            }
+
+            formulario.CreatedByUserId = userId;
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
@@ -68,26 +76,49 @@ namespace _2026_Team_G.Controllers
 
         // PROTEGIDO: So utilizadores autenticados podem ver o historico de submissoes
         [Authorize]
-        public async Task<IActionResult> HistoricoFormulariosUtilizador()
+        public async Task<IActionResult> HistoricoFormulariosUtilizador(int? categoriaId, string? q)
         {
             ViewBag.ActivePage = "Historico";
+            ViewBag.Categorias = await _context.Categorias.OrderBy(c => c.Descricao).ToListAsync();
+            ViewBag.CategoriaSelecionada = categoriaId;
+            ViewBag.Query = q;
+
             try
             {
                 var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                
+
                 IQueryable<Submissao> query = _context.Submissoes
                     .Include(s => s.Formulario)
-                    .Include(s => s.Utilizador);
+                    .ThenInclude(f => f.Categoria)
+                    .Include(s => s.Utilizador)
+                    .AsQueryable();
 
-                // Utilizadores comuns apenas vêem as suas próprias submissões, admins vêem todas
+                // Utilizadores comuns vêem as submissões que fizeram e as respostas dos formulários que criaram
                 if (!User.IsInRole("Admin"))
                 {
-                    query = query.Where(s => s.UtilizadorId == userId);
+                    query = query.Where(s => s.UtilizadorId == userId || (s.Formulario != null && s.Formulario.CreatedByUserId == userId));
+                }
+
+                if (categoriaId.HasValue)
+                {
+                    query = query.Where(s => s.Formulario != null && s.Formulario.CategoriaId == categoriaId.Value);
+                }
+
+                if (!string.IsNullOrWhiteSpace(q))
+                {
+                    var queryLower = q.Trim().ToLower();
+                    query = query.Where(s =>
+                        (s.Formulario != null && s.Formulario.Title != null && s.Formulario.Title.ToLower().Contains(queryLower)) ||
+                        (s.Formulario != null && s.Formulario.Categoria != null && s.Formulario.Categoria.Descricao != null && s.Formulario.Categoria.Descricao.ToLower().Contains(queryLower)) ||
+                        (s.Utilizador != null && s.Utilizador.UserName != null && s.Utilizador.UserName.ToLower().Contains(queryLower)) ||
+                        (s.Id.ToString().Contains(q.Trim()))
+                    );
                 }
 
                 var submissoes = await query
                     .OrderByDescending(s => s.DataSubmissao)
                     .ToListAsync();
+
 
                 // Passar o total de formulários ativos para as estatísticas
                 ViewBag.TotalFormulariosAtivos = await _context.Formularios.CountAsync(f => f.IsActive);

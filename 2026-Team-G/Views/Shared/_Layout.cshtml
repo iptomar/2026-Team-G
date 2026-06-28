@@ -28,19 +28,19 @@
                         <li class="nav-item">
                             <a class="nav-link py-2 px-3 text-dark @(activePage == "Home" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @if (User.IsInRole("Admin"))
+                        @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link py-2 px-3 text-dark @(activePage == "Formularios" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Formularios" asp-action="Index">Criar Formulário</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link py-2 px-3 text-dark @(activePage == "Categorias" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Categorias" asp-action="Index">Categorias</a>
+                                <a class="nav-link py-2 px-3 text-dark @(activePage == "Disponiveis" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Formularios" asp-action="Disponiveis">Formulários Disponíveis</a>
                             </li>
                         }
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link py-2 px-3 text-dark @(activePage == "Disponiveis" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Formularios" asp-action="Disponiveis">Formulários Disponíveis</a>
+                                <a class="nav-link py-2 px-3 text-dark @(activePage == "Categorias" ? "ipt-active-tab rounded-3" : "ipt-nav-link rounded-3")" asp-area="" asp-controller="Categorias" asp-action="Index">Categorias</a>
                             </li>
                         }
                         <li class="nav-item">

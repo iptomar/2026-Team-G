@@ -46,12 +46,12 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseStaticFiles();
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
-
-app.UseAuthorization();
 
 app.MapStaticAssets();
 
@@ -74,7 +74,7 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
     // Definir as roles que queremos no sistema
-    string[] roles = { "Admin", "User" };
+    string[] roles = { "Admin", "Utilizador" };
 
     // Para cada role, verificar se ja existe. Se nao, criar.
     foreach (var role in roles)
@@ -116,6 +116,22 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+
+        var connection = context.Database.GetDbConnection();
+        if (connection.State != System.Data.ConnectionState.Open)
+        {
+            connection.Open();
+        }
+
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM pragma_table_info('Formularios') WHERE name = 'CreatedByUserId'";
+        var columnExists = Convert.ToInt32(command.ExecuteScalar()) > 0;
+
+        if (!columnExists)
+        {
+            command.CommandText = "ALTER TABLE \"Formularios\" ADD COLUMN \"CreatedByUserId\" TEXT";
+            command.ExecuteNonQuery();
+        }
 
         DbInitializer.Initialize(context);
     }

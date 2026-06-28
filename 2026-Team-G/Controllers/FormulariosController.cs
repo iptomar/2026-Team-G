@@ -56,21 +56,34 @@ namespace _2026_Team_G.Controllers
             return View(formulario);
         }
 
-        // GET: Formularios/Create
-        [Authorize(Roles = "Admin")]
+        // GET: Formularios/Create (permitir utilizador autenticado não-admin)
+        [Authorize]
+        [Authorize(Roles = "Admin,Utilizador")]
         public IActionResult Create()
         {
             ViewBag.ActivePage = "Formularios";
             return View();
         }
 
-        // POST: Formularios/Create
+
+        // POST: Formularios/Create (permitir utilizador autenticado não-admin)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,IsActive")] Formulario formulario)
         {
             ViewBag.ActivePage = "Formularios";
+            // Não-admin deve apenas criar como "disponível" (marcar IsActive=true) e guardar CreatedByUserId
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Challenge();
+
+            if (!User.IsInRole("Admin"))
+            {
+                formulario.IsActive = true;
+                formulario.CreatedByUserId = userId;
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(formulario);
@@ -79,6 +92,7 @@ namespace _2026_Team_G.Controllers
             }
             return View(formulario);
         }
+
 
         // GET: Formularios/Edit/5
         [Authorize(Roles = "Admin")]
@@ -205,13 +219,29 @@ namespace _2026_Team_G.Controllers
         }
         // GET: Formularios/Disponiveis
         [Authorize]
-        public async Task<IActionResult> Disponiveis()
+        public async Task<IActionResult> Disponiveis(int? categoriaId)
         {
             ViewBag.ActivePage = "Disponiveis";
-            var formularios = await _context.Formularios
+            ViewBag.Categorias = await _context.Categorias
+                .OrderBy(c => c.Descricao)
+                .ToListAsync();
+            ViewBag.CategoriaSelecionada = categoriaId;
+
+            var query = _context.Formularios
                 .Where(f => f.IsActive)
                 .Include(f => f.Fields)
+                .Include(f => f.Categoria)
+                .AsQueryable();
+
+            if (categoriaId.HasValue)
+            {
+                query = query.Where(f => f.CategoriaId == categoriaId.Value);
+            }
+
+            var formularios = await query
+                .OrderBy(f => f.Title)
                 .ToListAsync();
+
             return View(formularios);
         }
 
@@ -321,7 +351,7 @@ namespace _2026_Team_G.Controllers
             }
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!User.IsInRole("Admin") && submissao.UtilizadorId != userId)
+            if (!User.IsInRole("Admin") && submissao.UtilizadorId != userId && submissao.Formulario?.CreatedByUserId != userId)
             {
                 return Challenge();
             }
@@ -388,7 +418,7 @@ namespace _2026_Team_G.Controllers
                 return NotFound();
             }
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!User.IsInRole("Admin") && submissao.UtilizadorId != userId)
+            if (!User.IsInRole("Admin") && submissao.UtilizadorId != userId && submissao.Formulario?.CreatedByUserId != userId)
             {
                 return Challenge();
             }

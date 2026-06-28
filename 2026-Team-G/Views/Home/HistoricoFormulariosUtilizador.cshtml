@@ -14,8 +14,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 
 <div class="page-header">
-    <h1>Histórico de Formulários</h1>
-    <p>Consulte todos os formulários que já submeteu e as suas respostas</p>
+    <h1>Histórico de Respostas</h1>
+    <p class="historico-respostas-subtitulo">Consulte as respostas que submeteu e as respostas dos formulários que criou</p>
+
 </div>
 
 <div class="stats-container">
@@ -37,9 +38,30 @@
     </div>
 </div>
 
-<div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Pesquisar formulário..." onkeyup="filterTable()">
+    <div class="search-bar d-flex flex-wrap gap-2 align-items-end">
+    <div class="flex-grow-1">
+        <input type="text" id="searchInput" name="q" placeholder="Pesquisar formulário..." value="@(ViewBag.Query ?? "")" onkeyup="filterTable()" class="w-100">
+    </div>
+    <form asp-action="HistoricoFormulariosUtilizador" method="get" class="d-flex flex-wrap gap-2 align-items-end">
+        <div>
+            <label for="categoriaId" class="form-label mb-1 fw-semibold">Categoria</label>
+            <select name="categoriaId" id="categoriaId" class="form-select">
+                <option value="">Todas as categorias</option>
+                @if (ViewBag.Categorias is List<_2026_Team_G.Models.Categoria> categorias)
+                {
+                    foreach (var categoria in categorias)
+                    {
+                        <option value="@categoria.Id" selected="@(ViewBag.CategoriaSelecionada != null && (int)ViewBag.CategoriaSelecionada == categoria.Id ? "selected" : null)">@categoria.Descricao</option>
+                    }
+                }
+            </select>
+        </div>
+        <input type="hidden" id="qHidden" name="q" value="@(ViewBag.Query ?? "")" />
+        <button type="submit" class="btn btn-ipt-green" onclick="syncSearchToHidden()">Filtrar</button>
+        <a asp-action="HistoricoFormulariosUtilizador" class="btn btn-outline-secondary">Limpar</a>
+    </form>
 </div>
+
 
 <div class="table-container">
     <table id="formTable">
@@ -47,6 +69,7 @@
             <tr>
                 <th>ID Resposta</th>
                 <th>Nome do Formulário</th>
+                <th>Categoria</th>
                 <th>Data de Submissão</th>
                 <th>Submetido por</th>
                 <th style="text-align: center;">Ações</th>
@@ -60,11 +83,12 @@
                     <tr>
                         <td>@sub.Id.ToString("D3")</td>
                         <td style="font-weight: 600;">@sub.Formulario?.Title</td>
+                        <td>@(sub.Formulario?.Categoria?.Descricao ?? "Sem categoria")</td>
                         <td>@sub.DataSubmissao.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>@(sub.Utilizador?.UserName ?? "Utilizador")</td>
                         <td style="text-align: center;">
                             <button class="btn-view" onclick="Editar(@sub.Id)" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;">
-                                <i class="bi bi-eye"></i> Ver Respostas
+                                <i class="bi bi-journal-text"></i> Histórico de Respostas
                             </button>
                         </td>
                     </tr>
@@ -73,7 +97,7 @@
             else
             {
                 <tr>
-                    <td colspan="5" style="text-align: center; color: var(--fb-text-muted); font-style: italic; padding: 30px;">
+                    <td colspan="6" style="text-align: center; color: var(--fb-text-muted); font-style: italic; padding: 30px;">
                         Nenhuma submissão encontrada na base de dados.
                     </td>
                 </tr>
@@ -83,17 +107,23 @@
 </div>
 
 <script>
+    function syncSearchToHidden() {
+        const input = document.getElementById('searchInput');
+        const hidden = document.getElementById('qHidden');
+        if (hidden && input) hidden.value = input.value;
+    }
+
     function filterTable() {
         const input = document.getElementById('searchInput');
-        const filter = input.value.toLowerCase();
+        const filter = (input?.value ?? '').toLowerCase();
         const table = document.getElementById('formTable');
         const tr = table.getElementsByTagName('tr');
 
         for (let i = 1; i < tr.length; i++) {
-            const tdNome = tr[i].getElementsByTagName('td')[1];
-            if (tdNome) {
-                const txtValue = tdNome.textContent || tdNome.innerText;
-                tr[i].style.display = txtValue.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+            const tds = tr[i].getElementsByTagName('td');
+            if (tds && tds.length > 1) {
+                const formName = tds[1].textContent || tds[1].innerText;
+                tr[i].style.display = formName.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
             }
         }
     }
@@ -101,4 +131,10 @@
     function Editar(id) {
         window.location.href = '/Formularios/DetalhesSubmissao/' + id;
     }
+
+    // manter estado do filtro ao recarregar
+    document.addEventListener('DOMContentLoaded', () => {
+        syncSearchToHidden();
+        filterTable();
+    });
 </script>

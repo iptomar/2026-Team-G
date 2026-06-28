@@ -40,9 +40,20 @@
 }
 
 .stat-label {
-    color: #666;
+    color: #4b5563;
     margin-top: 5px;
 }
+
+.historico-respostas-subtitulo {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.02rem;
+    margin: 0;
+}
+
+#formTable {
+    color: #111827;
+}
+
 
 .search-bar {
     margin-bottom: 20px;
@@ -142,7 +153,7 @@ tr:hover {
         margin-bottom: 10px;
     }
 
-@@media (max-width: 768px) {
+@media (max-width: 768px) {
     .stats-container {
         flex-direction: column;
     }
