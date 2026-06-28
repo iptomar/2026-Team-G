@@ -40,7 +40,7 @@ namespace _2026_Team_G.Controllers
         // PROTEGIDO: So Admins podem gravar formularios
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> SalvarFormulario([FromBody] Formulario formulario)
         {
             if (formulario == null)

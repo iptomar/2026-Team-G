@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace _2026_Team_G.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class CategoriasController : Controller
     {
         private readonly ApplicationDbContext _context;

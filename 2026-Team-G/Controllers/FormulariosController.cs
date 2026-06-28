@@ -25,7 +25,7 @@ namespace _2026_Team_G.Controllers
         }
 
         // GET: Formularios
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             ViewBag.ActivePage = "Formularios";
