@@ -1,6 +1,6 @@
 @model IEnumerable<_2026_Team_G.Models.Submissao>
 @{
-    ViewData["Title"] = "Histórico de Formulários";
+    ViewData["Title"] = "Histórico de Respostas";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     int totalSubmissions = Model?.Count() ?? 0;
@@ -31,10 +31,6 @@
     <div class="stat-card">
         <div class="stat-number" style="font-size: 1.25rem; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700;">@lastSubmissionDate</div>
         <div class="stat-label">Última Submissão</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" style="font-size: 1.15rem; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">@User.Identity.Name</div>
-        <div class="stat-label">Utilizador Logado</div>
     </div>
 </div>
 

@@ -121,7 +121,14 @@ namespace _2026_Team_G.Controllers
 
 
                 // Passar o total de formulários ativos para as estatísticas
-                ViewBag.TotalFormulariosAtivos = await _context.Formularios.CountAsync(f => f.IsActive);
+                if (User.IsInRole("Admin"))
+                {
+                    ViewBag.TotalFormulariosAtivos = await _context.Formularios.CountAsync(f => f.IsActive);
+                }
+                else
+                {
+                    ViewBag.TotalFormulariosAtivos = await _context.Formularios.CountAsync(f => f.IsActive && f.CreatedByUserId == userId);
+                }
 
                 return View(submissoes);
             }

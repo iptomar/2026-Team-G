@@ -1,5 +1,5 @@
 .page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--ipt-green) 0%, var(--ipt-green-hover) 100%);
     padding: 30px;
     border-radius: 15px;
     color: white;
@@ -36,7 +36,7 @@
 .stat-number {
     font-size: 32px;
     font-weight: bold;
-    color: #667eea;
+    color: var(--ipt-green);
 }
 
 .stat-label {
@@ -69,7 +69,7 @@
     }
 
         .search-bar input:focus {
-            border-color: #667eea;
+            border-color: var(--ipt-green);
             outline: none;
         }
 
@@ -129,7 +129,7 @@ tr:hover {
 }
 
 .btn-view {
-    background: #667eea;
+    background: var(--ipt-green);
     color: white;
     padding: 6px 12px;
     border-radius: 8px;
@@ -140,7 +140,7 @@ tr:hover {
 }
 
     .btn-view:hover {
-        background: #5a67d8;
+        background: var(--ipt-green-hover);
     }
 
 .empty-state {
